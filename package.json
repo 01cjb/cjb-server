@@ -1,0 +1,41 @@
+{
+  "name": "cjb-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:link": "supabase link --project-ref sforkxsrudzidwdjoisw",
+    "db:pull": "supabase db pull",
+    "db:push": "supabase db push",
+    "db:types": "supabase gen types typescript --linked > lib/supabase/database.types.ts",
+    "db:seed": "node scripts/gen-seed.mjs",
+    "app:add:android": "npx cap add android",
+    "app:add:ios": "npx cap add ios",
+    "app:sync": "npx cap sync",
+    "app:android": "npx cap open android",
+    "app:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.0",
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "supabase": "^2.40.0",
+    "typescript": "^5.6.0",
+    "tailwindcss": "^4.1.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/ios": "^7.4.0"
+  }
+}

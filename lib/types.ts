@@ -1,0 +1,25 @@
+export type Category = { id: number; slug: string; name: string; icon: string; sort: number };
+export type Brand = { id: number; slug: string; name: string; sort: number };
+export type Product = {
+  id: number;
+  name: string;
+  brand_id: number | null;
+  category_id: number | null;
+  model_no?: string | null;
+  summary?: string | null;
+  description?: string | null;
+  consumer_price?: number | null;
+  price: number;
+  salon_price?: number | null;
+  stock: number;
+  thumbnail_url?: string | null;
+  badges: string[];
+  is_best: boolean;
+  is_new: boolean;
+  is_timesale: boolean;
+  vip_only: boolean;
+  status: "active" | "soldout" | "hidden";
+  created_at?: string;
+};
+export type Banner = { id: number; title: string; subtitle?: string | null; link?: string | null; bg_color?: string | null; image_url?: string | null; sort: number };
+export type ProductQuery = { category?: string; brand?: string; q?: string; flag?: "best" | "new" | "timesale" | "vip"; sort?: "new" | "price_asc" | "price_desc" | "name"; limit?: number };

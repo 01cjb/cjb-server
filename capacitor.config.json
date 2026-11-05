@@ -1,0 +1,11 @@
+{
+  "appId": "com.icjb.beautywell",
+  "appName": "뷰티웰",
+  "webDir": "public",
+  "server": {
+    "url": "https://cjb-server.vercel.app",
+    "cleartext": false
+  },
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "automatic" }
+}
