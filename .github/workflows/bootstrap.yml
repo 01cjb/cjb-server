@@ -1,0 +1,24 @@
+name: bootstrap
+on:
+  push:
+    paths: ['.github/workflows/bootstrap.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack cjb-server source
+        run: |
+          if [ ! -f bootstrap/repo.b64 ]; then echo "nothing to unpack"; exit 0; fi
+          base64 -d bootstrap/repo.b64 > /tmp/repo.txz
+          echo "c3cfb81b4e7c8da032a66e2b6bad758fc38bf256af86c4f45300a8a8a7d0038d  /tmp/repo.txz" | sha256sum -c -
+          tar -xJf /tmp/repo.txz
+          git rm -r -q bootstrap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Admin backend: products cancel/bulk import, customers, shipments, consents, contracts, tax invoices"
+          git push
