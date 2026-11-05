@@ -1,0 +1,24 @@
+name: bootstrap
+on:
+  push:
+    paths: ['.github/workflows/bootstrap.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack cjb-server source
+        run: |
+          if [ ! -f bootstrap/repo.b64 ]; then echo "nothing to unpack"; exit 0; fi
+          base64 -d bootstrap/repo.b64 > /tmp/repo.txz
+          echo "b1eba711f894f40da8e5e757145ed72a072bde47fd2e8bced382ef23e3f15c16  /tmp/repo.txz" | sha256sum -c -
+          tar -xJf /tmp/repo.txz
+          git rm -r -q bootstrap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add cjb-server source (Beauty Well)"
+          git push
