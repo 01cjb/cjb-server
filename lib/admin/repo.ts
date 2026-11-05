@@ -173,3 +173,18 @@ export async function dashboard() {
     recentOrders: orders.slice(0, 6),
   };
 }
+
+export type StaffRow = { id: string; name: string; email: string; role: "staff" | "admin"; is_test: boolean; status: string; created_at: string; last_login_at?: string | null };
+export type AuditRow = { id: number; target_email: string | null; from_role: string | null; to_role: string | null; note: string | null; created_at: string };
+
+export async function listStaff(): Promise<{ staff: StaffRow[]; audit: AuditRow[] }> {
+  if (!live()) return {
+    staff: [{ id: "00000000-0000-0000-0000-000000000009", name: "관리자(예시)", email: "admin@example.com", role: "admin", is_test: true, status: "active", created_at: "2026-11-01T00:00:00Z" }],
+    audit: [{ id: 1, target_email: "admin@example.com", from_role: "customer", to_role: "admin", note: "테스트 관리자 지정", created_at: "2026-11-05T06:00:00Z" }],
+  };
+  const [s, a] = await Promise.all([
+    db().from("profiles").select("id,name,email,role,is_test,status,created_at,last_login_at").in("role", ["staff", "admin"]).order("role").order("created_at"),
+    db().from("admin_audit").select("id,target_email,from_role,to_role,note,created_at").order("id", { ascending: false }).limit(30),
+  ]);
+  return { staff: (s.data as StaffRow[]) ?? [], audit: (a.data as AuditRow[]) ?? [] };
+}

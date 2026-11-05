@@ -8,7 +8,7 @@ export const metadata = { title: "관리자", robots: { index: false } };
 const nav = [
   ["/admin", "대시보드"], ["/admin/products", "상품관리"], ["/admin/products/import", "엑셀 대량등록"],
   ["/admin/customers", "고객정보"], ["/admin/orders", "주문관리"], ["/admin/shipments", "배송추적"],
-  ["/admin/salon", "미용실 인증"], ["/admin/contracts", "계약정보"], ["/admin/invoices", "세금계산서"], ["/admin/consents", "약관·동의"],
+  ["/admin/salon", "미용실 인증"], ["/admin/contracts", "계약정보"], ["/admin/invoices", "세금계산서"], ["/admin/consents", "약관·동의"], ["/admin/staff", "관리자 계정"],
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

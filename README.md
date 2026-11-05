@@ -49,8 +49,15 @@ cart_items, wishlists, orders, order_items, reviews — 전부 RLS 적용.
 | 세금계산서 | 결제완료+요청 주문 자동 생성 → 매일 10시 자동발행(Vercel Cron), 수동 발행·취소 |
 | 약관·동의 | 약관 버전, 항목별 동의율 |
 
-**권한**: `profiles.role` = customer / staff / admin. 첫 관리자는 Supabase SQL Editor에서
-`update profiles set role='admin' where email='관리자이메일';` 로 지정합니다.
+**권한**: `profiles.role` = customer / staff(직원) / admin(최고관리자).
+
+### 관리자 계정 — 테스트(개인) → 회사 계정 전환
+1. 첫 관리자(개인 테스트 계정): 회원가입 후 Supabase SQL Editor에서
+   `select set_staff_role('개인메일@주소', 'admin', true, '테스트 관리자');`
+2. 회사 계정 준비되면: 회사 메일로 회원가입 → /admin/staff 에서 ‘최고관리자’ 지정(테스트 체크 해제)
+3. 회사 계정으로 로그인 → /admin/staff 에서 개인 계정 ‘권한 해제’
+4. Vercel 환경변수 `ADMIN_EMAIL_DOMAINS=회사도메인.com` → 이후 회사 메일만 관리자 지정 가능
+- 권한 변경은 최고관리자만 가능, 마지막 최고관리자는 해제 불가, 모든 변경은 `admin_audit` 기록
 
 ## 회원 (/mypage)
 구매내역 · 주문상세(진행단계·배송조회·계산서 요청) · 세금계산서 보기 · 계약정보 · 회원/사업자정보·배송지 · 마케팅 수신동의(채널별, 이력 보관)
@@ -60,6 +67,7 @@ cart_items, wishlists, orders, order_items, reviews — 전부 RLS 적용.
 | 이름 | 용도 |
 |---|---|
 | `CRON_SECRET` | 계산서 자동발행 크론 보호 (Vercel이 자동 전달) |
+| `ADMIN_EMAIL_DOMAINS` | 관리자로 지정 가능한 회사 메일 도메인 (예: `icjb.com`) |
 | `INVOICE_PROVIDER` | `mock`(기본) / `popbill` / `barobill` — 실제 국세청 발행은 대행사 계약 후 연동 |
 
 ## 설치 & 실행 (Windows)
@@ -73,7 +81,7 @@ npm run dev                      → http://localhost:3000
 ```
 npx supabase login
 npm run db:link                  (cjb Project, DB 비밀번호 입력)
-npm run db:push                  (migrations 3개 적용)
+npm run db:push                  (migrations 5개 적용)
 npm run db:seed                  (lib/mock.ts → supabase/seed.sql 생성)
 ```
 seed.sql은 Supabase → SQL Editor에 붙여넣어 실행하면 됩니다.

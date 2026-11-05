@@ -32,7 +32,7 @@ export default function Act({ url, method = "POST", body, label, ask, tone = "de
   const [open, setOpen] = useState(false);
   const [val, setVal] = useState("");
   const cls = { default: "border border-neutral-300 bg-white", danger: "border border-rose-300 text-rose-700 bg-white", primary: "bg-brand-600 text-white" }[tone];
-  const run = async () => { const r = await call(url, method, ask ? { ...body, reason: val, memo: val } : body); if (r.ok) { setOpen(false); setVal(""); } };
+  const run = async () => { const r = await call(url, method, ask ? { ...body, reason: val, memo: val, note: val } : body); if (r.ok) { setOpen(false); setVal(""); } };
   return (
     <span className="inline-flex flex-col">
       {open ? (
