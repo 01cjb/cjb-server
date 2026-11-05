@@ -8,12 +8,13 @@ export default function Checkout() {
   const { cart, grade, clearCart } = useStore();
   const q = useQuote();
   const [form, setForm] = useState({ name: "", phone: "", address: "", memo: "" });
+  const [invoice, setInvoice] = useState(false);
   const [result, setResult] = useState<{ orderNo?: string; error?: string; mock?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setBusy(true);
-    const r = await fetch("/api/orders", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lines: cart, grade, receiver: form }) });
+    const r = await fetch("/api/orders", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lines: cart, grade, receiver: form, invoice }) });
     const d = await r.json(); setBusy(false); setResult(d);
     if (r.ok) clearCart();
   };
@@ -42,6 +43,7 @@ export default function Checkout() {
         {field("phone", "연락처", "010-0000-0000")}
         {field("address", "주소", "서울시 관악구 ...")}
         {field("memo", "배송 메모 (선택)", "부재 시 문 앞")}
+        <label className="flex items-start gap-2 rounded-xl bg-brand-50 p-4 text-sm"><input type="checkbox" checked={invoice} onChange={(e) => setInvoice(e.target.checked)} className="mt-0.5 accent-brand-600" /><span><b>세금계산서 발행 요청</b><br /><span className="text-xs text-neutral-500">결제완료 시 마이페이지 사업자정보로 자동 발행됩니다.</span></span></label>
         <div className="rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500">결제수단 영역 — 토스페이먼츠 등 PG 연동 예정</div>
       </div>
       <aside className="rounded-2xl bg-neutral-50 p-5 h-fit space-y-2 text-sm">

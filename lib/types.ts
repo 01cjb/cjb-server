@@ -18,7 +18,10 @@ export type Product = {
   is_new: boolean;
   is_timesale: boolean;
   vip_only: boolean;
-  status: "active" | "soldout" | "hidden";
+  status: "active" | "soldout" | "hidden" | "draft" | "cancelled";
+  sku?: string | null;
+  cancel_reason?: string | null;
+  cancelled_at?: string | null;
   created_at?: string;
 };
 export type Banner = { id: number; title: string; subtitle?: string | null; link?: string | null; bg_color?: string | null; image_url?: string | null; sort: number };

@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const db = createServiceClient();
   const { data: order, error } = await db.from("orders").insert({
     order_no: orderNo, user_id: user.id, subtotal: q.subtotal, shipping_fee: q.shipping, total: q.total,
-    receiver_name: String(r.name), receiver_phone: String(r.phone), address: String(r.address), memo: r.memo ? String(r.memo) : null,
+    receiver_name: String(r.name), receiver_phone: String(r.phone), address: String(r.address), memo: r.memo ? String(r.memo) : null, invoice_requested: !!body?.invoice,
   }).select("id").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

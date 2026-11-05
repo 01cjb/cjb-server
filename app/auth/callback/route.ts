@@ -4,5 +4,6 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   if (code) await (await createClient()).auth.exchangeCodeForSession(code);
-  return NextResponse.redirect(new URL("/mypage", url.origin));
+  const next = url.searchParams.get("next");
+  return NextResponse.redirect(new URL(next && next.startsWith("/") && !next.startsWith("//") ? next : "/mypage", url.origin));
 }

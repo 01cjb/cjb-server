@@ -33,7 +33,7 @@ export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
   const brandId = q.brand ? (await getBrands()).find((x) => x.slug === q.brand)?.id : undefined;
 
   if (!useDb) {
-    let list = mock.products.filter((p) => p.status !== "hidden");
+    let list = mock.products.filter((p) => p.status === "active" || p.status === "soldout");
     if (catId) list = list.filter((p) => p.category_id === catId);
     if (brandId) list = list.filter((p) => p.brand_id === brandId);
     if (q.flag === "best") list = list.filter((p) => p.is_best);
@@ -45,7 +45,7 @@ export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
     return q.limit ? list.slice(0, q.limit) : list;
   }
 
-  let query = db().from("products").select("*").neq("status", "hidden");
+  let query = db().from("products").select("*").in("status", ["active", "soldout"]);
   if (catId) query = query.eq("category_id", catId);
   if (brandId) query = query.eq("brand_id", brandId);
   if (q.flag === "best") query = query.eq("is_best", true);

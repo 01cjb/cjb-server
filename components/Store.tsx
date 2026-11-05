@@ -13,6 +13,7 @@ type Ctx = {
   clearCart: () => void;
   toggleWish: (id: number) => void;
   setGrade: (g: Ctx["grade"]) => void;
+  serverGrade: Ctx["grade"] | null;
 };
 const StoreCtx = createContext<Ctx | null>(null);
 
@@ -21,7 +22,7 @@ const load = <T,>(k: string, d: T): T => {
 };
 const save = (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
+export function StoreProvider({ children, serverGrade = null }: { children: React.ReactNode; serverGrade?: Ctx["grade"] | null }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wish, setWish] = useState<number[]>([]);
   const [grade, setGradeState] = useState<Ctx["grade"]>("general");
@@ -30,7 +31,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setCart(load("bw_cart", []));
     setWish(load("bw_wish", []));
-    setGradeState(load("bw_grade", "general"));
+    setGradeState(serverGrade ?? load("bw_grade", "general"));
     setReady(true);
   }, []);
   useEffect(() => { if (ready) save("bw_cart", cart); }, [cart, ready]);
@@ -45,7 +46,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     removeFromCart: (id) => setCart((c) => c.filter((l) => l.id !== id)),
     clearCart: () => setCart([]),
     toggleWish: (id) => setWish((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id])),
-    setGrade: setGradeState,
+    setGrade: (g) => { if (!serverGrade) setGradeState(g); },
+    serverGrade,
   };
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }

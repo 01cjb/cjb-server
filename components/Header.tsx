@@ -16,7 +16,7 @@ const menus = [
   { href: "/category/vip", label: "★VIP 전용관★", cls: "text-accent font-bold" },
 ];
 
-export default function Header({ categories }: { categories: Category[] }) {
+export default function Header({ categories, session, loggedIn }: { categories: Category[]; session: { mock: boolean; name: string | null; admin: boolean }; loggedIn: boolean }) {
   const { cart, wish } = useStore();
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -32,7 +32,7 @@ export default function Header({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="hidden md:flex justify-end gap-4 max-w-6xl mx-auto px-4 pt-2 text-xs text-neutral-500">
-        <Link href="/login">로그인/회원가입</Link><Link href="/mypage">주문배송조회</Link><Link href="/mypage#cs">고객센터</Link>
+        {loggedIn && !session.mock ? <><span>{session.name ?? "회원"}님</span><a href="/logout">로그아웃</a></> : <Link href="/login">로그인/회원가입</Link>}<Link href="/mypage/orders">주문배송조회</Link>{session.admin && <Link href="/admin" className="text-brand-600 font-medium">관리자</Link>}<Link href="/mypage#cs">고객센터</Link>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">

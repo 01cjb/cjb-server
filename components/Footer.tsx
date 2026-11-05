@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-8 grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2 space-y-1">
           <div className="flex flex-wrap gap-4 text-neutral-700 font-medium mb-3">
-            <Link href="/">회사소개</Link><Link href="/">이용약관</Link><Link href="/" className="font-bold">개인정보처리방침</Link><Link href="/">이용안내</Link>
+            <Link href="/">회사소개</Link><Link href="/terms">이용약관</Link><Link href="/privacy" className="font-bold">개인정보처리방침</Link><Link href="/">이용안내</Link>
           </div>
           <p>법인명(상호) : {company.name} · 대표자 : {company.ceo} · 사업자등록번호 : {company.bizNo}</p>
           <p>통신판매업 신고 {company.mailOrderNo} · 전화 {company.tel} · 팩스 {company.fax}</p>

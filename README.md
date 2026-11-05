@@ -36,6 +36,32 @@ member_grades, profiles(가입 시 자동 생성, 등급은 관리자만 변경)
 categories, brands, products(소비자가/판매가/미용실회원가), banners, notices,
 cart_items, wishlists, orders, order_items, reviews — 전부 RLS 적용.
 
+## 관리자 백엔드 (/admin)
+| 메뉴 | 기능 |
+|---|---|
+| 상품관리 | 상태별 탭(판매중/품절/숨김/임시저장/**등록취소**), 등록·수정, 취소(사유 기록)·복구, 엑셀 내보내기 |
+| 엑셀 대량등록 | 양식 내려받기 → 업로드 → 행별 검증 → 정상 행만 등록(SKU 같으면 수정), 배치 이력·되돌리기 |
+| 고객정보 | 등급별 탭, 검색, 등급·상태·사업자정보·메모 수정, 주문·계약·동의·배송지 조회 |
+| 주문관리 | 상태 흐름(입금대기→결제완료→배송준비→배송중→배송완료/취소), 송장 등록 |
+| 배송추적 | 택배사·송장·상태·추적이벤트, 택배사 조회 링크, 주문상태 자동 동기화 |
+| 미용실 인증 | 승인 시 고객 등급 자동 ‘미용실회원’ |
+| 계약정보 | 공급/대리점/VIP/위탁 계약, 기간·할인율·결제조건·외상한도, 만료 임박 표시 |
+| 세금계산서 | 결제완료+요청 주문 자동 생성 → 매일 10시 자동발행(Vercel Cron), 수동 발행·취소 |
+| 약관·동의 | 약관 버전, 항목별 동의율 |
+
+**권한**: `profiles.role` = customer / staff / admin. 첫 관리자는 Supabase SQL Editor에서
+`update profiles set role='admin' where email='관리자이메일';` 로 지정합니다.
+
+## 회원 (/mypage)
+구매내역 · 주문상세(진행단계·배송조회·계산서 요청) · 세금계산서 보기 · 계약정보 · 회원/사업자정보·배송지 · 마케팅 수신동의(채널별, 이력 보관)
+가입 시 필수/선택 약관 동의가 `user_consents` 에 일시와 함께 저장됩니다.
+
+## 추가 환경변수
+| 이름 | 용도 |
+|---|---|
+| `CRON_SECRET` | 계산서 자동발행 크론 보호 (Vercel이 자동 전달) |
+| `INVOICE_PROVIDER` | `mock`(기본) / `popbill` / `barobill` — 실제 국세청 발행은 대행사 계약 후 연동 |
+
 ## 설치 & 실행 (Windows)
 ```
 npm install
@@ -47,7 +73,7 @@ npm run dev                      → http://localhost:3000
 ```
 npx supabase login
 npm run db:link                  (cjb Project, DB 비밀번호 입력)
-npm run db:push                  (migrations 적용)
+npm run db:push                  (migrations 3개 적용)
 npm run db:seed                  (lib/mock.ts → supabase/seed.sql 생성)
 ```
 seed.sql은 Supabase → SQL Editor에 붙여넣어 실행하면 됩니다.
