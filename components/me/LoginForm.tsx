@@ -7,16 +7,27 @@ import type { ConsentDoc } from "@/lib/admin/types";
 
 const enabled = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 const ORDER = ["age14", "terms", "privacy", "privacy_third", "marketing"];
+const SOCIAL_ERRORS: Record<string, string> = {
+  naver_off: "네이버 로그인은 준비 중입니다.",
+  naver_cancel: "네이버 로그인을 취소했습니다.",
+  naver_state: "로그인 시간이 지났습니다. 다시 시도해 주세요.",
+  naver_profile: "네이버 회원정보를 가져오지 못했습니다. 다시 시도해 주세요.",
+  naver_email: "네이버 로그인 시 이메일 제공에 동의해 주세요.",
+  naver_exists: "같은 이메일로 이미 가입된 계정이 있습니다. 이메일·비밀번호로 로그인해 주세요.",
+  naver_create: "회원가입 처리 중 오류가 났습니다. 잠시 후 다시 시도해 주세요.",
+  naver_session: "로그인 처리 중 오류가 났습니다. 잠시 후 다시 시도해 주세요.",
+};
 
 export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; already: boolean }) {
   const router = useRouter();
-  const next = useSearchParams().get("next") || "/mypage";
+  const params = useSearchParams();
+  const next = params.get("next") || "/mypage";
   const [mode, setMode] = useState<"in" | "up" | "reset">("in");
   const [f, setF] = useState({ email: "", password: "", name: "", phone: "" });
   const [agree, setAgree] = useState<Record<string, boolean>>({});
   const [ch, setCh] = useState({ ch_email: true, ch_sms: true, ch_push: true });
   const [open, setOpen] = useState<string | null>(null);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState(SOCIAL_ERRORS[params.get("error") ?? ""] ?? "");
   const list = [...docs].sort((a, b) => ORDER.indexOf(a.code) - ORDER.indexOf(b.code));
   const allOn = list.every((d) => agree[d.code]);
   const reqOk = list.filter((d) => d.required).every((d) => agree[d.code]);
@@ -76,9 +87,9 @@ export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; alrea
         <button className="w-full rounded-xl bg-brand-600 text-white font-semibold py-3 disabled:opacity-50" disabled={mode === "up" && !reqOk}>{mode === "in" ? "로그인" : mode === "up" ? "동의하고 가입하기" : "재설정 메일 받기"}</button>
       </form>
       {msg && <p className="mt-4 text-sm text-center text-neutral-600">{msg}</p>}
-      {mode === "in" && <div className="mt-6 grid gap-2">
+      {mode !== "reset" && <div className="mt-6 grid gap-2">
+        <a href={`/auth/naver?next=${encodeURIComponent(next)}`} className="w-full rounded-xl bg-[#03C75A] text-white font-semibold py-3 text-center">네이버로 시작하기</a>
         <button disabled className="w-full rounded-xl bg-[#FEE500] text-neutral-900 font-semibold py-3 disabled:opacity-60">카카오로 시작하기 (연동 예정)</button>
-        <button disabled className="w-full rounded-xl bg-[#03C75A] text-white font-semibold py-3 disabled:opacity-60">네이버로 시작하기 (연동 예정)</button>
       </div>}
       <div className="mt-6 text-center text-sm text-neutral-500 space-x-3">
         {mode !== "in" && <button className="text-brand-600" onClick={() => setMode("in")}>로그인</button>}
