@@ -16,6 +16,9 @@ const SOCIAL_ERRORS: Record<string, string> = {
   naver_exists: "같은 이메일로 이미 가입된 계정이 있습니다. 이메일·비밀번호로 로그인해 주세요.",
   naver_create: "회원가입 처리 중 오류가 났습니다. 잠시 후 다시 시도해 주세요.",
   naver_session: "로그인 처리 중 오류가 났습니다. 잠시 후 다시 시도해 주세요.",
+  social_cancel: "간편 로그인을 취소했습니다.",
+  auth_fail: "로그인 처리 중 오류가 났습니다. 다시 시도해 주세요.",
+  kakao_off: "카카오 로그인은 준비 중입니다.",
 };
 
 export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; already: boolean }) {
@@ -31,6 +34,16 @@ export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; alrea
   const list = [...docs].sort((a, b) => ORDER.indexOf(a.code) - ORDER.indexOf(b.code));
   const allOn = list.every((d) => agree[d.code]);
   const reqOk = list.filter((d) => d.required).every((d) => agree[d.code]);
+
+  // 카카오: Supabase 기본 제공 로그인 → /auth/callback 에서 약관 동의 확인
+  const kakao = async () => {
+    if (!enabled) return setMsg("목업 모드: Supabase 키를 설정하면 실제 로그인이 동작합니다.");
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "kakao",
+      options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+    });
+    if (error) setMsg(error.message.includes("not enabled") ? SOCIAL_ERRORS.kakao_off : error.message);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setMsg("");
@@ -89,7 +102,7 @@ export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; alrea
       {msg && <p className="mt-4 text-sm text-center text-neutral-600">{msg}</p>}
       {mode !== "reset" && <div className="mt-6 grid gap-2">
         <a href={`/auth/naver?next=${encodeURIComponent(next)}`} className="w-full rounded-xl bg-[#03C75A] text-white font-semibold py-3 text-center">네이버로 시작하기</a>
-        <button disabled className="w-full rounded-xl bg-[#FEE500] text-neutral-900 font-semibold py-3 disabled:opacity-60">카카오로 시작하기 (연동 예정)</button>
+        <button type="button" onClick={kakao} className="w-full rounded-xl bg-[#FEE500] text-neutral-900 font-semibold py-3">카카오로 시작하기</button>
       </div>}
       <div className="mt-6 text-center text-sm text-neutral-500 space-x-3">
         {mode !== "in" && <button className="text-brand-600" onClick={() => setMode("in")}>로그인</button>}
