@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getProductsByIds } from "@/lib/data";
 import { quote, type Grade } from "@/lib/pricing";
 import { adminEnabled, createServiceClient, currentUser } from "@/lib/auth";
+import { needsConsent } from "@/lib/consent";
 
 // POST /api/orders — 주문 생성 (결제 연동 전: status=pending)
 export async function POST(req: Request) {
@@ -23,6 +24,8 @@ export async function POST(req: Request) {
   if (!adminEnabled()) return NextResponse.json({ mock: true, orderNo, ...q });
 
   const db = createServiceClient();
+  // 소셜 가입 후 약관 동의를 건너뛴 회원은 주문 불가
+  if (user.id && (await needsConsent(db, user.id))) return NextResponse.json({ error: "필수 약관 동의 후 주문할 수 있습니다.", consent: true }, { status: 403 });
   const { data: order, error } = await db.from("orders").insert({
     order_no: orderNo, user_id: user.id, subtotal: q.subtotal, shipping_fee: q.shipping, total: q.total,
     receiver_name: String(r.name), receiver_phone: String(r.phone), address: String(r.address), memo: r.memo ? String(r.memo) : null, invoice_requested: !!body?.invoice,
