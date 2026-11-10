@@ -1,0 +1,30 @@
+# 스키마 드리프트 감시 — 대시보드에서 직접 바꾼 DB 변경이 migrations에 없는지 매주 확인
+# 차이가 있으면 실패 처리되고(GitHub 알림 메일), 로그에 차이 SQL이 출력됩니다.
+# 해결: 로컬에서 `npx supabase db diff --linked -f <이름>` 로 migration 파일을 만들어 커밋
+name: db-drift
+
+on:
+  schedule:
+    - cron: "17 0 * * 1" # 매주 월요일 09:17 (KST)
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: supabase link --project-ref sforkxsrudzidwdjoisw
+      - name: 운영 DB vs migrations 비교
+        run: |
+          supabase db diff --linked --schema public > drift.sql
+          if grep -qvE '^\s*(--.*)?$' drift.sql; then
+            cat drift.sql
+            echo "::error::운영 DB에 migrations에 없는 변경이 있습니다"
+            exit 1
+          fi
+          echo "드리프트 없음"
