@@ -1,5 +1,4 @@
 {
   "regions": ["icn1"],
-  "git": { "deploymentEnabled": { "main": false } },
   "crons": [{ "path": "/api/cron/invoices", "schedule": "0 1 * * *" }]
 }
