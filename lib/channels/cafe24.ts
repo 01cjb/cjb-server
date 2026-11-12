@@ -3,11 +3,13 @@ import { adminEnabled, createServiceClient } from "@/lib/auth";
 
 // 카페24 Admin API 연동 (주문 읽기 전용)
 // 문서: https://apidocs.cafe24.com/docs/admin/get-orders · OAuth: https://apidocs.cafe24.com/docs/guide/oauth2-authentication
-// 환경변수: CAFE24_MALL_ID, CAFE24_CLIENT_ID, CAFE24_CLIENT_SECRET, (선택) CAFE24_API_VERSION
+// 환경변수: CAFE24_MALL_ID, CAFE24_CLIENT_ID, CAFE24_CLIENT_SECRET, (선택) CAFE24_SHOP_NO, CAFE24_API_VERSION
+// CAFE24_SHOP_NO: 멀티쇼핑몰 번호, 쉼표로 여러 개 (뷰티웰 icjb.com = 5). 없으면 1
 
 export const CHANNEL = "cafe24";
 export const SCOPE = "mall.read_order";
 const API_VERSION = () => process.env.CAFE24_API_VERSION || "2026-09-01";
+export const shopNos = () => (process.env.CAFE24_SHOP_NO || "1").split(",").map((s) => s.trim()).filter((s) => /^\d+$/.test(s));
 const db = () => createServiceClient();
 
 export const cafe24Config = () => {
@@ -141,11 +143,11 @@ export function mapOrder(o: C24Order) {
 
 const ymd = (d: Date) => d.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
-async function fetchOrders(token: string, start: Date, end: Date): Promise<C24Order[]> {
+async function fetchOrders(token: string, start: Date, end: Date, shopNo: string): Promise<C24Order[]> {
   const c = cafe24Config()!;
   const out: C24Order[] = [];
   for (let offset = 0; offset <= 15000; offset += 500) {
-    const p = new URLSearchParams({ shop_no: "1", start_date: ymd(start), end_date: ymd(end), date_type: "order_date", embed: "items,receivers,buyer", limit: "500", offset: String(offset) });
+    const p = new URLSearchParams({ shop_no: shopNo, start_date: ymd(start), end_date: ymd(end), date_type: "order_date", embed: "items,receivers,buyer", limit: "500", offset: String(offset) });
     const r = await fetch(`https://${c.mall}.cafe24api.com/api/v2/admin/orders?${p}`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "X-Cafe24-Api-Version": API_VERSION() }, cache: "no-store",
     });
@@ -164,8 +166,8 @@ export async function syncCafe24(days = 14): Promise<{ ok: boolean; count: numbe
   try {
     const token = await accessToken();
     const end = new Date(), start = new Date(Date.now() - Math.min(days, 89) * 86400_000);
-    const orders = await fetchOrders(token, start, end);
-    const rows = orders.map(mapOrder);
+    const rows = [];
+    for (const shop of shopNos()) rows.push(...(await fetchOrders(token, start, end, shop)).map((o) => ({ ...mapOrder(o), shop_no: Number(shop) })));
     for (let i = 0; i < rows.length; i += 200) {
       const { error } = await db().from("channel_orders").upsert(rows.slice(i, i + 200), { onConflict: "channel,external_order_id" });
       if (error) throw new Error("주문 저장 실패: " + error.message);
