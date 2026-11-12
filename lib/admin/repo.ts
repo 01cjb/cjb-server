@@ -77,8 +77,17 @@ export async function listOrders(status?: string): Promise<Order[]> {
   let list: Order[];
   if (!live()) list = m.orders.map((o) => ({ ...o, customer_name: m.customers.find((c) => c.id === o.user_id)?.name }));
   else {
-    const { data } = await db().from("orders").select("*, profiles:user_id(name)").order("created_at", { ascending: false }).limit(500);
-    list = ((data ?? []) as (Order & { profiles?: { name: string } })[]).map((o) => ({ ...o, customer_name: o.profiles?.name }));
+    // orders.user_id 는 auth.users 를 가리켜 profiles 와 직접 조인(embed)이 안 됨 → 이름은 따로 조회
+    const { data, error } = await db().from("orders").select("*").order("created_at", { ascending: false }).limit(500);
+    if (error) console.error("listOrders:", error.message);
+    const rows = (data ?? []) as Order[];
+    const ids = [...new Set(rows.map((o) => o.user_id).filter((x): x is string => !!x))];
+    const names: Record<string, string> = {};
+    if (ids.length) {
+      const { data: ps } = await db().from("profiles").select("id,name").in("id", ids);
+      for (const p of (ps ?? []) as { id: string; name: string }[]) names[p.id] = p.name;
+    }
+    list = rows.map((o) => ({ ...o, customer_name: (o.user_id && names[o.user_id]) || undefined }));
   }
   return status && status !== "all" ? list.filter((o) => o.status === status) : list;
 }
