@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import BottomTabBar from "@/components/BottomTabBar";
 import { StoreProvider } from "@/components/Store";
 import PwaRegister from "@/components/PwaRegister";
+import { MainShell, ShopOnly } from "@/components/ShopChrome";
 import { getCategories } from "@/lib/data";
 import { company } from "@/lib/company";
 import { getMe } from "@/lib/me";
@@ -25,10 +26,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="ko">
       <body>
         <StoreProvider serverGrade={serverGrade}>
-          <Header categories={categories} session={session} loggedIn={me.mock || !!me.user} />
-          <main className="min-h-[60vh] pb-20 md:pb-0">{children}</main>
-          <Footer />
-          <BottomTabBar />
+          <ShopOnly><Header categories={categories} session={session} loggedIn={me.mock || !!me.user} /></ShopOnly>
+          <MainShell>{children}</MainShell>
+          <ShopOnly><Footer /><BottomTabBar /></ShopOnly>
         </StoreProvider>
         <PwaRegister />
       </body>
