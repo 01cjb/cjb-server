@@ -3,11 +3,15 @@ import { CONTRACT_TYPE, GRADE_NAME, INVOICE_STATUS, ORDER_STATUS, PRODUCT_STATUS
 import { adminEnabled } from "@/lib/auth";
 import { day, dt, trackUrl, won } from "@/lib/fmt";
 import type { Menu } from "@/lib/work/menus";
+import type { WorkMe } from "@/lib/work/auth";
+import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
+import { cafe24Config, getConnection, syncIfStale } from "@/lib/channels/cafe24";
+import SyncButton from "./SyncButton";
 import Pill from "@/components/admin/Pill";
 import { Table, Tabs } from "@/components/admin/Table";
 
 // 메뉴별 화면 — 기존 쇼핑몰 DB를 조회 전용으로 보여줌 (수정은 이후 단계에서 메뉴별로 추가)
-type P = { menu: Menu; q: Record<string, string | undefined> };
+type P = { menu: Menu; q: Record<string, string | undefined>; me: WorkMe };
 
 export const Low = 5; // 재고 부족 기준
 
@@ -116,19 +120,72 @@ export async function Inventory() {
 }
 
 export async function Orders({ q }: P) {
-  const s = q.s ?? "all";
-  const all = await listOrders();
-  const list = s === "all" ? all : all.filter((o) => o.status === s);
+  await syncIfStale(5); // 카페24: 마지막 수집 5분 지났으면 화면 열 때 자동 수집
+  const s = q.s ?? "all", c = q.c ?? "all";
+  const all = await unifiedOrders();
+  const byCh = c === "all" ? all : all.filter((o) => o.channel === c);
+  const list = s === "all" ? byCh : byCh.filter((o) => o.status === s);
+  const qs = (k: string, v: string) => { const p = new URLSearchParams({ c, s }); p.set(k, v); return `?${p}`; };
+  const conn = await getConnection();
   return (
     <>
-      <Tabs cur={s} items={[{ key: "all", label: "전체", href: "?s=all", count: all.length }, ...(Object.keys(ORDER_STATUS) as OrderStatus[]).map((k) => ({ key: k, label: ORDER_STATUS[k], href: `?s=${k}`, count: all.filter((o) => o.status === k).length }))]} />
-      <Table head={["주문번호", "주문자", "받는 분", "금액", "계산서", "상태", "주문일시"]} empty={!list.length}>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        {[["all", "전체 채널"], ...Object.entries(CHANNELS)].map(([k, l]) => (
+          <a key={k} href={qs("c", k)} className={`rounded-full px-3 py-1 text-sm ${c === k ? "bg-neutral-900 text-white" : "bg-white text-neutral-600 ring-1 ring-neutral-200"}`}>
+            {l} <span className="text-xs opacity-60">{k === "all" ? all.length : all.filter((o) => o.channel === k).length}</span>
+          </a>
+        ))}
+        <span className="ml-auto text-xs text-neutral-400">{conn ? `카페24 마지막 수집 ${dt(conn.last_sync_at)}${conn.last_sync_ok === false ? " · 실패" : ""}` : "카페24 미연결 — 판매채널 연동 메뉴에서 연결"}</span>
+      </div>
+      <Tabs cur={s} items={[{ key: "all", label: "전체", href: qs("s", "all"), count: byCh.length }, ...Object.entries(STATUS_LABEL).map(([k, l]) => ({ key: k, label: l, href: qs("s", k), count: byCh.filter((o) => o.status === k).length })).filter((t) => t.count || ["pending", "paid", "preparing", "shipped", "delivered", "cancelled"].includes(t.key))]} />
+      <Table head={["채널", "주문번호", "주문자", "받는 분", "상품", "금액", "상태", "주문일시"]} empty={!list.length}>
         {list.map((o) => (
-          <tr key={o.id}><td className="font-mono text-xs">{o.order_no}</td><td>{o.customer_name ?? "-"}</td><td>{o.receiver_name}<span className="block text-xs text-neutral-400">{o.receiver_phone}</span></td>
-            <td className="tabular-nums">{won(o.total)}</td><td className="text-xs">{o.invoice_requested ? "요청" : "-"}</td><td><Pill s={o.status} label={ORDER_STATUS[o.status]} /></td><td className="text-xs text-neutral-500">{dt(o.created_at)}</td></tr>
+          <tr key={o.key}>
+            <td className="whitespace-nowrap"><span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${o.channel === "cafe24" ? "bg-sky-50 text-sky-700" : "bg-brand-50 text-brand-700"}`}>{CHANNELS[o.channel] ?? o.channel}</span><span className="block text-[11px] text-neutral-400">{o.place ?? ""}</span></td>
+            <td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? "-"}</td><td>{o.receiver ?? "-"}<span className="block text-xs text-neutral-400">{o.receiverPhone ?? ""}</span></td>
+            <td className="max-w-[240px] text-xs">{o.items.length ? `${o.items[0].name}${o.items[0].option ? ` (${o.items[0].option})` : ""} × ${o.items[0].qty}${o.items.length > 1 ? ` 외 ${o.items.length - 1}건` : ""}` : "-"}</td>
+            <td className="tabular-nums">{won(o.total)}</td>
+            <td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} />{o.statusText && o.channel !== "beautywell" && <span className="block text-[11px] text-neutral-400">{o.statusText}</span>}</td>
+            <td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td>
+          </tr>
         ))}
       </Table>
     </>
+  );
+}
+
+export async function Channels({ q, me }: P) {
+  const cfg = !!cafe24Config(), conn = await getConnection(), live = adminEnabled();
+  const refreshLeft = conn?.refresh_expires_at ? Math.round((new Date(conn.refresh_expires_at).getTime() - Date.now()) / 86400_000) : null;
+  return (
+    <div className="space-y-4">
+      {q.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{q.error}</p>}
+      {q.connected && !q.error && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">카페24 연결 완료 · 최근 90일 주문 {q.count ?? 0}건을 가져왔습니다.</p>}
+      <section className="rounded-xl border border-neutral-200 bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">카페24 <span className="text-xs font-normal text-neutral-500">{process.env.CAFE24_MALL_ID ?? ""}</span></h2>
+            <p className="mt-1 text-sm text-neutral-600">
+              {!live ? "목업 모드 — 예시 주문 2건만 표시됩니다." : !cfg ? "카페24 앱 정보가 아직 등록되지 않았습니다." : conn?.connected_at ? <>연결됨 · {dt(conn.connected_at)}{refreshLeft != null && <span className="text-neutral-400"> · 자동 유지 {refreshLeft}일 남음(매일 갱신)</span>}</> : "앱 정보는 있음 · 아직 연결 전"}
+            </p>
+            {conn?.last_sync_at && <p className="mt-1 text-xs text-neutral-500">마지막 수집 {dt(conn.last_sync_at)} · {conn.last_sync_ok ? `${conn.last_sync_count ?? 0}건` : <span className="text-rose-600">실패: {conn.last_error}</span>}</p>}
+          </div>
+          <div className="flex gap-2">
+            {cfg && me.is_owner && <a href="/api/integrations/cafe24/connect" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm">{conn?.connected_at ? "다시 연결" : "카페24 연결"}</a>}
+            {cfg && conn?.connected_at && <SyncButton />}
+          </div>
+        </div>
+      </section>
+      <section className="rounded-xl border border-dashed border-neutral-300 bg-white p-5 text-sm text-neutral-600">
+        <h3 className="mb-2 font-semibold text-neutral-800">동작 방식</h3>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>카페24 주문은 <b>읽기 전용</b>으로 가져옵니다. 카페24 쪽 데이터는 바뀌지 않습니다.</li>
+          <li>「주문」 화면을 열 때 마지막 수집이 5분 지났으면 자동으로 최근 14일 주문을 다시 가져와 상태 변경도 반영합니다. 매일 09:30에도 자동 수집합니다.</li>
+          <li>처음 연결할 때 최근 90일 주문을 가져옵니다.</li>
+          <li>스마트스토어·쿠팡 등은 사방넷 연동 후 같은 화면에 추가됩니다.</li>
+        </ul>
+      </section>
+    </div>
   );
 }
 
@@ -235,5 +292,5 @@ export function Soon({ menu }: P) {
 }
 
 export const VIEWS: Record<string, (p: P) => React.ReactNode | Promise<React.ReactNode>> = {
-  tax: Tax, revenue: Revenue, clients: Clients, store: Store, inventory: Inventory, orders: Orders, shipping: Shipping, waybill: Waybill, frontend: Frontend, backend: Backend,
+  tax: Tax, revenue: Revenue, clients: Clients, store: Store, inventory: Inventory, orders: Orders, shipping: Shipping, waybill: Waybill, frontend: Frontend, backend: Backend, channels: Channels,
 };
