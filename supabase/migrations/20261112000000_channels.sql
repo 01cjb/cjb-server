@@ -25,6 +25,7 @@ create table if not exists public.channel_orders (
   id                 bigint generated always as identity primary key,
   channel            text not null,
   external_order_id  text not null,
+  shop_no            int,                             -- 카페24 멀티쇼핑몰 번호 (뷰티웰 = 5)
   order_place        text,                            -- 카페24 주문경로 (PC/모바일/네이버페이 등)
   ordered_at         timestamptz,
   paid_at            timestamptz,
