@@ -1,6 +1,7 @@
 # CJB pipeline - see docs/PIPELINE.md
 # PR:   app check + DB check (clean DB) + prod DB dry-run
-# main: checks -> prod DB migrate -> Vercel prod deploy -> /api/health smoke test
+# main: checks -> prod DB migrate -> /api/health smoke test
+# Vercel deploys main by itself (Git integration) - no Vercel token needed
 name: pipeline
 
 on:
@@ -68,29 +69,13 @@ jobs:
       - run: supabase db push --remote --dry-run
       - run: supabase db push --remote --yes
 
-  deploy:
-    needs: migrate
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - run: npm i -g vercel@latest
-      - run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - run: vercel build --prod --token="$VERCEL_TOKEN"
-      - run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
-
   smoke:
-    needs: deploy
+    needs: migrate
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for i in 1 2 3 4 5; do
+          sleep 120 # Vercel 배포 대기
+          for i in 1 2 3 4 5 6 7 8; do
             body=$(curl -fsS "$PROD_URL/api/health" || true)
             echo "$body"
             if echo "$body" | jq -e '.ok == true and .db.ok == true' >/dev/null 2>&1; then exit 0; fi
