@@ -66,7 +66,7 @@ jobs:
         with: { version: latest }
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
       - run: supabase db push --remote --dry-run
-      - run: supabase db push --remote
+      - run: supabase db push --remote --yes
 
   deploy:
     needs: migrate
