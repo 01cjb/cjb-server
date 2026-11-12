@@ -1,7 +1,7 @@
 // 사내 업무 시스템 메뉴 목록 — 개인별 권한은 이 key로 체크합니다 (work_user_menus.menu_key)
 // status: live = 데이터 연결됨 / soon = 화면만 준비 (외부 데이터 연동 예정)
 
-export type TeamKey = "mgmt" | "sales" | "design" | "logistics" | "dev";
+export type TeamKey = "mgmt" | "sales" | "design" | "logistics" | "dev"; // dev: 예전 팀 값(디자인팀으로 통합)
 export type Menu = { key: string; label: string; team: TeamKey; status: "live" | "soon"; desc: string; source?: string };
 
 export const TEAMS: { key: TeamKey; label: string; short: string }[] = [
@@ -9,7 +9,6 @@ export const TEAMS: { key: TeamKey; label: string; short: string }[] = [
   { key: "sales", label: "영업 / 영업지원팀", short: "영업" },
   { key: "design", label: "디자인 / 마케팅팀", short: "디자인·마케팅" },
   { key: "logistics", label: "물류 / 물류지원팀", short: "물류" },
-  { key: "dev", label: "프론트엔드 / 백엔드", short: "개발" },
 ];
 
 export const MENUS: Menu[] = [
@@ -33,11 +32,12 @@ export const MENUS: Menu[] = [
   { key: "shipping", label: "배송", team: "logistics", status: "live", desc: "배송 진행 상태", source: "사방넷 연동 예정" },
   { key: "waybill", label: "송장", team: "logistics", status: "live", desc: "택배사·송장번호", source: "사방넷 연동 예정" },
   { key: "channels", label: "판매채널 연동", team: "logistics", status: "live", desc: "카페24 등 외부 쇼핑몰 주문 수집" },
-  // 프론트엔드 / 백엔드
-  { key: "frontend", label: "프론트엔드", team: "dev", status: "live", desc: "화면·배포 상태" },
-  { key: "backend", label: "백엔드", team: "dev", status: "live", desc: "DB·API·파이프라인 상태" },
+  // 홈페이지 운영 (예전 프론트엔드/백엔드 팀 → 디자인/마케팅팀으로 통합)
+  { key: "frontend", label: "프론트엔드", team: "design", status: "live", desc: "화면·배포 상태" },
+  { key: "backend", label: "백엔드", team: "design", status: "live", desc: "DB·API·파이프라인 상태" },
 ];
 
 export const MENU_BY_KEY = Object.fromEntries(MENUS.map((m) => [m.key, m])) as Record<string, Menu>;
-export const teamLabel = (t: string) => TEAMS.find((x) => x.key === t)?.label ?? t;
-export const teamShort = (t: string) => TEAMS.find((x) => x.key === t)?.short ?? t;
+const team = (t: string) => TEAMS.find((x) => x.key === (t === "dev" ? "design" : t));
+export const teamLabel = (t: string) => team(t)?.label ?? t;
+export const teamShort = (t: string) => team(t)?.short ?? t;
