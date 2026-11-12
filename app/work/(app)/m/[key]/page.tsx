@@ -28,7 +28,7 @@ export default async function MenuPage({ params, searchParams }: { params: Promi
     <>
       <p className="mb-1 text-xs text-neutral-500">{teamLabel(menu.team)}</p>
       <H1 right={menu.source ? <span className="text-xs text-neutral-400">{menu.source}</span> : null}>{menu.label}</H1>
-      {await View({ menu, q })}
+      {await View({ menu, q, me })}
     </>
   );
 }

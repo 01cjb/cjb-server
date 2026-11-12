@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { dashboard, listAdminProducts, listContracts, listCustomers } from "@/lib/admin/repo";
-import { ORDER_STATUS } from "@/lib/admin/types";
 import Pill from "@/components/admin/Pill";
 import { H1, Table } from "@/components/admin/Table";
 import { Low } from "@/components/work/views";
 import { canSee, getWorkMe } from "@/lib/work/auth";
 import { MENUS, TEAMS } from "@/lib/work/menus";
+import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
+import { syncIfStale } from "@/lib/channels/cafe24";
 import { dt, won } from "@/lib/fmt";
 
 export const dynamic = "force-dynamic";
@@ -13,16 +14,22 @@ export const metadata = { title: "대시보드" };
 
 export default async function WorkHome() {
   const me = (await getWorkMe())!;
-  const [d, products, contracts, customers] = await Promise.all([dashboard(), listAdminProducts(), listContracts(), listCustomers()]);
-  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+  if (canSee(me, "orders")) await syncIfStale(5);
+  const [d, products, contracts, customers, uo] = await Promise.all([dashboard(), listAdminProducts(), listContracts(), listCustomers(), unifiedOrders()]);
+  const kstDay = (iso: string) => (iso ? new Date(iso).toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }) : "");
+  const today = kstDay(new Date().toISOString());
+  const todayN = uo.filter((o) => kstDay(o.orderedAt) === today).length;
+  const pendingN = uo.filter((o) => o.status === "pending").length;
+  const toShipN = uo.filter((o) => o.status === "paid" || o.status === "preparing").length;
+  const shippedN = uo.filter((o) => o.status === "shipped").length;
   const expiring = contracts.filter((c) => c.status === "active" && c.end_date && new Date(c.end_date).getTime() - Date.now() < 30 * 86400_000).length;
 
   // [라벨, 값, 링크, 필요한 메뉴, 강조]
   const cards: [string, string | number, string, string, boolean][] = [
-    ["오늘 주문", d.todayOrders, "/work/m/orders", "orders", false],
-    ["입금 대기", d.pendingPay, "/work/m/orders?s=pending", "orders", d.pendingPay > 0],
-    ["출고 필요", d.toShip, "/work/m/orders?s=paid", "orders", d.toShip > 0],
-    ["배송중", d.inTransit, "/work/m/shipping", "shipping", false],
+    ["오늘 주문 (전 채널)", todayN, "/work/m/orders", "orders", false],
+    ["입금 대기", pendingN, "/work/m/orders?s=pending", "orders", pendingN > 0],
+    ["출고 필요", toShipN, "/work/m/orders?s=paid", "orders", toShipN > 0],
+    ["배송중", shippedN, "/work/m/orders?s=shipped", "orders", false],
     ["재고 부족", products.filter((p) => p.status !== "cancelled" && p.stock <= Low).length, "/work/m/inventory", "inventory", true],
     ["계산서 처리", d.invoicePending, "/work/m/tax?s=pending", "tax", d.invoicePending > 0],
     ["누적 매출", won(d.sales), "/work/m/revenue", "revenue", false],
@@ -51,9 +58,9 @@ export default async function WorkHome() {
 
       {canSee(me, "orders") && (
         <section className="mb-8">
-          <h2 className="mb-2 text-sm font-semibold">최근 주문</h2>
-          <Table head={["주문번호", "고객", "금액", "상태", "일시"]} empty={!d.recentOrders.length}>
-            {d.recentOrders.map((o) => <tr key={o.id}><td className="font-mono text-xs">{o.order_no}</td><td>{o.customer_name ?? o.receiver_name}</td><td className="tabular-nums">{won(o.total)}</td><td><Pill s={o.status} label={ORDER_STATUS[o.status]} /></td><td className="text-xs text-neutral-500">{dt(o.created_at)}</td></tr>)}
+          <h2 className="mb-2 text-sm font-semibold">최근 주문 (뷰티웰·카페24)</h2>
+          <Table head={["채널", "주문번호", "주문자", "금액", "상태", "일시"]} empty={!uo.length}>
+            {uo.slice(0, 8).map((o) => <tr key={o.key}><td className="text-xs">{CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{won(o.total)}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
           </Table>
         </section>
       )}
