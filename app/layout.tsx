@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: { default: `${company.mall} - 뷰티/이·미용인을 위한 복지몰`, template: `%s | ${company.mall}` },
   description: `${company.name} 이·미용 전문가 도매 쇼핑몰`,
   appleWebApp: { capable: true, title: company.mall, statusBarStyle: "default" },
+  manifest: "/manifest.webmanifest", // 업무 시스템(/work)은 자체 manifest로 덮어씀
 };
 
 export const viewport: Viewport = { themeColor: "#6a2f96", width: "device-width", initialScale: 1, viewportFit: "cover" };

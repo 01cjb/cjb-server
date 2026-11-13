@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Brand from "./Brand";
+import InstallApp from "./InstallApp";
 
 export type NavGroup = { team: string; label: string; items: { key: string; label: string; soon: boolean }[] };
 type Me = { name: string; position: string | null; teamLabel: string; is_owner: boolean };
@@ -37,6 +38,7 @@ export default function Sidebar({ me, groups, mock }: { me: Me; groups: NavGroup
         <p className="text-sm font-semibold">{me.name} <span className="font-normal text-neutral-500">{me.position ?? ""}</span></p>
         <p className="text-xs text-neutral-500">{me.is_owner ? "대표 · 전체 권한" : me.teamLabel}</p>
         <button onClick={out} className="mt-2 text-xs text-neutral-500 underline">로그아웃</button>
+        <InstallApp />
       </div>
     </nav>
   );
