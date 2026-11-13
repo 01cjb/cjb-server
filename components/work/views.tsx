@@ -7,6 +7,8 @@ import type { WorkMe } from "@/lib/work/auth";
 import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
 import { cafe24Config, getConnection, syncIfStale } from "@/lib/channels/cafe24";
 import SyncButton from "./SyncButton";
+import LogenPanel from "./LogenPanel";
+import { listWaybills, logenConfig, waybillTargets } from "@/lib/carriers/logen";
 import Pill from "@/components/admin/Pill";
 import { Table, Tabs } from "@/components/admin/Table";
 
@@ -204,12 +206,17 @@ export async function Shipping({ q }: P) {
 }
 
 export async function Waybill() {
-  const [list, carriers] = await Promise.all([listShipments(), listCarriers()]);
+  const [list, carriers, targets, rows] = await Promise.all([listShipments(), listCarriers(), waybillTargets(), listWaybills()]);
+  const lc = logenConfig();
   const cname = (c: string | null) => carriers.find((x) => x.code === c);
   const missing = list.filter((x) => !x.tracking_no).length;
   return (
     <>
-      <Note>송장번호 미입력 <b className="text-rose-600">{missing}건</b>. 송장 일괄 등록·출력은 사방넷 연동 후 추가됩니다.</Note>
+      <LogenPanel ready={lc.ready} missing={lc.missing} env={lc.env} mock={!adminEnabled()} rows={rows}
+        targets={targets.map((o) => ({ key: o.key, channel: o.channel, orderNo: o.orderNo, receiver: o.receiver ?? o.buyer, address: o.address ?? null,
+          item: o.items.length > 1 ? `${o.items[0]?.name} 외 ${o.items.length - 1}건` : o.items[0]?.name ?? "", orderedAt: o.orderedAt }))} />
+      <h2 className="mb-2 text-base font-bold">뷰티웰 배송 송장</h2>
+      <Note>송장번호 미입력 <b className="text-rose-600">{missing}건</b>.</Note>
       <Table head={["주문번호", "받는 분", "택배사", "송장번호", "조회", "상태"]} empty={!list.length}>
         {list.map((x) => {
           const c = cname(x.carrier_code), url = trackUrl(c?.tracking_url, x.tracking_no);
