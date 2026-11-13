@@ -27,4 +27,4 @@ export async function middleware(req: NextRequest) {
   return res;
 }
 
-export const config = { matcher: ["/((?!_next/static|_next/image|icons|sw.js|manifest.webmanifest|icon.png|apple-icon.png|api/cron).*)"] };
+export const config = { matcher: ["/((?!_next/static|_next/image|icons|sw.js|manifest.webmanifest|logo/|icon.png|apple-icon.png|api/cron).*)"] };
