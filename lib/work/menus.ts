@@ -30,7 +30,7 @@ export const MENUS: Menu[] = [
   { key: "inventory", label: "재고", team: "logistics", status: "live", desc: "상품별 재고 수량", source: "사방넷 연동 예정" },
   { key: "orders", label: "주문", team: "logistics", status: "live", desc: "뷰티웰·카페24 주문 통합 현황" },
   { key: "shipping", label: "배송", team: "logistics", status: "live", desc: "배송 진행 상태", source: "사방넷 연동 예정" },
-  { key: "waybill", label: "송장", team: "logistics", status: "live", desc: "택배사·송장번호", source: "사방넷 연동 예정" },
+  { key: "waybill", label: "송장", team: "logistics", status: "live", desc: "로젠택배 송장 출력·송장번호" },
   { key: "channels", label: "판매채널 연동", team: "logistics", status: "live", desc: "카페24 등 외부 쇼핑몰 주문 수집" },
   // 홈페이지 운영 (예전 프론트엔드/백엔드 팀 → 디자인/마케팅팀으로 통합)
   { key: "frontend", label: "프론트엔드", team: "design", status: "live", desc: "화면·배포 상태" },
