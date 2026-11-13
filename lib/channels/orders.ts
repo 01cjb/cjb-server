@@ -4,7 +4,7 @@ import { listOrders } from "@/lib/admin/repo";
 
 // 업무 시스템용 통합 주문 목록: 뷰티웰(자사몰) + 외부 채널(카페24, 사방넷 엑셀 …)
 
-export const CHANNELS: Record<string, string> = { beautywell: "뷰티웰", cafe24: "카페24", sabangnet: "사방넷" };
+export const CHANNELS: Record<string, string> = { beautywell: "뷰티웰", cafe24: "카페24", sabangnet: "사방넷", vuka: "뷰카" };
 export const STATUS_LABEL: Record<string, string> = {
   pending: "입금대기", paid: "결제완료", preparing: "배송준비", shipped: "배송중", delivered: "배송완료",
   cancelled: "취소", returned: "반품", exchanged: "교환",

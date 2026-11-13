@@ -90,7 +90,7 @@ export async function importSabangnetLogen(buf: ArrayBuffer, date: string): Prom
 // ---------- 2) 로젠 양식 엑셀 만들기 ----------
 export async function waybillDay(date: string, channels?: string[]) {
   const all = await unifiedOrders();
-  const rank = (c: string) => ["sabangnet", "cafe24", "beautywell"].indexOf(c);
+  const rank = (c: string) => ["sabangnet", "vuka", "cafe24", "beautywell"].indexOf(c);
   const num = (k: string) => Math.abs(Number(k.split("-").pop()) || 0);
   return all.filter((o) => kstDay(o.orderedAt) === date && SHIP_STATUS.includes(o.status) && !o.tracking?.some((t) => t.no)
     && (!channels?.length || channels.includes(o.channel)))
