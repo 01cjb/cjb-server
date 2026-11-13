@@ -157,3 +157,18 @@ export async function removeWaybill(orderKey: string) {
   if (!adminEnabled()) { g.__logen = mem().filter((w) => w.order_key !== orderKey); return; }
   await createServiceClient().from("logen_waybills").delete().eq("order_key", orderKey).neq("status", "done");
 }
+
+// 연결 확인(읽기 전용): 없는 주문번호로 송장번호 조회만 해서 테스트·실서버가 응답하는지 확인. 주문 등록·출력 안 함
+export async function pingLogen(custCdInput?: string) {
+  const custCd = logenConfig().custCd || (custCdInput ?? "").replace(/\D/g, "").slice(0, 8);
+  if (!custCd) throw new Error("거래처코드가 필요합니다.");
+  const body = JSON.stringify({ userId: process.env.LOGEN_USER_ID || custCd, data: [{ custCd, fixTakeNo: "CJB-CONNTEST-0001" }] });
+  const out: Record<string, { status: number | null; body: string }> = {};
+  for (const env of Object.keys(HOST) as Env[]) {
+    try {
+      const r = await fetch(HOST[env] + "/lrm02b-edi/edi/inquirySlipNoMulti", { method: "POST", headers: { "content-type": "application/json" }, body, cache: "no-store", signal: AbortSignal.timeout(10000) });
+      out[env] = { status: r.status, body: (await r.text()).slice(0, 600) };
+    } catch (e) { out[env] = { status: null, body: (e as Error).message }; }
+  }
+  return { custCd, ...out };
+}
