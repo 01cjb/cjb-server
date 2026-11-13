@@ -2,9 +2,9 @@ import "server-only";
 import { adminEnabled, createServiceClient } from "@/lib/auth";
 import { listOrders } from "@/lib/admin/repo";
 
-// 업무 시스템용 통합 주문 목록: 뷰티웰(자사몰) + 외부 채널(카페24 …)
+// 업무 시스템용 통합 주문 목록: 뷰티웰(자사몰) + 외부 채널(카페24, 사방넷 엑셀 …)
 
-export const CHANNELS: Record<string, string> = { beautywell: "뷰티웰", cafe24: "카페24" };
+export const CHANNELS: Record<string, string> = { beautywell: "뷰티웰", cafe24: "카페24", sabangnet: "사방넷" };
 export const STATUS_LABEL: Record<string, string> = {
   pending: "입금대기", paid: "결제완료", preparing: "배송준비", shipped: "배송중", delivered: "배송완료",
   cancelled: "취소", returned: "반품", exchanged: "교환",
@@ -12,13 +12,14 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export type UOrder = {
   key: string; channel: string; orderNo: string; place: string | null; buyer: string | null; receiver: string | null; receiverPhone: string | null; address?: string | null;
+  zipcode?: string | null; addressOnly?: string | null; message?: string | null;
   total: number; status: string; statusText: string | null; orderedAt: string; items: { name: string; option?: string | null; qty: number }[];
   invoiceRequested?: boolean; tracking?: { carrier: string | null; no: string | null }[];
 };
 
 type Row = {
   id: number; channel: string; external_order_id: string; order_place: string | null; ordered_at: string | null; status: string; status_code: string | null;
-  buyer_name: string | null; receiver_name: string | null; receiver_phone: string | null; zipcode?: string | null; address?: string | null; total_amount: string | number | null;
+  buyer_name: string | null; receiver_name: string | null; receiver_phone: string | null; zipcode?: string | null; address?: string | null; shipping_message?: string | null; total_amount: string | number | null;
   items: { name: string; option?: string | null; qty: number; status_text?: string | null; carrier?: string | null; tracking_no?: string | null }[];
 };
 
@@ -27,11 +28,15 @@ const MOCK: Row[] = [
   { id: -2, channel: "cafe24", external_order_id: "20261111-0000017", order_place: "네이버페이", ordered_at: "2026-11-11T05:40:00Z", status: "shipped", status_code: "N30", buyer_name: "예시미용실", receiver_name: "예시미용실", receiver_phone: "010-3333-4444", zipcode: "48058", address: "부산 해운대구 센텀중앙로 45 (예시)", total_amount: 128000, items: [{ name: "(예시) 펌제 세트", qty: 4, status_text: "배송중", carrier: "CJ대한통운", tracking_no: "000000000000" }] },
 ];
 
+// 목업 모드: 엑셀로 올린 사방넷 주문을 메모리에 보관
+const g = globalThis as unknown as { __mockChannelRows?: Row[] };
+export const mockChannelRows = () => (g.__mockChannelRows ??= []);
+
 async function channelRows(): Promise<Row[]> {
-  if (!adminEnabled()) return MOCK;
+  if (!adminEnabled()) return [...mockChannelRows(), ...MOCK];
   const { data, error } = await createServiceClient().from("channel_orders")
-    .select("id,channel,external_order_id,order_place,ordered_at,status,status_code,buyer_name,receiver_name,receiver_phone,zipcode,address,total_amount,items")
-    .order("ordered_at", { ascending: false }).limit(1000);
+    .select("id,channel,external_order_id,order_place,ordered_at,status,status_code,buyer_name,receiver_name,receiver_phone,zipcode,address,shipping_message,total_amount,items")
+    .order("ordered_at", { ascending: false }).limit(3000);
   if (error) console.error("channel_orders:", error.message);
   return (data as Row[]) ?? [];
 }
@@ -46,11 +51,12 @@ export async function unifiedOrders(): Promise<UOrder[]> {
     for (const o of own) o.items = (by[o.id] ?? []) as typeof o.items;
   }
   const a: UOrder[] = own.map((o) => ({
-    key: `bw-${o.id}`, channel: "beautywell", orderNo: o.order_no, place: "자사몰", buyer: o.customer_name ?? null, receiver: o.receiver_name, receiverPhone: o.receiver_phone, address: o.address,
+    key: `bw-${o.id}`, channel: "beautywell", orderNo: o.order_no, place: "자사몰", buyer: o.customer_name ?? null, receiver: o.receiver_name, receiverPhone: o.receiver_phone, address: o.address, addressOnly: o.address, message: o.memo ?? null,
     total: o.total, status: o.status, statusText: null, orderedAt: o.created_at, items: (o.items ?? []).map((i) => ({ name: i.product_name, qty: i.qty })), invoiceRequested: o.invoice_requested,
   }));
   const b: UOrder[] = ext.map((r) => ({
     key: `${r.channel}-${r.id}`, channel: r.channel, orderNo: r.external_order_id, place: r.order_place, buyer: r.buyer_name, receiver: r.receiver_name, receiverPhone: r.receiver_phone, address: [r.zipcode ? `(${r.zipcode})` : "", r.address ?? ""].join(" ").trim() || null,
+    zipcode: r.zipcode ?? null, addressOnly: r.address ?? null, message: r.shipping_message ?? null,
     total: Number(r.total_amount ?? 0), status: r.status, statusText: r.items?.find((i) => i.status_text)?.status_text ?? r.status_code, orderedAt: r.ordered_at ?? "",
     items: (r.items ?? []).map((i) => ({ name: i.name, option: i.option, qty: i.qty })),
     tracking: (r.items ?? []).filter((i) => i.tracking_no).map((i) => ({ carrier: i.carrier ?? null, no: i.tracking_no ?? null })),
