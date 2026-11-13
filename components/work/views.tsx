@@ -8,6 +8,8 @@ import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
 import { cafe24Config, getConnection, syncIfStale } from "@/lib/channels/cafe24";
 import SyncButton from "./SyncButton";
 import LogenPanel from "./LogenPanel";
+import LogenExcel from "./LogenExcel";
+import { dayCounts, waybillDay } from "@/lib/carriers/logen-excel";
 import { listWaybills, logenConfig, waybillTargets } from "@/lib/carriers/logen";
 import Pill from "@/components/admin/Pill";
 import { Table, Tabs } from "@/components/admin/Table";
@@ -205,13 +207,15 @@ export async function Shipping({ q }: P) {
   );
 }
 
-export async function Waybill() {
-  const [list, carriers, targets, rows] = await Promise.all([listShipments(), listCarriers(), waybillTargets(), listWaybills()]);
+export async function Waybill({ q }: P) {
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(q.d ?? "") ? q.d! : new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+  const [list, carriers, targets, rows, day] = await Promise.all([listShipments(), listCarriers(), waybillTargets(), listWaybills(), waybillDay(date)]);
   const lc = logenConfig();
   const cname = (c: string | null) => carriers.find((x) => x.code === c);
   const missing = list.filter((x) => !x.tracking_no).length;
   return (
     <>
+      <LogenExcel date={date} counts={dayCounts(day)} />
       <LogenPanel ready={lc.ready} missing={lc.missing} env={lc.env} mock={!adminEnabled()} rows={rows}
         targets={targets.map((o) => ({ key: o.key, channel: o.channel, orderNo: o.orderNo, receiver: o.receiver ?? o.buyer, address: o.address ?? null,
           item: o.items.length > 1 ? `${o.items[0]?.name} 외 ${o.items.length - 1}건` : o.items[0]?.name ?? "", orderedAt: o.orderedAt }))} />
