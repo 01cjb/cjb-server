@@ -26,12 +26,12 @@ export default function BuyBox({ p }: { p: Product }) {
         </div>
       </div>
       {blocked && <p className="text-sm text-accent">VIP 회원만 구매할 수 있는 상품입니다.</p>}
-      <div className="flex gap-2 fixed md:static bottom-[64px] inset-x-0 z-30 bg-white md:bg-transparent p-3 md:p-0 border-t md:border-0 border-neutral-200">
+      <div className="flex gap-2 fixed @3xl:static bottom-[64px] inset-x-0 mx-auto max-w-[480px] z-30 bg-white @3xl:bg-transparent p-3 @3xl:p-0 border-t @3xl:border-0 border-neutral-200">
         <div className="grid place-items-center size-12 border border-neutral-300 rounded-xl shrink-0"><WishButton id={p.id} /></div>
         <button disabled={blocked || soldout} onClick={add} className="flex-1 rounded-xl border border-brand-600 text-brand-600 font-semibold disabled:opacity-40">장바구니</button>
         <button disabled={blocked || soldout} onClick={() => { addToCart(p.id, qty); router.push("/cart"); }} className="flex-1 rounded-xl bg-brand-600 text-white font-semibold disabled:opacity-40">{soldout ? "품절" : "바로구매"}</button>
       </div>
-      {toast && <div className="fixed bottom-36 md:bottom-10 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white text-sm rounded-full px-5 py-2.5">장바구니에 담았습니다</div>}
+      {toast && <div className="fixed bottom-36 @3xl:bottom-10 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white text-sm rounded-full px-5 py-2.5">장바구니에 담았습니다</div>}
     </div>
   );
 }

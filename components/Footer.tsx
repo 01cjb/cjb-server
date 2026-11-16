@@ -4,8 +4,8 @@ import { company } from "@/lib/company";
 export default function Footer() {
   return (
     <footer className="bg-neutral-50 border-t border-neutral-200 mt-16 text-xs text-neutral-500">
-      <div className="max-w-6xl mx-auto px-4 py-8 grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-1">
+      <div className="max-w-6xl mx-auto px-4 py-8 grid gap-6 @3xl:grid-cols-3">
+        <div className="@3xl:col-span-2 space-y-1">
           <div className="flex flex-wrap gap-4 text-neutral-700 font-medium mb-3">
             <Link href="/">회사소개</Link><Link href="/terms">이용약관</Link><Link href="/privacy" className="font-bold">개인정보처리방침</Link><Link href="/">이용안내</Link>
           </div>

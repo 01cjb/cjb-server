@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 // 어두운 헤더용 흰색 로고: 원본(/logo/full.png)의 보라색은 흰색, W 마크 속 흰색은 진보라로 바꿔서 그림
 let cached: string | null = null;
 
-export default function LogoWhite({ className = "h-9 w-auto md:h-11" }: { className?: string }) {
+export default function LogoWhite({ className = "h-9 w-auto @3xl:h-11" }: { className?: string }) {
   const [src, setSrc] = useState<string | null>(cached);
   useEffect(() => {
     if (cached) return;

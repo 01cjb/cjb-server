@@ -18,7 +18,7 @@ export default function BottomTabBar() {
   const { cart } = useStore();
   const count = cart.reduce((a, l) => a + l.qty, 0);
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-neutral-200 safe-bottom">
+    <nav className="@3xl:hidden fixed bottom-0 inset-x-0 mx-auto max-w-[480px] z-40 bg-white border-t border-neutral-200 safe-bottom">
       <ul className="grid grid-cols-5">
         {tabs.map(({ href, label, Icon }) => {
           const active = href === "/" ? path === "/" : path.startsWith(href);
