@@ -20,12 +20,21 @@ export const MENUS: Menu[] = [
   { key: "purchase", label: "매입", team: "mgmt", status: "soon", desc: "매입처·매입전표·지급", source: "이카운트" },
   { key: "revenue", label: "매출", team: "mgmt", status: "live", desc: "쇼핑몰 주문 기준 매출", source: "이카운트 연동 예정" },
   { key: "ledger", label: "원장", team: "mgmt", status: "soon", desc: "거래처 원장·계정별 원장", source: "이카운트" },
+  { key: "payments", label: "결제·환불", team: "mgmt", status: "soon", desc: "뷰티웰 결제 내역·취소·환불 (앱: 장바구니·결제)", source: "토스페이먼츠 연동 예정" },
   // 영업 / 영업지원
   { key: "clients", label: "고객사 관리", team: "sales", status: "live", desc: "회원·사업자 정보·계약" },
+  { key: "salon-cert", label: "미용실회원 인증", team: "sales", status: "soon", desc: "사업자·면허 서류 확인 후 승인·반려 (앱: 미용실회원관)" },
+  { key: "vip", label: "VIP 인증", team: "sales", status: "soon", desc: "VIP 인증 신청 심사·등급 부여 (앱: VIP 전용관)" },
+  { key: "cs", label: "고객 문의", team: "sales", status: "soon", desc: "1:1 문의 답변·FAQ 관리 (앱: 고객센터)" },
   // 디자인 / 마케팅
   { key: "store", label: "온라인 스토어 관리", team: "design", status: "live", desc: "상품 판매 상태·가격" },
   { key: "design", label: "디자인 관리", team: "design", status: "soon", desc: "배너·상세페이지·이미지 자산" },
-  { key: "marketing", label: "마케팅 관리", team: "design", status: "soon", desc: "프로모션·수신동의·캠페인" },
+  { key: "marketing", label: "마케팅 관리", team: "design", status: "soon", desc: "수신동의·알림톡·캠페인" },
+  { key: "coupons", label: "쿠폰·포인트", team: "design", status: "soon", desc: "쿠폰 발행·포인트 적립 규칙·사용 내역 (앱: 쿠폰·포인트)" },
+  { key: "events", label: "이벤트·기획전", team: "design", status: "soon", desc: "이벤트·기획전 등록과 기간 관리 (앱: 이벤트)" },
+  { key: "notices", label: "공지·알림 발송", team: "design", status: "soon", desc: "공지사항 등록·앱 알림 발송 (앱: 알림·공지사항)" },
+  { key: "reorder", label: "재주문 알림", team: "design", status: "soon", desc: "상품별 재구매 주기·재주문 알림 대상 (앱: 재주문)" },
+  { key: "reviews", label: "리뷰 관리", team: "design", status: "soon", desc: "상품 리뷰 확인·숨김·적립 (앱: 상품 리뷰)" },
   // 물류 / 물류지원 — 사방넷 연동 예정
   { key: "inventory", label: "재고", team: "logistics", status: "live", desc: "상품별 재고 수량", source: "사방넷 연동 예정" },
   { key: "orders", label: "주문", team: "logistics", status: "live", desc: "뷰티웰·카페24 주문 통합 현황" },
