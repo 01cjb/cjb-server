@@ -18,7 +18,7 @@ export default function Wishlist() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-6">찜리스트 <span className="text-brand-600">{wish.length}</span></h1>
       {!wish.length ? <p className="py-20 text-center text-neutral-400">찜한 상품이 없습니다.</p> : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-6">
+        <div className="grid grid-cols-2 @xl:grid-cols-3 @5xl:grid-cols-4 gap-x-3 gap-y-6">
           {items.map((p) => (
             <Link key={p.id} href={`/product/${p.id}`} className="block">
               <div className="relative aspect-square rounded-xl overflow-hidden"><ProductThumb id={p.id} src={p.thumbnail_url} />

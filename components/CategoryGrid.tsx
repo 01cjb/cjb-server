@@ -8,8 +8,8 @@ export default function CategoryGrid({ categories, title = "카테고리 모아�
         {categories.map((c) => (
           <li key={c.id}>
             <Link href={`/category/${c.slug}`} className="flex flex-col items-center gap-1.5 group">
-              <span className="size-14 md:size-16 rounded-2xl bg-neutral-100 grid place-items-center text-2xl group-hover:bg-brand-100 transition-colors">{c.icon}</span>
-              <span className="text-[11px] md:text-xs text-center leading-tight">{c.name}</span>
+              <span className="size-14 @3xl:size-16 rounded-2xl bg-neutral-100 grid place-items-center text-2xl group-hover:bg-brand-100 transition-colors">{c.icon}</span>
+              <span className="text-[11px] @3xl:text-xs text-center leading-tight">{c.name}</span>
             </Link>
           </li>
         ))}

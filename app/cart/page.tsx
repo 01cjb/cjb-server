@@ -16,7 +16,7 @@ export default function CartPage() {
           <Link href="/category/best" className="inline-block mt-4 rounded-full bg-brand-600 text-white px-5 py-2 text-sm">BEST 상품 보러가기</Link>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-[1fr_280px]">
+        <div className="grid gap-6 @3xl:grid-cols-[1fr_280px]">
           <ul className="divide-y divide-neutral-200 border-y border-neutral-200">
             {q?.items.map((i) => (
               <li key={i.id} className="flex gap-3 py-4">

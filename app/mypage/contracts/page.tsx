@@ -8,7 +8,7 @@ export default async function MyContracts() {
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">계약정보</h1>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 @3xl:grid-cols-2">
         {list.map((k) => (
           <div key={k.id} className="rounded-xl border border-neutral-200 p-4 text-sm">
             <div className="flex items-center gap-2 mb-3"><b>{CONTRACT_TYPE[k.contract_type]}</b><span className="font-mono text-xs text-neutral-400">{k.contract_no}</span><span className="ml-auto"><Pill s={k.status} label={ST[k.status]} /></span></div>
@@ -21,7 +21,7 @@ export default async function MyContracts() {
             </dl>
           </div>
         ))}
-        {!list.length && <p className="py-16 text-center text-sm text-neutral-400 md:col-span-2">체결된 계약이 없습니다. 대량 구매·대리점 계약은 고객센터로 문의해 주세요.</p>}
+        {!list.length && <p className="py-16 text-center text-sm text-neutral-400 @3xl:col-span-2">체결된 계약이 없습니다. 대량 구매·대리점 계약은 고객센터로 문의해 주세요.</p>}
       </div>
     </div>
   );
