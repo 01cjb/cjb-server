@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import LogoWhite from "@/components/LogoWhite";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -62,61 +63,71 @@ export default function StoreLoginForm({ already, name, testOn, tel }: { already
     go();
   };
 
-  const input = "mt-1.5 w-full rounded-xl border border-[#ddd5e4] bg-white px-3.5 py-3 text-[15px] outline-none focus:border-brand-600 placeholder:text-neutral-400";
-  const label = "block text-[13px] font-semibold text-neutral-700";
-  const mark = <span aria-hidden className="mx-auto block size-14 bg-[url(/logo/full.png)] bg-[length:232px_56px] bg-no-repeat" />;
+  const input = "mt-2 h-14 w-full rounded-2xl border-0 bg-[#f6f2f9] px-4 text-[16px] font-medium text-neutral-900 outline-none ring-brand-600/40 transition focus:bg-white focus:ring-2 placeholder:font-normal placeholder:tracking-normal placeholder:text-neutral-400";
+  const label = "block text-[12.5px] font-semibold tracking-wide text-neutral-500";
+  const btn = "h-14 w-full rounded-2xl bg-plum font-bold text-white shadow-[0_10px_24px_-10px_rgba(59,29,90,.7)] transition active:scale-[.99] disabled:opacity-50";
+
+  // 위: 진보라 배경 + 흰 로고 / 아래: 떠 있는 흰 카드
+  const Hero = ({ title, sub }: { title: string; sub: React.ReactNode }) => (
+    <div className="relative overflow-hidden rounded-b-[36px] bg-gradient-to-br from-plum via-plum-2 to-brand-600 px-6 pb-24 pt-5 text-white">
+      <span aria-hidden className="absolute -right-16 -top-16 size-56 rounded-full bg-white/[.06]" />
+      <span aria-hidden className="absolute -left-10 bottom-6 size-32 rounded-full bg-gold/10" />
+      <Link href="/" className="relative inline-flex items-center gap-1 text-[13px] text-white/70">‹ 홈</Link>
+      <div className="relative mt-8"><LogoWhite className="h-10 w-auto" /></div>
+      <h1 className="relative mt-7 text-[26px] font-extrabold tracking-tight">{title}</h1>
+      <p className="relative mt-1.5 text-[13.5px] leading-relaxed text-white/75">{sub}</p>
+    </div>
+  );
+  const card = "relative z-10 mx-5 -mt-16 space-y-5 rounded-[28px] bg-white p-6 shadow-[0_24px_60px_-24px_rgba(59,29,90,.45)]";
 
   if (already) return (
-    <div className="px-5 py-16 text-center">
-      {mark}
-      <p className="mt-4 font-semibold">{name ?? "원장"}님, 이미 로그인되어 있어요.</p>
-      <div className="mt-5 flex justify-center gap-2"><Link href="/" className="rounded-xl bg-plum px-5 py-2.5 text-sm font-bold text-white">홈으로</Link><a href="/logout" className="rounded-xl border border-[#ece6f1] bg-white px-5 py-2.5 text-sm">로그아웃</a></div>
+    <div className="min-h-dvh">
+      <Hero title={`${name ?? "원장"}님, 반가워요`} sub="이미 로그인되어 있어요." />
+      <div className={card}>
+        <Link href="/" className={`${btn} grid place-items-center`}>홈으로</Link>
+        <a href="/logout" className="block text-center text-sm text-neutral-500 underline">로그아웃</a>
+      </div>
     </div>
   );
 
   if (step === "pin") return (
-    <div className="px-5 pt-12 pb-10">
-      <div className="text-center">{mark}<h1 className="mt-4 text-xl font-extrabold text-plum">새 PIN 정하기</h1><p className="mt-2 text-[13px] leading-relaxed text-neutral-500">임시 PIN으로 들어오셨어요.<br />앞으로 쓰실 PIN을 숫자 4~6자리로 정해 주세요.</p></div>
-      <form onSubmit={setPin} className="mt-6 space-y-4 rounded-2xl border border-[#ece6f1] bg-white p-5">
-        <label className={label}>새 PIN<input className={input} type="password" inputMode="numeric" maxLength={6} placeholder="숫자 4~6자리" value={np.a} onChange={(e) => setNp({ ...np, a: e.target.value.replace(/\D/g, "") })} required /></label>
-        <label className={label}>새 PIN 한 번 더<input className={input} type="password" inputMode="numeric" maxLength={6} value={np.b} onChange={(e) => setNp({ ...np, b: e.target.value.replace(/\D/g, "") })} required /></label>
-        <button disabled={!!busy} className="w-full rounded-xl bg-plum py-3.5 font-bold text-white disabled:opacity-50">{busy ? "저장 중…" : "PIN 저장하고 시작하기"}</button>
+    <div className="min-h-dvh pb-10">
+      <Hero title="새 PIN 정하기" sub={<>임시 PIN으로 들어오셨어요.<br />앞으로 쓰실 PIN을 숫자 4~6자리로 정해 주세요.</>} />
+      <form onSubmit={setPin} className={card}>
+        <label className={label}>새 PIN<input className={`${input} tracking-[.4em]`} type="password" inputMode="numeric" maxLength={6} placeholder="숫자 4~6자리" value={np.a} onChange={(e) => setNp({ ...np, a: e.target.value.replace(/\D/g, "") })} required /></label>
+        <label className={label}>새 PIN 한 번 더<input className={`${input} tracking-[.4em]`} type="password" inputMode="numeric" maxLength={6} value={np.b} onChange={(e) => setNp({ ...np, b: e.target.value.replace(/\D/g, "") })} required /></label>
+        <button disabled={!!busy} className={btn}>{busy ? "저장 중…" : "PIN 저장하고 시작하기"}</button>
         {msg && <p className="text-center text-sm text-rose-600">{msg}</p>}
       </form>
     </div>
   );
 
   return (
-    <div className="px-5 pt-12 pb-10">
-      <div className="text-center">
-        {mark}
-        <h1 className="mt-4 text-xl font-extrabold text-plum">로그인</h1>
-        <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">담당자에게 받은 매장 코드와 가입한 연락처,<br />PIN을 입력해 로그인해 주세요.</p>
-      </div>
+    <div className="flex min-h-dvh flex-col pb-8">
+      <Hero title="로그인" sub={<>담당자에게 받은 매장 코드와<br />가입한 연락처, PIN을 입력해 주세요.</>} />
 
-      <form onSubmit={login} className="mt-6 space-y-4 rounded-2xl border border-[#ece6f1] bg-white p-5">
-        <label className={label}>매장 코드<input className={input} inputMode="numeric" maxLength={8} placeholder="담당자에게 받은 8자리" value={f.code} onChange={(e) => setF({ ...f, code: e.target.value.replace(/\D/g, "") })} required /></label>
-        <label className={label}>가입한 연락처<input className={input} type="tel" inputMode="numeric" placeholder="010-1234-5678" value={f.phone} onChange={(e) => setF({ ...f, phone: fmtPhone(e.target.value) })} required /></label>
-        <label className={label}>PIN 번호<input className={input} type="password" inputMode="numeric" maxLength={6} placeholder="숫자 4~6자리" value={f.pin} onChange={(e) => setF({ ...f, pin: e.target.value.replace(/\D/g, "") })} required /></label>
-        <p className="-mt-1 text-xs leading-relaxed text-neutral-500">처음이시면 뷰티웰에서 보내드린 임시 PIN을 적어 주세요. 들어온 뒤 내 PIN으로 바꿔요.</p>
-        <label className="flex items-center gap-2 text-[13px] text-neutral-700"><input type="checkbox" className="size-4 accent-brand-600" checked={save} onChange={(e) => setSave(e.target.checked)} />매장 코드·연락처 저장 <span className="text-xs text-neutral-400">(PIN은 저장 안 해요)</span></label>
-        <button disabled={!!busy} className="w-full rounded-xl bg-plum py-3.5 font-bold text-white disabled:opacity-50">{busy === "login" ? "확인 중…" : "로그인"}</button>
+      <form onSubmit={login} className={card}>
+        <label className={label}>매장 코드<input className={`${input} tracking-[.2em]`} inputMode="numeric" maxLength={8} placeholder="8자리 숫자" value={f.code} onChange={(e) => setF({ ...f, code: e.target.value.replace(/\D/g, "") })} required /></label>
+        <label className={label}>연락처<input className={input} type="tel" inputMode="numeric" placeholder="010-1234-5678" value={f.phone} onChange={(e) => setF({ ...f, phone: fmtPhone(e.target.value) })} required /></label>
+        <label className={label}>PIN<input className={`${input} tracking-[.4em]`} type="password" inputMode="numeric" maxLength={6} placeholder="숫자 4~6자리" value={f.pin} onChange={(e) => setF({ ...f, pin: e.target.value.replace(/\D/g, "") })} required /></label>
+        <label className="flex items-center gap-2 text-[13px] text-neutral-600"><input type="checkbox" className="size-[18px] rounded accent-brand-600" checked={save} onChange={(e) => setSave(e.target.checked)} />매장 코드·연락처 기억하기</label>
+        <button disabled={!!busy} className={btn}>{busy === "login" ? "확인 중…" : "로그인"}</button>
         {msg && <p className="text-center text-sm text-rose-600">{msg}</p>}
+        <p className="text-center text-xs leading-relaxed text-neutral-400">처음이시면 받으신 임시 PIN으로 들어와 새 PIN을 정해요.<br />코드·PIN을 모르시면 <a href={`tel:${tel}`} className="font-semibold text-plum">{tel}</a></p>
       </form>
 
-      <p className="mt-4 text-center text-xs leading-relaxed text-neutral-500">매장 코드를 모르시거나 PIN을 잊으셨으면<br /><a href={`tel:${tel}`} className="font-semibold text-plum">{tel}</a>로 연락 주세요.</p>
-
-      {testOn && (
-        <div className="mt-6 rounded-2xl border-2 border-dashed border-gold bg-gold-50 p-4 text-center">
-          <p className="text-xs font-semibold text-gold-ink">오픈 전 테스트용</p>
-          <button type="button" onClick={testLogin} disabled={!!busy} className="mt-2 w-full rounded-xl bg-gold py-3 font-bold text-plum disabled:opacity-50">{busy === "test" ? "들어가는 중…" : "테스트 계정으로 로그인"}</button>
-          <p className="mt-1.5 text-[11px] text-gold-ink/80">뷰티웰 테스트 미용실 (미용실회원) 계정으로 들어가요</p>
+      <div className="mx-5 mt-6 space-y-3">
+        {testOn && (
+          <button type="button" onClick={testLogin} disabled={!!busy} className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-gold/70 bg-gold-50 text-[14px] font-bold text-gold-ink disabled:opacity-50">
+            <span className="rounded-md bg-gold px-1.5 py-0.5 text-[10px] font-extrabold text-plum">TEST</span>
+            {busy === "test" ? "들어가는 중…" : "테스트 계정으로 둘러보기"}
+          </button>
+        )}
+        <div className="flex items-center justify-center gap-3 pt-2 text-[12.5px] text-neutral-500">
+          <Link href={`/login/email?next=${encodeURIComponent(next)}`} className="hover:text-plum">이메일·네이버·카카오</Link>
+          <span className="h-3 w-px bg-neutral-300" />
+          <Link href="/work/login" className="hover:text-plum">직원 로그인</Link>
         </div>
-      )}
-
-      <div className="mt-6 grid gap-2 text-center text-[13px]">
-        <Link href={`/login/email?next=${encodeURIComponent(next)}`} className="rounded-xl border border-[#ece6f1] bg-white py-3 text-neutral-700">이메일 · 네이버 · 카카오로 로그인</Link>
-        <Link href="/work/login" className="py-2 text-neutral-500 underline">직원 로그인 (업무 시스템)</Link>
       </div>
     </div>
   );
