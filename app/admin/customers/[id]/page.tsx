@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCustomer } from "@/lib/admin/repo";
 import { CONTRACT_TYPE, GRADE_NAME, ORDER_STATUS } from "@/lib/admin/types";
 import CustomerEditor from "@/components/admin/CustomerEditor";
+import StoreLoginIssue from "@/components/admin/StoreLoginIssue";
 import Pill from "@/components/admin/Pill";
 import { H1, Table } from "@/components/admin/Table";
 import { day, dt, won } from "@/lib/fmt";
@@ -16,6 +17,7 @@ export default async function CustomerDetail({ params }: { params: Promise<{ id:
         {c.name} <span className="text-sm font-normal text-neutral-500">{c.email}</span> <Pill s={c.grade_id} label={GRADE_NAME[c.grade_id]} />
       </H1>
       <CustomerEditor c={c} />
+      <StoreLoginIssue id={c.id} code={c.store_code ?? null} temp={!!c.pin_temp} setAt={c.pin_set_at ?? null} phone={c.phone} />
       <div className="grid gap-6 lg:grid-cols-2">
         <div><h2 className="font-semibold text-sm mb-2">주문 {orders.length}건</h2>
           <Table head={["주문번호", "금액", "상태", "일시"]} empty={!orders.length}>

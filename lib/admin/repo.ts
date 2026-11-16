@@ -70,7 +70,9 @@ export async function getCustomer(id: string) {
     db().from("user_consent_current").select("*").eq("user_id", id),
     db().from("customer_addresses").select("*").eq("user_id", id),
   ]);
-  return { customer: c.data as Customer | null, orders: (o.data as Order[]) ?? [], contracts: (k.data as Contract[]) ?? [], consents: cs.data ?? [], addresses: ad.data ?? [] };
+  const { pin_hash: _pin, ...cust } = (c.data ?? {}) as Customer & { pin_hash?: string };
+  void _pin;
+  return { customer: c.data ? (cust as Customer) : null, orders: (o.data as Order[]) ?? [], contracts: (k.data as Contract[]) ?? [], consents: cs.data ?? [], addresses: ad.data ?? [] };
 }
 
 export async function listOrders(status?: string): Promise<Order[]> {

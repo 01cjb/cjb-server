@@ -9,6 +9,7 @@ export type Customer = {
   biz_type?: string | null; biz_item?: string | null; biz_address?: string | null; tax_email?: string | null;
   marketing_agree: boolean; memo?: string | null; created_at: string; last_login_at?: string | null;
   order_count?: number; order_total?: number;
+  store_code?: string | null; pin_temp?: boolean; pin_set_at?: string | null;
 };
 export type Address = { id: number; user_id: string; label: string; receiver_name: string; phone: string; zipcode?: string | null; address1: string; address2?: string | null; is_default: boolean };
 export type OrderItem = { id: number; order_id: number; product_id: number | null; product_name: string; unit_price: number; qty: number };

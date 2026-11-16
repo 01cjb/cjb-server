@@ -25,7 +25,7 @@ export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; alrea
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/mypage";
-  const [mode, setMode] = useState<"in" | "up" | "reset">("in");
+  const [mode, setMode] = useState<"in" | "up" | "reset">(params.get("mode") === "up" ? "up" : "in");
   const [f, setF] = useState({ email: "", password: "", name: "", phone: "" });
   const [agree, setAgree] = useState<Record<string, boolean>>({});
   const [ch, setCh] = useState({ ch_email: true, ch_sms: true, ch_push: true });
@@ -109,6 +109,7 @@ export default function LoginForm({ docs, already }: { docs: ConsentDoc[]; alrea
         {mode !== "up" && <button className="text-brand-600 font-medium" onClick={() => setMode("up")}>회원가입</button>}
         {mode !== "reset" && <button onClick={() => setMode("reset")}>비밀번호 찾기</button>}
       </div>
+      <p className="mt-6 text-center text-sm"><Link href="/login" className="text-brand-600 font-medium">매장 코드로 로그인 ›</Link></p>
       <p className="mt-3 text-center text-xs space-x-3"><Link href="/terms" className="text-neutral-400 underline">이용약관</Link><Link href="/privacy" className="text-neutral-400 underline font-semibold">개인정보처리방침</Link><Link href="/salon-member" className="text-neutral-400 underline">미용실회원 인증</Link></p>
     </div>
   );
