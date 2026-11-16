@@ -76,16 +76,16 @@ export default async function Home() {
   return (
     <>
       {/* 상단 인사 + 주문 현황 */}
-      <section className="bg-plum text-white rounded-b-[26px] md:rounded-b-[36px]">
-        <div className="max-w-6xl mx-auto px-[18px] pt-3 pb-6 md:pb-10 md:pt-6">
+      <section className="bg-plum text-white rounded-b-[26px] @3xl:rounded-b-[36px]">
+        <div className="max-w-6xl mx-auto px-[18px] pt-3 pb-6 @3xl:pb-10 @3xl:pt-6">
           {user && active ? (
-            <div className="md:grid md:grid-cols-[1fr_1.1fr] md:gap-10 md:items-end">
+            <div className="@3xl:grid @3xl:grid-cols-[1fr_1.1fr] @3xl:gap-10 @3xl:items-end">
               <div>
                 <p className="text-[13px] opacity-80">{who}, 안녕하세요</p>
-                <h1 className="text-[22px] md:text-3xl font-extrabold leading-snug mt-1">{active.status === "shipped" || active.status === "preparing" ? "주문하신 상품이" : "최근 주문"}<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">{HEAD[active.status]}</em></h1>
+                <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">{active.status === "shipped" || active.status === "preparing" ? "주문하신 상품이" : "최근 주문"}<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">{HEAD[active.status]}</em></h1>
                 {ship && <p className="text-[13px] opacity-85 mt-1.5">{carrier} · 송장 {ship.tracking_no}</p>}
               </div>
-              <Link href={`/mypage/orders/${active.order_no}`} className="block mt-4 md:mt-0 rounded-[18px] bg-plum-2 px-4 py-3.5">
+              <Link href={`/mypage/orders/${active.order_no}`} className="block mt-4 @3xl:mt-0 rounded-[18px] bg-plum-2 px-4 py-3.5">
                 <div className="flex justify-between items-center text-xs opacity-95">
                   <span className="truncate">주문 {active.order_no} · {active.items?.length ?? 0}개 상품</span>
                   <span className="shrink-0 rounded-full bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 text-[11px]">{PILL[active.status]}</span>
@@ -97,20 +97,20 @@ export default async function Home() {
           ) : user ? (
             <div>
               <p className="text-[13px] opacity-80">{who}, 안녕하세요</p>
-              <h1 className="text-[22px] md:text-3xl font-extrabold leading-snug mt-1">오늘 필요한 재료,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">뷰티웰에서 바로 주문하세요</em></h1>
+              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">오늘 필요한 재료,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">뷰티웰에서 바로 주문하세요</em></h1>
               <div className="flex gap-2 mt-4"><Link href="/reorder" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">재주문하기</Link><Link href="/categories" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">카테고리 보기</Link></div>
             </div>
           ) : (
             <div>
               <p className="text-[13px] opacity-80">이·미용 전문가를 위한 복지몰</p>
-              <h1 className="text-[22px] md:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">로그인하고 확인하세요</em></h1>
+              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">로그인하고 확인하세요</em></h1>
               <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link><Link href="/salon-member" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">미용실회원 인증</Link></div>
             </div>
           )}
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 pt-4 grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2 md:gap-4">
+      <div className="max-w-6xl mx-auto px-4 pt-4 grid grid-cols-[minmax(0,1fr)] gap-3 @3xl:grid-cols-2 @3xl:gap-4">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 content-start min-w-0">
           {lastFirst && (
             <div className="flex items-center gap-3 rounded-[20px] bg-gradient-to-br from-gold-100 to-gold-50 p-4">
@@ -170,7 +170,7 @@ export default async function Home() {
         <Section title="원장님이 자주 산 상품" sub="지난 주문 기준" more="/reorder">
           <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4">
             {freq.map((p) => (
-              <div key={p.id} className="w-36 md:w-44 shrink-0">
+              <div key={p.id} className="w-36 @3xl:w-44 shrink-0">
                 <ProductCard p={p} brand={brands.find((b) => b.id === p.brand_id)?.name} icon={categories.find((c) => c.id === p.category_id)?.icon} />
               </div>
             ))}
