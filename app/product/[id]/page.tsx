@@ -19,13 +19,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <nav className="text-xs text-neutral-400 mb-4"><Link href="/">홈</Link> › {cat && <Link href={`/category/${cat.slug}`}>{cat.name}</Link>}</nav>
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 @3xl:grid-cols-2">
         <div className="aspect-square rounded-2xl overflow-hidden border border-neutral-100">
           <ProductThumb id={p.id} src={p.thumbnail_url} label={brand?.name} icon={cat?.icon} />
         </div>
         <div>
           {brand && <Link href={`/brands?b=${brand.slug}`} className="text-sm text-brand-600 font-medium">{brand.name} ›</Link>}
-          <h1 className="text-xl md:text-2xl font-bold mt-1 leading-snug">{p.name}</h1>
+          <h1 className="text-xl @3xl:text-2xl font-bold mt-1 leading-snug">{p.name}</h1>
           {p.summary && <p className="text-sm text-neutral-500 mt-2">{p.summary}</p>}
           <div className="mt-5 pb-5 border-b border-neutral-200"><Price p={p} large /></div>
           <dl className="grid grid-cols-[90px_1fr] gap-y-2 text-sm py-5 border-b border-neutral-200">
