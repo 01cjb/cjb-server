@@ -29,7 +29,7 @@ export default async function Reorder() {
   })).sort((a, b) => b.times - a.times);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-5 grid gap-3 pb-28 md:pb-10">
+    <div className="max-w-3xl mx-auto px-4 py-5 grid gap-3 pb-28 @3xl:pb-10">
       <h1 className="text-xl font-bold">재주문</h1>
       <p className="rounded-2xl border border-gold-100 bg-gold-50 px-4 py-3 text-[12.5px] leading-relaxed text-gold-ink">지난번에 주문한 상품을 골라 한 번에 담을 수 있어요. 수량은 지난 주문과 같게 담기고, 장바구니에서 바꿀 수 있어요.</p>
       {items.length ? <ReorderList items={items} /> : (
