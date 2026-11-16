@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>뷰티웰 새 디자인 미리보기</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+:root{--plum:#3b1d5a;--plum2:#4c2673;--brand:#6a2f96;--acc:#f4c95d;--acc2:#fbecc0;--acc3:#fff8e6;--acct:#7a5a12;--cream:#fbf7f3;--line:#ece6f1;--ink:#231a2c;--muted:#7d7388;--mint:#d9f3ea;--red:#ff5a5f}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#efe9f4}
+body{font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;color:var(--ink);font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+[data-go],[data-act]{cursor:pointer}
+.app{max-width:420px;margin:0 auto;background:var(--cream);min-height:100vh;padding-bottom:84px;position:relative}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* 홈 헤더 */
+.top{background:var(--plum);color:#fff;padding:14px 18px 22px;border-radius:0 0 26px 26px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.logo{height:40px}
+.hbtns{display:flex;gap:8px}
+.hb{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;position:relative;color:#fff}
+.hb i{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:9px;background:var(--acc)}
+.hi{margin-top:18px;font-size:13px;opacity:.8}
+.h1{font-size:22px;font-weight:800;line-height:1.35;margin-top:4px}
+.h1 em{font-style:normal;color:var(--plum);background:var(--acc);padding:0 6px;border-radius:6px}
+.sub{font-size:13px;opacity:.85;margin-top:6px}
+.track{margin-top:16px;background:var(--plum2);border-radius:18px;padding:14px 16px}
+.track .row{display:flex;justify-content:space-between;align-items:center;font-size:12px;opacity:.95}
+.pill{background:var(--mint);color:#1f6b52;font-weight:700;border-radius:20px;padding:2px 9px;font-size:11px;white-space:nowrap}
+.pill.gray{background:#eee9f2;color:#6b6277}.pill.acc{background:var(--acc2);color:var(--acct)}.pill.plum{background:var(--plum);color:var(--acc)}
+.steps{display:flex;align-items:center;margin:16px 4px 6px}
+.st{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;width:64px}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:11px}
+.dot.on{background:var(--acc);border-color:var(--acc);color:var(--plum)}
+.dot.cur{border-color:var(--acc);box-shadow:0 0 0 4px rgba(244,201,93,.25)}
+.dot.cur::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.ln{flex:1;height:2px;background:rgba(255,255,255,.25);margin-bottom:18px}.ln.on{background:var(--acc)}
+.link{font-size:12px;color:var(--acc);font-weight:700;margin-top:6px;display:inline-block}
+/* 하위 화면 헤더 */
+.sh{position:sticky;top:0;z-index:5;background:var(--plum);color:#fff;display:flex;align-items:center;gap:6px;padding:12px 10px;min-height:56px}
+.sh h2{font-size:17px;font-weight:700;flex:1}
+.sh .bk{width:36px;height:36px;display:grid;place-items:center;color:#fff}
+.wrap{padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.re{background:linear-gradient(135deg,var(--acc2),var(--acc3));border-radius:20px;padding:16px;display:flex;gap:12px;align-items:center}
+.thumb{width:58px;height:58px;border-radius:14px;background:#fff;display:grid;place-items:center;font-size:26px;flex:none}
+.re b{display:block;font-size:15px}.re p{font-size:12px;color:var(--acct);margin-top:2px}
+.btn{background:var(--plum);color:#fff;border-radius:12px;padding:9px 12px;font-weight:700;font-size:12px;flex:none;white-space:nowrap}
+.btn.big{display:block;width:100%;padding:15px;border-radius:16px;font-size:15px;text-align:center}
+.btn.brand{background:var(--brand)}.btn.acc{background:var(--acc);color:var(--plum)}
+.btn.ghost{background:#fff;color:var(--plum);border:1px solid var(--line)}
+.btn:disabled{opacity:.4}
+.re .btn{margin-left:auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}
+.card.np{padding:0;overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 6px}
+.it{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11.5px;color:#3d3347;text-align:center}
+.ic{width:46px;height:46px;border-radius:15px;background:#f3eef8;display:grid;place-items:center;color:var(--brand);position:relative}
+.ic.on::after{content:"";position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid #fff}
+.ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ttl h3{font-size:15px}.ttl span{font-size:11.5px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border-radius:14px;background:#f6f2f9;padding:12px}
+.tile small{font-size:11px;color:var(--muted)}.tile b{display:block;font-size:20px;margin-top:4px}.tile b span{font-size:12px;font-weight:600}
+.tile.acc{background:var(--plum);color:#fff}.tile.acc small{color:var(--acc2)}
+.line{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;padding:11px 2px;border-top:1px solid var(--line)}
+.tiles+.line{margin-top:10px}
+.prods{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+.prods::-webkit-scrollbar{display:none}
+.pc{width:128px;flex:none}
+.img{border-radius:14px;background:linear-gradient(160deg,#f3eef8,#e6dcef);display:grid;place-items:center;position:relative}
+.pc .img{height:118px;font-size:34px}
+.tag{position:absolute;left:8px;top:8px;background:#fff;color:var(--brand);font-size:10px;font-weight:800;border-radius:7px;padding:2px 6px}
+.pc p{font-size:12px;margin-top:7px;line-height:1.35;height:32px;overflow:hidden}
+.pc b{font-size:13px}.pc s,.pl s{font-size:11px;color:var(--muted);margin-left:4px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px}
+.pgrid .pc{width:auto}.pgrid .img{height:150px;font-size:42px}
+.mp{color:var(--brand);font-size:11px;font-weight:700;display:block;margin-top:2px}
+/* 탭바 */
+.tab{position:fixed;bottom:0;left:0;right:0;margin:0 auto;max-width:420px;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 0 calc(12px + env(safe-area-inset-bottom));z-index:9}
+.tab button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:#8b8296;position:relative;width:64px}
+.tab .on{color:var(--brand);font-weight:700}
+.tab i{position:absolute;top:-4px;right:12px;background:var(--acc);color:var(--plum);font-style:normal;font-size:9px;font-weight:800;border-radius:9px;padding:0 5px}
+/* 공통 */
+.seg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.seg button{border-radius:20px;padding:7px 13px;background:#fff;border:1px solid var(--line);font-size:12.5px;white-space:nowrap;color:#5d5368}
+.seg button.on{background:var(--plum);border-color:var(--plum);color:#fff;font-weight:700}
+.list>*{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+.list>*:first-child{border-top:0}
+.list .ar{margin-left:auto;color:#b4abbd}
+.mi{display:flex;align-items:center;gap:12px;width:100%;text-align:left}
+.mi .ic{width:36px;height:36px;border-radius:11px}
+.mi svg{width:19px;height:19px}
+.muted{color:var(--muted);font-size:12px}
+.row{display:flex;align-items:center;gap:10px}
+.sp{flex:1}
+.b{font-weight:700}
+.pl{display:flex;gap:12px;align-items:center}
+.pl .img{width:64px;height:64px;font-size:28px;flex:none}
+.pl .nm{font-size:13px;line-height:1.35}
+.qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.qty button{width:30px;height:30px;font-size:16px;color:var(--plum)}
+.qty span{min-width:26px;text-align:center;font-size:13px;font-weight:700}
+.chk{width:20px;height:20px;accent-color:var(--brand);flex:none}
+.inp{width:100%;border:1px solid #ddd5e4;border-radius:12px;padding:12px;font-size:14px;background:#fff;outline:none}
+.inp:focus{border-color:var(--brand)}
+label.f{display:block;font-size:12.5px;color:#5d5368}
+label.f .inp{margin-top:5px}
+.cp{display:flex;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff}
+.cp .l{background:var(--acc2);color:var(--acct);width:96px;display:grid;place-items:center;font-weight:800;font-size:20px;border-right:2px dashed #fff;flex:none}
+.cp .r{padding:12px 14px;flex:1;min-width:0}
+.cp.used{opacity:.45}
+.ev{border-radius:18px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+.ev .bn{height:120px;display:flex;flex-direction:column;justify-content:center;padding:0 18px;color:#fff}
+.ev .bn b{font-size:18px}.ev .bn small{opacity:.85;margin-top:4px}
+.ev .ds{padding:12px 16px;display:flex;justify-content:space-between;font-size:12.5px}
+.lock{text-align:center;padding:26px 16px}
+.lock .em{font-size:44px}
+.faq summary{list-style:none;padding:14px 16px;border-top:1px solid var(--line);font-size:13.5px;display:flex;gap:8px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary b{color:var(--brand)}
+.faq p{padding:0 16px 14px 36px;font-size:12.5px;color:#5d5368;line-height:1.6}
+.faq details:first-child summary{border-top:0}
+.tot{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+.tot.big{font-size:17px;font-weight:800;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
+.bottom{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:420px;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:8px}
+.bottom .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:rgba(35,26,44,.92);color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:20;max-width:360px;width:max-content}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.sheet-bg{position:fixed;inset:0;background:rgba(20,10,30,.45);z-index:15;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:420px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:85vh;overflow:auto}
+.sheet h3{font-size:16px;margin-bottom:12px}
+.empty{text-align:center;color:var(--muted);padding:40px 0;font-size:13px}
+.banner{border-radius:18px;padding:16px;background:var(--plum);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.banner small{color:var(--acc2);font-size:11.5px}
+.mark{font-size:10px;color:var(--muted);text-align:center}
+.cdn{font-variant-numeric:tabular-nums;font-weight:800;color:var(--acc)}
+.hl{background:var(--acc3);border:1px solid var(--acc2);border-radius:14px;padding:12px 14px;font-size:12.5px;color:var(--acct);line-height:1.55}
+.prof{background:var(--plum);color:#fff;padding:18px 18px 22px;border-radius:0 0 26px 26px}
+.prof .nm{font-size:19px;font-weight:800;margin-top:6px}
+.prof .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.prof .mini div{background:var(--plum2);border-radius:14px;padding:10px 12px;font-size:11px;color:var(--acc2)}
+.prof .mini b{display:block;color:#fff;font-size:16px;margin-top:2px}
+.sec{font-size:12px;color:var(--muted);font-weight:700;padding:4px 4px 0}
+.desk-note{display:none}
+@media (min-width:640px){.desk-note{display:block;position:fixed;left:16px;top:16px;width:220px;font-size:12px;color:#5d5368;line-height:1.6}}
+</style>
+
+<div class="desk-note"><b>뷰티웰 새 디자인 미리보기</b><br>휴대폰 화면 기준입니다. 모든 메뉴·버튼을 눌러 볼 수 있어요. (데이터는 예시, 실제 결제 안 됨)<br><br>지금 사이트: <a href="/">cjb-server.vercel.app</a></div>
+<div class="app" id="app"></div>
+<div class="toast" id="toast"></div>
+<div id="sheet"></div>
+
+<script>
+let LOGO = "/logo/full.png";
+// 원본 로고(/logo/full.png)를 어두운 헤더용 흰색 로고로 바꿔서 사용
+(() => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) { if (!p[i + 3]) continue; const l = (p[i] + p[i + 1] + p[i + 2]) / 3; if (l > 200) { p[i] = 59; p[i + 1] = 29; p[i + 2] = 90; } else { p[i] = p[i + 1] = p[i + 2] = 255; } }
+  x.putImageData(d, 0, 0); LOGO = c.toDataURL(); document.querySelectorAll('img.logo').forEach((e) => e.src = LOGO); }; im.src = '/logo/full.png'; })();
+const I = {
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  truck:'<path d="M3 7h13v10H3zM16 10h3l2 3v4h-5"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/>',
+  re:'<path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/>',
+  cp:'<path d="M4 8h16v4a2 2 0 0 0 0 4H4a2 2 0 0 0 0-4z"/><path d="M10 8v8" stroke-dasharray="2 2"/>',
+  gift:'<path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0"/>',
+  star:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/>',
+  shop:'<path d="M4 20V9l8-5 8 5v11M9 20v-6h6v6"/>',
+  doc:'<path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5"/>',
+  cs:'<path d="M4 13a8 8 0 1 1 16 0v4a2 2 0 0 1-2 2h-1v-6h3M4 13h3v6H6a2 2 0 0 1-2-2z"/>',
+  home:'<path d="M4 11l8-7 8 7v9H4z"/>',
+  cat:'<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>',
+  cart:'<path d="M3 4h2l2.4 11h11L21 7H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  pin:'<path d="M12 21s-6-5.7-6-11a6 6 0 0 1 12 0c0 5.3-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+  pen:'<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>',
+  mega:'<path d="M3 10v4h3l7 4V6L6 10zM16 9a4 4 0 0 1 0 6"/>',
+  ok:'<path d="M5 12l4 4 10-10"/>',
+  sign:'<path d="M5 4h10l4 4v12H5zM8 15c2-3 3 1 5-1"/>',
+  set:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.4-2.6a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>',
+  out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  box:'<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
+};
+const ic = (k, s='') => `<svg viewBox="0 0 24 24" ${s}>${I[k]}</svg>`;
+const won = (n) => n.toLocaleString('ko-KR') + '원';
+
+// ---------- 예시 데이터 ----------
+const CATS = [['perm','펌제/염색제','🧪'],['exam','국가고시용','📝'],['appl','이·미용가전','💨'],['goods','이·미용잡화','🧰'],['sciss','미용가위','✂️'],['hair','헤어케어/스타일링','💆'],['skin','스킨케어','🧴'],['living','생활/건강','🌿']];
+const BRANDS = ['로레알 프로페셔널','밀본','파나소닉','바비리스 프로','시세이도','필립스','폴톤','토야노카지야'];
+const P = [
+  {id:1,n:'세리엑스퍼트 프로롱거 샴푸 1500ml',b:'로레알 프로페셔널',c:'hair',e:'🧴',cp:52000,p:46000,sp:42550,buy:3},
+  {id:2,n:'ER-GM40 완전방수 눈썹바리깡',b:'파나소닉',c:'appl',e:'✂️',cp:45000,p:42000,sp:40000,buy:1},
+  {id:3,n:'마지렐 마지패션 8.1 애쉬 브라운',b:'로레알 프로페셔널',c:'perm',e:'🎨',cp:11000,p:9500,sp:8500,buy:5},
+  {id:4,n:'오르디브 아딧쿠 염모제 80g',b:'밀본',c:'perm',e:'🧪',cp:16000,p:14000,sp:12800,buy:2},
+  {id:5,n:'디지털 펌 1제 1000ml',b:'밀본',c:'perm',e:'🧪',cp:28000,p:25000,sp:22000,buy:4},
+  {id:6,n:'프로 드라이어 2000W 블랙',b:'바비리스 프로',c:'appl',e:'💨',cp:189000,p:169000,sp:155000,buy:0,vip:true},
+  {id:7,n:'커트 가위 6.0인치 (컷트용)',b:'토야노카지야',c:'sciss',e:'✂️',cp:320000,p:288000,sp:265000,buy:0,vip:true},
+  {id:8,n:'서브리밍 트리트먼트 500g',b:'시세이도',c:'hair',e:'💆',cp:38000,p:34000,sp:31000,buy:1},
+  {id:9,n:'국가고시용 위그 (마네킹)',b:'폴톤',c:'exam',e:'📝',cp:24000,p:21000,sp:19500,buy:0},
+  {id:10,n:'일회용 위생 가운 50매',b:'폴톤',c:'goods',e:'🧰',cp:18000,p:15000,sp:13500,buy:2},
+  {id:11,n:'원스텝 헤어 에센스 150ml',b:'필립스',c:'skin',e:'🧴',cp:22000,p:19000,sp:17000,buy:0},
+  {id:12,n:'샴푸 체어 쿠션 커버',b:'폴톤',c:'living',e:'🌿',cp:30000,p:26000,sp:23000,buy:0},
+];
+const PB = (id) => P.find((x) => x.id === id);
+const ORDERS = [
+  {no:'BW261113-K7Q2',d:'11/13',st:'배송중',step:2,inv:'4557 4606 125',items:[[1,1],[3,6],[4,2]]},
+  {no:'BW261104-M2A8',d:'11/04',st:'배송완료',step:3,inv:'4557 4588 017',items:[[5,2],[10,1]]},
+  {no:'BW261021-Q9T4',d:'10/21',st:'배송완료',step:3,inv:'4557 4510 662',items:[[1,1],[8,1]]},
+  {no:'BW261114-R1C5',d:'11/14',st:'결제완료',step:0,inv:'',items:[[2,1]]},
+];
+const STEPS = ['주문확인','출고','배송중','도착'];
+const EVENTS = [
+  {id:1,t:'11월 펌제 기획전',s:'펌제·염색제 최대 20% 할인',d:'11/01 ~ 11/30',bg:'linear-gradient(135deg,#6a2f96,#3b1d5a)',body:'밀본·로레알 펌제와 염색제를 이번 달만 최대 20% 할인해요. 미용실회원가에 추가 할인이 적용됩니다.'},
+  {id:2,t:'첫 VIP 인증 웰컴 쿠폰',s:'VIP 인증 완료 시 3만원 쿠폰',d:'상시',bg:'linear-gradient(135deg,#c79a2b,#7a5a12)',body:'VIP 인증이 완료되면 3만원 할인 쿠폰(20만원 이상 구매 시)을 바로 드려요.'},
+  {id:3,t:'가위 연마 서비스 무료',s:'가위 구매 시 1회 무료 연마',d:'11/10 ~ 12/10',bg:'linear-gradient(135deg,#2f6f73,#1d3d40)',body:'토야노카지야 가위 구매 고객께 1회 무료 연마 서비스를 드려요. 고객센터로 신청해 주세요.'},
+];
+const NOTICES = [
+  {t:'[배송] 11/20(금) 오후 출고 지연 안내',d:'11/12',b:'물류센터 재고 실사로 11/20 오후 주문은 11/21 출고됩니다.'},
+  {t:'[공지] 세금계산서 자동 발행 기준 변경',d:'11/05',b:'매월 말일 기준으로 한 달 구매분을 합쳐 자동 발행합니다. 건별 발행이 필요하면 세금계산서 메뉴에서 요청해 주세요.'},
+  {t:'[안내] 미용실회원 인증 서류 안내',d:'10/28',b:'사업자등록증과 미용사 면허증(또는 자격증) 사진을 올려주세요.'},
+];
+const FAQ = [
+  ['주문하면 언제 출고되나요?','평일 오후 3시까지 결제한 주문은 당일 출고돼요. 이후 주문은 다음 영업일에 출고됩니다.'],
+  ['미용실회원가는 어떻게 받나요?','미용실회원관에서 사업자 인증을 신청하면 영업일 1~2일 안에 승인되고, 승인 즉시 회원가가 적용돼요.'],
+  ['VIP는 어떻게 되나요?','VIP는 구매 금액이 아니라 인증으로 정해져요. VIP 전용관에서 인증 신청을 해주세요.'],
+  ['세금계산서는 언제 발행되나요?','매월 말일 기준으로 자동 발행돼요. 건별 발행은 세금계산서 메뉴에서 요청할 수 있어요.'],
+  ['반품·교환은 어떻게 하나요?','상품 수령 후 7일 안에 1:1 문의로 신청해 주세요. 개봉한 약제는 반품이 어려워요.'],
+];
+
+// ---------- 상태 ----------
+const S = {
+  cart: [{id:1,q:1},{id:3,q:4}],
+  wish: new Set([6,8]),
+  coupons: [
+    {id:'c1',amt:'10%',t:'펌제 10% 할인',min:30000,cat:'perm',rate:.1,exp:'11/20 만료',own:true,used:false},
+    {id:'c2',amt:'3천원',t:'5만원 이상 3,000원 할인',min:50000,flat:3000,exp:'11/30 만료',own:true,used:false},
+    {id:'c3',amt:'5천원',t:'가위·가전 5,000원 할인',min:100000,flat:5000,exp:'12/10 만료',own:false,used:false},
+  ],
+  points: 12400,
+  pointLog: [['11/04 주문 적립','+2,150'],['10/21 주문 적립','+1,870'],['10/15 리뷰 작성','+500'],['10/02 주문 시 사용','-3,000']],
+  salon: 'approved', // none | pending | approved
+  vip: 'none', // none | pending | approved
+  qna: [{t:'가위 연마 서비스 신청합니다',d:'11/11',st:'답변완료',a:'안녕하세요 원장님, 연마 신청 접수되었습니다. 택배 회수 기사님이 11/14에 방문합니다.'}],
+  noti: [
+    {k:'truck',t:'주문하신 상품이 배송 중이에요',s:'BW261113-K7Q2 · 내일(11/14) 도착 예정',go:'order/BW261113-K7Q2',read:false},
+    {k:'cp',t:'새 쿠폰이 도착했어요',s:'가위·가전 5,000원 할인 쿠폰',go:'benefit',read:false},
+    {k:'re',t:'펌제 떨어질 때 됐어요',s:'지난달 구매한 펌제를 다시 담아보세요',go:'reorder',read:true},
+    {k:'mega',t:'[공지] 11/20 오후 출고 지연 안내',s:'물류센터 재고 실사',go:'notices',read:true},
+  ],
+  addr: [{n:'뷰티헤어 (매장)',r:'[예시] 김원장',p:'010-1234-5678',a:'서울 마포구 월드컵로 00, 1층',def:true},{n:'자택',r:'[예시] 김원장',p:'010-1234-5678',a:'경기 고양시 덕양구 00로 00',def:false}],
+  taxReq: [],
+  reAlert: true,
+  pay: 'card',
+  applied: null,
+  lastOrder: null,
+};
+const cartCount = () => S.cart.reduce((n, c) => n + c.q, 0);
+const priceOf = (p) => (S.salon === 'approved' ? p.sp : p.p);
+
+// ---------- 공통 조각 ----------
+const sub = (t, right='') => `<div class="sh"><button class="bk" data-act="back" aria-label="뒤로">${ic('back')}</button><h2>${t}</h2>${right}</div>`;
+const tabbar = (on) => `<nav class="tab">${[['home','home','홈'],['category','cat','카테고리'],['reorder','re','재주문'],['cart','cart','장바구니'],['my','user','마이']].map(([r,k,l]) => `<button data-go="${r}" class="${on===r?'on':''}">${ic(k)}${r==='cart'&&cartCount()?`<i>${cartCount()}</i>`:''}${l}</button>`).join('')}</nav>`;
+const pcard = (p, tag='') => `<div class="pc" data-go="product/${p.id}"><div class="img">${tag?`<span class="tag">${tag}</span>`:''}${p.e}</div><p>[${p.b.split(' ')[0]}] ${p.n}</p><b>${won(priceOf(p))}</b>${p.cp>priceOf(p)?`<s>${p.cp.toLocaleString()}</s>`:''}${S.salon==='approved'?'<span class="mp">미용실회원가</span>':''}</div>`;
+const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800); };
+const sheet = (h) => { document.getElementById('sheet').innerHTML = h ? `<div class="sheet-bg" data-act="close"><div class="sheet" data-act="noop">${h}</div></div>` : ''; };
+const addCart = (id, q=1) => { const c = S.cart.find((x) => x.id === id); if (c) c.q += q; else S.cart.push({id, q}); };
+const unread = (k) => S.noti.some((n) => !n.read && n.k === k);
+
+// ---------- 화면 ----------
+const V = {};
+V.home = () => {
+  const o = ORDERS.find((x) => x.st === '배송중') || ORDERS[0];
+  return `<div class="top">
+    <div class="bar"><img class="logo" src="${LOGO}" alt="Beauty Well"><div class="hbtns"><button class="hb" data-go="search" aria-label="검색">${ic('search')}</button><button class="hb" data-go="noti" aria-label="알림">${ic('bell')}${S.noti.some(n=>!n.read)?'<i></i>':''}</button></div></div>
+    <p class="hi">[예시] 뷰티헤어 원장님, 안녕하세요</p>
+    <h1 class="h1">주문하신 상품이<br><em>내일(11/14) 도착해요</em></h1>
+    <p class="sub">로젠택배 · 송장 ${o.inv}</p>
+    <div class="track" data-go="order/${o.no}">
+      <div class="row"><span>주문 ${o.no} · ${o.items.length}개 상품</span><span class="pill">배송중</span></div>
+      ${steps(o.step)}
+      <span class="link">배송조회 ›</span>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="banner" data-act="cutoff"><div><small>오늘 출고 마감</small><div class="b">오후 3시까지 결제하면 오늘 출고</div></div><span class="cdn" id="cdn"></span></div>
+    ${S.reAlert?`<div class="re"><div class="thumb">🧴</div><div><b>펌제 떨어질 때 됐어요</b><p>지난달 구매 · 밀본 디지털 펌 1제 1000ml</p></div><button class="btn" data-act="addone" data-id="5">바로 재주문</button></div>`:''}
+    <button class="btn big brand" data-act="lastorder">＋ 지난 주문 그대로 다시 담기</button>
+    <div class="card"><div class="grid">
+      ${[['orders','truck','주문·배송',unread('truck')],['reorder','re','재주문'],['benefit','cp','쿠폰·포인트',unread('cp')],['events','gift','이벤트'],['vip','star','VIP 전용관'],['salon','shop','미용실회원관'],['tax','doc','세금계산서'],['cs','cs','고객센터']]
+        .map(([r,k,l,on]) => `<button class="it" data-go="${r}"><div class="ic ${on?'on':''}">${ic(k)}</div>${l}</button>`).join('')}
+    </div></div>
+    <div class="card">
+      <div class="ttl"><h3>이번 달 혜택 현황</h3><span>11월 1일~오늘</span></div>
+      <div class="tiles">
+        <div class="tile acc" data-go="orders"><small>구매 금액</small><b>32<span> 만원</span></b></div>
+        <div class="tile" data-go="salon"><small>아낀 금액</small><b>4,800<span> 원</span></b></div>
+        <div class="tile" data-go="benefit"><small>쓸 수 있는 쿠폰</small><b>${S.coupons.filter(c=>c.own&&!c.used).length}<span> 장</span></b></div>
+      </div>
+      <div class="line" data-go="benefit"><span>쿠폰 1장 <b style="color:var(--acct)">11/20 만료</b> · 펌제 10% 할인</span><span>›</span></div>
+      <div class="line" data-go="tax"><span>세금계산서 <b>11월분 자동 발행 예정</b></span><span>›</span></div>
+    </div>
+    <div class="card">
+      <div class="ttl"><h3>원장님이 자주 산 상품</h3><span data-go="reorder">전체보기 ›</span></div>
+      <div class="prods">${P.filter(p=>p.buy).sort((a,b)=>b.buy-a.buy).slice(0,6).map(p=>pcard(p,`재구매 ${p.buy}회`)).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="ttl"><h3>진행 중인 이벤트</h3><span data-go="events">전체보기 ›</span></div>
+      <div class="ev" data-go="event/1"><div class="bn" style="background:${EVENTS[0].bg}"><b>${EVENTS[0].t}</b><small>${EVENTS[0].s}</small></div></div>
+    </div>
+    <div class="card np"><div class="list">
+      ${NOTICES.slice(0,2).map((n,i)=>`<div data-go="notice/${i}"><span class="pill gray">공지</span><span style="font-size:12.5px">${n.t}</span><span class="ar">›</span></div>`).join('')}
+    </div></div>
+    <p class="mark">※ 목업입니다. 이름·주문·금액은 모두 예시예요.</p>
+  </div>${tabbar('home')}`;
+};
+const steps = (n) => `<div class="steps">${STEPS.map((s,i)=>`<div class="st"><div class="dot ${i<n?'on':i===n?(n===3?'on':'cur'):''}">${i<n||(n===3&&i===3)?'✓':''}</div>${s}</div>${i<3?`<div class="ln ${i<n?'on':''}"></div>`:''}`).join('')}</div>`;
+
+V.orders = (f='전체') => {
+  const list = ORDERS.filter((o) => f==='전체' || o.st===f);
+  return sub('주문·배송') + `<div class="wrap">
+    <div class="seg">${['전체','결제완료','배송중','배송완료'].map(x=>`<button data-go="orders/${x}" class="${x===f?'on':''}">${x}</button>`).join('')}</div>
+    ${list.length?list.map(o=>`<div class="card" data-go="order/${o.no}">
+      <div class="row"><span class="muted">${o.d} 주문 · ${o.no}</span><span class="sp"></span><span class="pill ${o.st==='배송완료'?'gray':o.st==='결제완료'?'acc':''}">${o.st}</span></div>
+      <div class="pl" style="margin-top:12px"><div class="img">${PB(o.items[0][0]).e}</div><div><div class="nm">${PB(o.items[0][0]).n}${o.items.length>1?` 외 ${o.items.length-1}건`:''}</div><div class="b" style="margin-top:4px">${won(o.items.reduce((s,[id,q])=>s+PB(id).sp*q,0))}</div></div></div>
+      <div class="row" style="margin-top:12px"><button class="btn ghost" style="flex:1" data-act="reorder" data-no="${o.no}">다시 담기</button>${o.inv?`<button class="btn" style="flex:1" data-act="track" data-inv="${o.inv}">배송조회</button>`:`<button class="btn ghost" style="flex:1" data-act="cancel" data-no="${o.no}">주문취소</button>`}</div>
+    </div>`).join(''):'<div class="empty">해당 주문이 없어요</div>'}
+  </div>${tabbar('')}`;
+};
+V.order = (no) => {
+  const o = ORDERS.find((x)=>x.no===no) || S.lastOrder || ORDERS[0];
+  const sum = o.items.reduce((s,[id,q])=>s+PB(id).sp*q,0);
+  return sub('주문 상세') + `<div class="wrap">
+    <div class="card" style="background:var(--plum);color:#fff;border:0">
+      <div class="row"><span style="font-size:12px;opacity:.85">${o.d} · ${o.no}</span><span class="sp"></span><span class="pill">${o.st}</span></div>
+      ${steps(o.step)}
+      ${o.inv?`<div class="row" style="font-size:12.5px;margin-top:6px"><span>로젠택배 ${o.inv}</span><span class="sp"></span><button class="link" data-act="track" data-inv="${o.inv}">배송조회 ›</button></div>`:'<p style="font-size:12.5px;opacity:.85">오늘 오후 출고 예정이에요</p>'}
+    </div>
+    <div class="card np"><div class="list">${o.items.map(([id,q])=>{const p=PB(id);return `<div data-go="product/${id}"><div class="pl"><div class="img">${p.e}</div><div><div class="nm">${p.n}</div><div class="muted">${p.b} · ${q}개</div><div class="b">${won(p.sp*q)}</div></div></div></div>`}).join('')}</div></div>
+    <div class="card"><div class="tot"><span>상품 금액</span><span>${won(sum)}</span></div><div class="tot"><span>배송비</span><span>${sum>=50000?'무료':'3,000원'}</span></div><div class="tot big"><span>결제 금액</span><span>${won(sum+(sum>=50000?0:3000))}</span></div></div>
+    <div class="card"><div class="ttl"><h3>배송지</h3></div><p style="font-size:13px;line-height:1.6">${S.addr[0].n} · ${S.addr[0].r}<br>${S.addr[0].a}</p></div>
+    <div class="row"><button class="btn ghost big" style="flex:1" data-act="reorder" data-no="${o.no}">다시 담기</button><button class="btn ghost big" style="flex:1" data-go="cs/문의">문의하기</button></div>
+    ${o.st==='배송완료'?'<button class="btn big acc" data-act="review">리뷰 쓰고 500P 받기</button>':''}
+  </div>`;
+};
+
+V.reorder = () => {
+  const list = P.filter((p)=>p.buy).sort((a,b)=>b.buy-a.buy);
+  return sub('재주문') + `<div class="wrap">
+    <div class="hl">자주 산 상품을 골라 한 번에 담을 수 있어요. 수량은 장바구니에서 바꿀 수 있어요.</div>
+    <div class="card np"><div class="list">
+      <label style="font-size:13px"><input type="checkbox" class="chk" data-act="reall" checked> 전체 선택</label>
+      ${list.map(p=>`<label><input type="checkbox" class="chk rechk" value="${p.id}" checked><div class="pl" style="flex:1"><div class="img">${p.e}</div><div><div class="nm">${p.n}</div><div class="muted">최근 ${p.buy}회 구매 · 마지막 10/21</div><div class="b">${won(priceOf(p))}</div></div></div></label>`).join('')}
+    </div></div>
+    <div class="card"><div class="row"><div><div class="b">재주문 알림 받기</div><div class="muted">떨어질 때쯤 홈·알림으로 알려드려요</div></div><span class="sp"></span><input type="checkbox" class="chk" data-act="realert" ${S.reAlert?'checked':''}></div></div>
+    <button class="btn big brand" data-act="readd">선택 상품 장바구니 담기</button>
+  </div>${tabbar('reorder')}`;
+};
+
+V.benefit = (t='쿠폰') => sub('쿠폰·포인트') + `<div class="wrap">
+  <div class="tiles" style="grid-template-columns:1fr 1fr"><div class="tile acc"><small>사용 가능 쿠폰</small><b>${S.coupons.filter(c=>c.own&&!c.used).length}<span> 장</span></b></div><div class="tile"><small>포인트</small><b>${S.points.toLocaleString()}<span> P</span></b></div></div>
+  <div class="seg">${['쿠폰','받을 수 있는 쿠폰','포인트'].map(x=>`<button data-go="benefit/${x}" class="${x===t?'on':''}">${x}</button>`).join('')}</div>
+  ${t==='포인트'?`<div class="card np"><div class="list">${S.pointLog.map(([a,b])=>`<div><span style="font-size:13px">${a}</span><span class="sp"></span><b style="color:${b[0]==='+'?'var(--brand)':'#c0392b'}">${b}P</b></div>`).join('')}</div></div><p class="muted">구매 금액의 1%가 적립되고, 1P = 1원으로 결제할 때 쓸 수 있어요.</p>`
+  : (S.coupons.filter(c=>t==='쿠폰'?c.own:!c.own).map(c=>`<div class="cp ${c.used?'used':''}"><div class="l">${c.amt}</div><div class="r"><div class="b" style="font-size:13.5px">${c.t}</div><div class="muted">${won(c.min)} 이상 · ${c.exp}</div>${c.own?(c.used?'<span class="pill gray" style="margin-top:6px;display:inline-block">사용완료</span>':`<button class="btn" style="margin-top:8px" data-go="cart">사용하러 가기</button>`):`<button class="btn acc" style="margin-top:8px" data-act="getcp" data-id="${c.id}">쿠폰 받기</button>`}</div></div>`).join('') || '<div class="empty">받을 수 있는 쿠폰을 모두 받았어요</div>')}
+</div>`;
+
+V.events = () => sub('이벤트') + `<div class="wrap">${EVENTS.map(e=>`<div class="ev" data-go="event/${e.id}"><div class="bn" style="background:${e.bg}"><b>${e.t}</b><small>${e.s}</small></div><div class="ds"><span class="muted">${e.d}</span><span class="b" style="color:var(--brand)">자세히 ›</span></div></div>`).join('')}</div>`;
+V.event = (id) => { const e = EVENTS.find(x=>x.id==id) || EVENTS[0]; const items = id==1?P.filter(p=>p.c==='perm'):id==3?P.filter(p=>p.c==='sciss'):P.filter(p=>p.vip);
+  return sub('이벤트') + `<div class="ev" style="border-radius:0;border:0"><div class="bn" style="background:${e.bg};height:170px"><b style="font-size:22px">${e.t}</b><small>${e.s} · ${e.d}</small></div></div>
+  <div class="wrap"><p style="font-size:13.5px;line-height:1.7">${e.body}</p>
+  ${id==2?'<button class="btn big brand" data-go="vip">VIP 인증 신청하기</button>':''}
+  <div class="pgrid">${items.map(p=>pcard(p)).join('')}</div></div>`; };
+
+V.vip = () => {
+  if (S.vip === 'approved') return sub('VIP 전용관') + `<div class="wrap"><div class="banner"><div><small>VIP 회원</small><div class="b">VIP 전용 상품과 특가를 만나보세요</div></div><span class="pill plum">VIP</span></div><div class="pgrid">${P.filter(p=>p.vip).map(p=>pcard(p,'VIP')).join('')}</div></div>`;
+  return sub('VIP 전용관') + `<div class="wrap">
+    <div class="card lock"><div class="em">👑</div><h3 style="margin-top:8px">VIP 인증 회원 전용이에요</h3><p class="muted" style="margin-top:6px;line-height:1.6">VIP는 구매 금액이 아니라 <b>인증</b>으로 정해져요.<br>인증이 완료되면 전용 상품·특가를 볼 수 있어요.</p></div>
+    ${S.vip==='pending'?`<div class="hl"><b>인증 심사 중이에요.</b> 영업일 기준 1~2일 안에 결과를 알림으로 알려드려요.</div><button class="btn big ghost" data-act="vipok">(목업) 승인된 화면 보기</button>`
+    :`<div class="card"><div class="ttl"><h3>VIP 인증 신청</h3></div>
+      <div style="display:grid;gap:10px">
+        <label class="f">매장명<input class="inp" value="[예시] 뷰티헤어"></label>
+        <label class="f">인증 구분<select class="inp"><option>대리점·위탁 계약 매장</option><option>본사 지정 VIP 매장</option><option>교육 수료 디자이너</option></select></label>
+        <label class="f">증빙 서류<div class="inp muted" style="margin-top:5px">계약서 또는 수료증 사진 올리기 ＋</div></label>
+      </div>
+      <button class="btn big brand" style="margin-top:14px" data-act="vipreq">인증 신청하기</button></div>
+      <p class="muted">※ 인증 기준은 회사 기준에 맞춰 바뀔 수 있어요 (예시 항목).</p>`}
+    <div class="sec">VIP 전용 상품 미리보기</div>
+    <div class="pgrid" style="filter:blur(3px);pointer-events:none">${P.filter(p=>p.vip).map(p=>pcard(p,'VIP')).join('')}</div>
+  </div>`;
+};
+
+V.salon = () => sub('미용실회원관') + `<div class="wrap">
+  ${S.salon==='approved'?`<div class="banner"><div><small>미용실회원 인증 완료</small><div class="b">[예시] 뷰티헤어 · 미용실회원가 적용 중</div></div><span class="pill">인증</span></div>
+  <div class="hl">이번 달 미용실회원가로 <b>4,800원</b> 아꼈어요.</div>`
+  :`<div class="card lock"><div class="em">💈</div><h3>미용실·이용원 사업자 인증</h3><p class="muted" style="margin-top:6px">인증하면 전 상품에 미용실회원가가 적용돼요</p><button class="btn big brand" style="margin-top:14px" data-act="salonreq">인증 신청하기</button></div>`}
+  <div class="seg">${CATS.slice(0,6).map((c,i)=>`<button class="${i===0?'on':''}" data-go="list/${c[0]}">${c[2]} ${c[1]}</button>`).join('')}</div>
+  <div class="sec">회원가 인기 상품</div>
+  <div class="pgrid">${P.filter(p=>!p.vip).slice(0,6).map(p=>pcard(p,`-${Math.round((1-p.sp/p.cp)*100)}%`)).join('')}</div>
+</div>`;
+
+V.tax = () => sub('세금계산서') + `<div class="wrap">
+  <div class="card"><div class="ttl"><h3>발행 정보</h3><button class="link" style="color:var(--brand)" data-act="taxinfo">수정</button></div>
+    <p style="font-size:13px;line-height:1.7">[예시] 뷰티헤어 · 123-45-67890<br>대표 김원장 · 담당 메일 tax@example.com</p></div>
+  <div class="hl">매월 말일 기준으로 한 달 구매분을 합쳐 <b>자동 발행</b>돼요. 11월분은 12/1에 발행 예정이에요.</div>
+  <div class="sec">발행 내역</div>
+  <div class="card np"><div class="list">
+    ${S.taxReq.map(r=>`<div><div><div class="b" style="font-size:13.5px">${r}</div><div class="muted">건별 발행 요청</div></div><span class="sp"></span><span class="pill acc">요청됨</span></div>`).join('')}
+    ${[['10월분','312,400원','11/01'],['9월분','287,900원','10/01'],['8월분','354,000원','09/01']].map(([m,a,d])=>`<div data-act="taxview" data-m="${m}"><div><div class="b" style="font-size:13.5px">${m} · ${a}</div><div class="muted">${d} 발행 · 국세청 전송 완료</div></div><span class="sp"></span><span class="pill">발행</span></div>`).join('')}
+  </div></div>
+  <button class="btn big ghost" data-act="taxreq">주문 건별로 발행 요청하기</button>
+</div>`;
+
+V.cs = (t='자주 묻는 질문') => sub('고객센터') + `<div class="wrap">
+  <div class="row"><button class="btn ghost big" style="flex:1" data-act="call">${ic('phone','style="width:16px;height:16px;vertical-align:-3px"')} 전화 상담</button><button class="btn acc big" style="flex:1" data-act="kakao">${ic('chat','style="width:16px;height:16px;vertical-align:-3px"')} 카카오톡 상담</button></div>
+  <p class="muted" style="text-align:center">평일 09:00~18:00 · 점심 12:00~13:00</p>
+  <div class="seg">${['자주 묻는 질문','문의','내 문의'].map(x=>`<button data-go="cs/${x}" class="${x===t?'on':''}">${x==='문의'?'1:1 문의하기':x}${x==='내 문의'?` ${S.qna.length}`:''}</button>`).join('')}</div>
+  ${t==='문의'?`<div class="card" style="display:grid;gap:10px">
+      <label class="f">문의 유형<select class="inp" id="qtype"><option>배송</option><option>반품·교환</option><option>상품</option><option>회원·인증</option><option>세금계산서</option><option>기타</option></select></label>
+      <label class="f">제목<input class="inp" id="qt" placeholder="제목을 입력하세요"></label>
+      <label class="f">내용<textarea class="inp" id="qb" rows="5" placeholder="주문번호와 함께 적어주시면 빨리 도와드려요"></textarea></label>
+      <button class="btn big brand" data-act="qsend">문의 남기기</button></div>`
+  : t==='내 문의'?`<div class="card np faq">${S.qna.map(q=>`<details><summary><b>Q</b><span class="sp">${q.t}</span><span class="pill ${q.st==='답변완료'?'':'acc'}">${q.st}</span></summary><p>${q.a||'답변을 준비 중이에요. 답변이 등록되면 알림으로 알려드려요.'}</p></details>`).join('')}</div>`
+  :`<div class="card np faq">${FAQ.map(([q,a])=>`<details><summary><b>Q</b>${q}</summary><p>${a}</p></details>`).join('')}</div>`}
+  <div class="card np"><div class="list"><div data-go="notices">${ic('mega')}<span>공지사항</span><span class="ar">›</span></div></div></div>
+</div>`;
+
+V.noti = () => { const h = sub('알림', `<button class="link" style="color:var(--acc);padding:0 8px" data-act="readall">모두 읽음</button>`) + `<div class="card np" style="margin:14px 16px"><div class="list">${S.noti.map((n,i)=>`<div data-act="notigo" data-i="${i}" style="${n.read?'opacity:.55':''}"><div class="ic" style="width:38px;height:38px;border-radius:12px">${ic(n.k,'style="width:19px;height:19px"')}</div><div style="flex:1;min-width:0"><div class="b" style="font-size:13.5px">${n.t}</div><div class="muted">${n.s}</div></div>${n.read?'':'<span style="width:8px;height:8px;border-radius:50%;background:var(--red);flex:none"></span>'}</div>`).join('')}</div></div>`; return h; };
+V.notices = () => sub('공지사항') + `<div class="card np" style="margin:14px 16px"><div class="list">${NOTICES.map((n,i)=>`<div data-go="notice/${i}"><div style="flex:1"><div style="font-size:13.5px">${n.t}</div><div class="muted">${n.d}</div></div><span class="ar">›</span></div>`).join('')}</div></div>`;
+V.notice = (i) => { const n = NOTICES[i] || NOTICES[0]; return sub('공지사항') + `<div class="wrap"><div class="card"><h3 style="font-size:16px;line-height:1.4">${n.t}</h3><p class="muted" style="margin-top:4px">${n.d}</p><p style="margin-top:14px;font-size:13.5px;line-height:1.7">${n.b}</p></div></div>`; };
+
+V.search = (q='') => { const r = q ? P.filter(p=>(p.n+p.b).includes(q)) : []; return sub('검색') + `<div class="wrap">
+  <input class="inp" id="sq" placeholder="상품명·브랜드 검색 (예: 펌, 로레알)" value="${q}" autofocus>
+  ${q?(r.length?`<div class="muted">검색 결과 ${r.length}개</div><div class="pgrid">${r.map(p=>pcard(p)).join('')}</div>`:'<div class="empty">검색 결과가 없어요</div>')
+  :`<div class="sec">많이 찾는 검색어</div><div class="seg" style="flex-wrap:wrap">${['펌제','염색','샴푸','바리깡','가위','드라이어','밀본','로레알'].map(k=>`<button data-act="kw" data-k="${k}">${k}</button>`).join('')}</div>`}
+</div>`; };
+
+V.category = (t='카테고리') => sub('카테고리', `<button class="bk" data-go="search">${ic('search')}</button>`) + `<div class="wrap">
+  <div class="seg"><button data-go="category/카테고리" class="${t==='카테고리'?'on':''}">카테고리</button><button data-go="category/브랜드" class="${t==='브랜드'?'on':''}">브랜드관</button></div>
+  ${t==='브랜드'?`<div class="card np"><div class="list">${BRANDS.map(b=>`<div data-go="brand/${encodeURIComponent(b)}"><div class="ic" style="width:38px;height:38px;border-radius:12px;font-weight:800;font-size:13px">${b[0]}</div><span>${b}</span><span class="muted">${P.filter(p=>p.b===b).length}개</span><span class="ar">›</span></div>`).join('')}</div></div>`
+  :`<div class="card"><div class="grid" style="grid-template-columns:repeat(4,1fr)">${CATS.map(([k,n,e])=>`<button class="it" data-go="list/${k}"><div class="ic" style="font-size:22px">${e}</div>${n}</button>`).join('')}</div></div>
+  <div class="card np"><div class="list"><div data-go="vip">${ic('star')}<span>VIP 전용관</span><span class="ar">›</span></div><div data-go="salon">${ic('shop')}<span>미용실회원관</span><span class="ar">›</span></div><div data-go="events">${ic('gift')}<span>이벤트·기획전</span><span class="ar">›</span></div></div></div>`}
+</div>${tabbar('category')}`;
+V.list = (k) => { const c = CATS.find(x=>x[0]===k) || CATS[0]; const r = P.filter(p=>p.c===c[0]); return sub(c[1]) + `<div class="wrap"><div class="seg">${CATS.map(x=>`<button data-go="list/${x[0]}" class="${x[0]===c[0]?'on':''}">${x[1]}</button>`).join('')}</div>${r.length?`<div class="pgrid">${r.map(p=>pcard(p,p.vip?'VIP':'')).join('')}</div>`:'<div class="empty">준비 중인 상품이에요</div>'}</div>`; };
+V.brand = (b) => { b = decodeURIComponent(b); const r = P.filter(p=>p.b===b); return sub(b) + `<div class="wrap">${r.length?`<div class="pgrid">${r.map(p=>pcard(p)).join('')}</div>`:'<div class="empty">준비 중인 상품이에요</div>'}</div>`; };
+
+V.product = (id) => { const p = PB(+id) || P[0]; const locked = p.vip && S.vip !== 'approved';
+  return sub('상품 상세', `<button class="bk" data-go="cart">${ic('cart')}</button>`) + `<div class="img" style="height:300px;border-radius:0;font-size:96px">${p.e}${p.vip?'<span class="tag">VIP 전용</span>':''}</div>
+  <div class="wrap">
+    <div><div class="muted">${p.b}</div><h2 style="font-size:18px;line-height:1.4;margin-top:4px">${p.n}</h2></div>
+    <div class="card">
+      <div class="tot"><span class="muted">소비자가</span><s class="muted">${won(p.cp)}</s></div>
+      <div class="tot"><span class="muted">일반 회원가</span><span>${won(p.p)}</span></div>
+      <div class="tot big"><span>미용실회원가</span><span style="color:var(--brand)">${S.salon==='approved'?won(p.sp):'인증 후 공개'}</span></div>
+    </div>
+    <div class="hl">오후 3시까지 결제하면 <b>오늘 출고</b> · 5만원 이상 무료배송 · 구매 시 ${Math.round(priceOf(p)*.01).toLocaleString()}P 적립</div>
+    <div class="card"><div class="ttl"><h3>상품 정보</h3></div><p class="muted" style="line-height:1.7">상세 이미지가 들어갈 자리예요. (실제 상품 상세페이지로 교체)</p></div>
+    <div class="card"><div class="ttl"><h3>리뷰 2</h3><span>★ 4.8</span></div><p style="font-size:12.5px;line-height:1.6">"매장에서 계속 쓰는 제품이에요. 배송 빨라요." <span class="muted">· 헤어** 원장님</span></p></div>
+  </div>
+  <div class="bottom"><button class="btn ghost" style="flex:0 0 52px" data-act="wish" data-id="${p.id}" aria-label="찜">${ic('heart', S.wish.has(p.id)?'style="fill:#e0476a;stroke:#e0476a"':'')}</button>
+  ${locked?`<button class="btn brand" data-go="vip">VIP 인증 후 구매 가능</button>`:`<button class="btn ghost" data-act="add" data-id="${p.id}">장바구니</button><button class="btn brand" data-act="buy" data-id="${p.id}">바로 구매</button>`}</div>`; };
+
+const cartCalc = () => {
+  const items = S.cart.map((c)=>({...c,p:PB(c.id)}));
+  const sum = items.reduce((s,c)=>s+priceOf(c.p)*c.q,0);
+  const cp = S.coupons.find((c)=>c.id===S.applied);
+  let dc = 0;
+  if (cp) { const base = cp.cat ? items.filter(c=>c.p.c===cp.cat).reduce((s,c)=>s+priceOf(c.p)*c.q,0) : sum; if (sum>=cp.min) dc = cp.rate ? Math.round(base*cp.rate) : cp.flat; }
+  const ship = sum-dc>=50000||!sum ? 0 : 3000;
+  return {items,sum,dc,ship,total:sum-dc+ship,cp};
+};
+V.cart = () => { const c = cartCalc();
+  if (!c.items.length) return sub('장바구니') + `<div class="empty" style="padding-top:80px">장바구니가 비어 있어요<br><br><button class="btn" data-go="reorder">자주 산 상품 담기</button></div>${tabbar('cart')}`;
+  return sub('장바구니') + `<div class="wrap" style="padding-bottom:90px">
+  <div class="card np"><div class="list">${c.items.map(x=>`<div><div class="pl" style="flex:1;min-width:0" data-go="product/${x.id}"><div class="img">${x.p.e}</div><div style="min-width:0"><div class="nm">${x.p.n}</div><div class="b">${won(priceOf(x.p)*x.q)}</div></div></div><div style="display:grid;gap:6px;justify-items:end"><button data-act="rm" data-id="${x.id}" class="muted" aria-label="삭제">${ic('x','style="width:16px;height:16px"')}</button><div class="qty"><button data-act="dec" data-id="${x.id}">−</button><span>${x.q}</span><button data-act="inc" data-id="${x.id}">＋</button></div></div></div>`).join('')}</div></div>
+  <div class="card"><div class="row" data-act="cpsel"><span class="b">쿠폰</span><span class="sp"></span><span class="muted">${c.cp?c.cp.t:'선택 안 함'} ›</span></div></div>
+  <div class="card"><div class="tot"><span>상품 금액${S.salon==='approved'?' (미용실회원가)':''}</span><span>${won(c.sum)}</span></div><div class="tot"><span>쿠폰 할인</span><span style="color:#c0392b">-${won(c.dc)}</span></div><div class="tot"><span>배송비</span><span>${c.ship?won(c.ship):'무료'}</span></div>${c.ship?`<p class="muted" style="margin-top:4px">${won(50000-(c.sum-c.dc))} 더 담으면 무료배송</p>`:''}<div class="tot big"><span>결제 예정 금액</span><span>${won(c.total)}</span></div></div>
+  </div><div class="bottom" style="bottom:0"><button class="btn brand big" data-go="checkout">${won(c.total)} 주문하기</button></div>`; };
+
+V.checkout = () => { const c = cartCalc(); const a = S.addr.find(x=>x.def) || S.addr[0];
+  return sub('주문·결제') + `<div class="wrap" style="padding-bottom:90px">
+  <div class="card"><div class="ttl"><h3>배송지</h3><button class="link" style="color:var(--brand)" data-go="address">변경</button></div><p style="font-size:13px;line-height:1.7"><b>${a.n}</b> · ${a.r} · ${a.p}<br>${a.a}</p><select class="inp" style="margin-top:10px"><option>배송 메시지 선택</option><option>매장 앞에 놓아주세요</option><option>오전에 받고 싶어요</option></select></div>
+  <div class="card"><div class="ttl"><h3>주문 상품 ${c.items.length}건</h3></div>${c.items.map(x=>`<div class="tot"><span style="max-width:70%">${x.p.n} × ${x.q}</span><span>${won(priceOf(x.p)*x.q)}</span></div>`).join('')}</div>
+  <div class="card"><div class="ttl"><h3>결제 수단</h3><span>토스페이먼츠</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${[['card','신용·체크카드'],['easy','간편결제'],['bank','계좌이체'],['vbank','가상계좌']].map(([k,l])=>`<button class="btn ${S.pay===k?'':'ghost'}" data-act="pay" data-k="${k}">${l}</button>`).join('')}</div></div>
+  <div class="card"><div class="tot"><span>상품 금액</span><span>${won(c.sum)}</span></div><div class="tot"><span>할인</span><span>-${won(c.dc)}</span></div><div class="tot"><span>배송비</span><span>${c.ship?won(c.ship):'무료'}</span></div><div class="tot big"><span>최종 결제</span><span>${won(c.total)}</span></div><p class="muted" style="margin-top:6px">세금계산서는 월말에 자동 발행돼요</p></div>
+  </div><div class="bottom"><button class="btn brand big" data-act="paynow">${won(c.total)} 결제하기</button></div>`; };
+V.done = () => { const o = S.lastOrder; return sub('주문 완료') + `<div class="wrap" style="text-align:center;padding-top:40px"><div style="font-size:54px">✅</div><h2 style="margin-top:8px">주문이 완료됐어요</h2><p class="muted" style="margin-top:6px">${o?o.no:''} · 오늘 오후 출고 예정</p><p class="muted" style="margin-top:2px">(목업이라 실제 결제는 되지 않아요)</p><button class="btn big brand" style="margin-top:20px" data-go="order/${o?o.no:''}">주문 상세 보기</button><button class="btn big ghost" data-go="home">홈으로</button></div>`; };
+
+V.my = () => `<div class="prof"><div class="row"><span class="pill ${S.salon==='approved'?'':'gray'}">${S.salon==='approved'?'미용실회원':'일반회원'}</span>${S.vip==='approved'?'<span class="pill plum">VIP</span>':''}<span class="sp"></span><button class="hb" data-go="settings" aria-label="설정">${ic('set')}</button></div><div class="nm">[예시] 뷰티헤어 김원장님</div><div class="mini"><div data-go="benefit">쿠폰<b>${S.coupons.filter(c=>c.own&&!c.used).length}장</b></div><div data-go="benefit/포인트">포인트<b>${S.points.toLocaleString()}P</b></div><div data-go="wish">찜<b>${S.wish.size}개</b></div></div></div>
+  <div class="wrap">
+    <div class="card np"><div class="list">${[['orders','truck','주문·배송 내역'],['reorder','re','재주문'],['wish','heart','찜한 상품'],['address','pin','배송지 관리']].map(mi).join('')}</div></div>
+    <div class="sec">혜택·인증</div>
+    <div class="card np"><div class="list">${[['benefit','cp','쿠폰·포인트'],['events','gift','이벤트'],['salon','shop','미용실회원 인증'],['vip','star','VIP 인증']].map(mi).join('')}</div></div>
+    <div class="sec">사업자 서류</div>
+    <div class="card np"><div class="list">${[['tax','doc','세금계산서'],['contracts','sign','계약서']].map(mi).join('')}</div></div>
+    <div class="sec">고객지원</div>
+    <div class="card np"><div class="list">${[['cs','cs','고객센터'],['notices','mega','공지사항'],['settings','set','회원정보·알림 설정']].map(mi).join('')}<div data-act="logout"><span class="mi">${'<div class="ic">'+ic('out')+'</div>'}<span>로그아웃</span></span></div></div></div>
+  </div>${tabbar('my')}`;
+const mi = ([r,k,l]) => `<div data-go="${r}"><span class="mi"><div class="ic">${ic(k)}</div><span>${l}</span></span><span class="ar">›</span></div>`;
+V.wish = () => { const r = P.filter(p=>S.wish.has(p.id)); return sub('찜한 상품') + `<div class="wrap">${r.length?`<div class="pgrid">${r.map(p=>pcard(p)).join('')}</div>`:'<div class="empty">찜한 상품이 없어요</div>'}</div>`; };
+V.address = () => sub('배송지 관리') + `<div class="wrap">${S.addr.map((a,i)=>`<div class="card"><div class="row"><b>${a.n}</b>${a.def?'<span class="pill acc">기본</span>':''}<span class="sp"></span>${a.def?'':`<button class="link" style="color:var(--brand)" data-act="defaddr" data-i="${i}">기본으로</button>`}</div><p style="font-size:13px;line-height:1.7;margin-top:6px">${a.r} · ${a.p}<br>${a.a}</p></div>`).join('')}<button class="btn big ghost" data-act="addaddr">＋ 새 배송지 추가</button></div>`;
+V.contracts = () => sub('계약서') + `<div class="wrap"><div class="card np"><div class="list">${[['공급 계약서','2026.03.02 ~ 2027.03.01','진행중'],['개인정보 처리 위탁 동의','2026.03.02','서명완료']].map(([t,d,s])=>`<div data-act="pdf"><div><div class="b" style="font-size:13.5px">${t}</div><div class="muted">${d}</div></div><span class="sp"></span><span class="pill">${s}</span></div>`).join('')}</div></div><p class="muted">계약서 원본은 PDF로 내려받을 수 있어요.</p></div>`;
+V.settings = () => sub('회원정보·알림 설정') + `<div class="wrap">
+  <div class="card" style="display:grid;gap:10px"><label class="f">이름<input class="inp" value="[예시] 김원장"></label><label class="f">휴대폰<input class="inp" value="010-1234-5678"></label><label class="f">매장명<input class="inp" value="[예시] 뷰티헤어"></label><button class="btn big brand" data-act="saved">저장</button></div>
+  <div class="sec">알림·수신 동의</div>
+  <div class="card np"><div class="list">${[['주문·배송 알림 (필수)',true,true],['재주문 알림',true],['쿠폰·이벤트 소식 (카카오톡)',true],['쿠폰·이벤트 소식 (문자)',false],['이메일 소식',false]].map(([l,on,fix])=>`<label><span style="flex:1;font-size:13.5px">${l}</span><input type="checkbox" class="chk" ${on?'checked':''} ${fix?'disabled':''} data-act="consent"></label>`).join('')}</div></div>
+  <button class="muted" style="text-decoration:underline" data-act="leave">회원 탈퇴</button>
+</div>`;
+
+// ---------- 라우터 ----------
+const stack = [];
+function go(route, push = true) {
+  if (push && location.hash.slice(1) !== route) { location.hash = route; return; }
+  const [name, ...args] = route.split('/');
+  const fn = V[name] || V.home;
+  document.getElementById('app').innerHTML = fn(...args.map(decodeURIComponent));
+  window.scrollTo(0, 0);
+  if (name === 'search') { const q = document.getElementById('sq'); q.addEventListener('keydown', (e) => { if (e.key === 'Enter') go('search/' + q.value.trim()); }); }
+  tick();
+}
+window.addEventListener('hashchange', () => go(location.hash.slice(1) || 'home', false));
+function tick() {
+  const el = document.getElementById('cdn'); if (!el) return;
+  const n = new Date(), end = new Date(n); end.setHours(15, 0, 0, 0);
+  let s = Math.floor((end - n) / 1000);
+  el.textContent = s > 0 ? `${Math.floor(s / 3600)}시간 ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}분 남음` : '지금 주문 시 내일 출고';
+}
+setInterval(tick, 30000);
+
+const A = {
+  back: () => (history.length > 1 ? history.back() : go('home')),
+  close: () => sheet(''),
+  noop: () => {},
+  cutoff: () => toast('평일 오후 3시까지 결제한 주문은 당일 출고돼요'),
+  addone: (d) => { addCart(+d.id); toast('장바구니에 담았어요'); go(location.hash.slice(1) || 'home', false); },
+  lastorder: () => { ORDERS[1].items.forEach(([id, q]) => addCart(id, q)); toast(`지난 주문 ${ORDERS[1].items.length}개 상품을 담았어요`); go('cart'); },
+  reorder: (d) => { const o = ORDERS.find(x => x.no === d.no) || S.lastOrder; o.items.forEach(([id, q]) => addCart(id, q)); toast('주문 상품을 다시 담았어요'); go('cart'); },
+  track: (d) => sheet(`<h3>배송조회 · 로젠택배</h3><p class="muted">송장 ${d.inv}</p><div class="card np" style="margin-top:12px"><div class="list">${[['11/13 18:20','배송 출발 (마포 영업소)'],['11/13 09:10','간선 하차 (중앙 터미널)'],['11/12 20:45','집하 (본사 물류센터)']].map(([t,s])=>`<div><span class="muted" style="width:80px">${t}</span><span style="font-size:13px">${s}</span></div>`).join('')}</div></div><button class="btn big ghost" style="margin-top:12px" data-act="close">닫기</button>`),
+  cancel: () => sheet(`<h3>주문을 취소할까요?</h3><p class="muted">출고 전 주문이라 바로 취소되고, 결제는 영업일 1~3일 안에 환불돼요.</p><div class="row" style="margin-top:16px"><button class="btn big ghost" style="flex:1" data-act="close">아니요</button><button class="btn big brand" style="flex:1" data-act="cancelok">취소하기</button></div>`),
+  cancelok: () => { const o = ORDERS.find(x => x.st === '결제완료'); if (o) { o.st = '취소완료'; o.step = 0; } sheet(''); toast('주문이 취소됐어요'); go('orders', false); },
+  review: () => { S.points += 500; S.pointLog.unshift(['오늘 리뷰 작성', '+500']); toast('리뷰가 등록됐어요 · 500P 적립'); },
+  reall: (d, el) => document.querySelectorAll('.rechk').forEach(c => c.checked = el.checked),
+  realert: (d, el) => { S.reAlert = el.checked; toast(el.checked ? '재주문 알림을 켰어요' : '재주문 알림을 껐어요'); },
+  readd: () => { const ids = [...document.querySelectorAll('.rechk:checked')].map(c => +c.value); if (!ids.length) return toast('담을 상품을 골라주세요'); ids.forEach(id => addCart(id)); toast(`${ids.length}개 상품을 담았어요`); go('cart'); },
+  getcp: (d) => { const c = S.coupons.find(x => x.id === d.id); c.own = true; S.noti.find(n => n.k === 'cp').read = true; toast('쿠폰을 받았어요'); go('benefit/쿠폰', false); },
+  vipreq: () => { S.vip = 'pending'; toast('VIP 인증 신청이 접수됐어요'); go('vip', false); },
+  vipok: () => { S.vip = 'approved'; toast('(목업) VIP 승인 상태로 바꿨어요'); go('vip', false); },
+  salonreq: () => { S.salon = 'approved'; toast('(목업) 인증 승인 상태로 바꿨어요'); go('salon', false); },
+  taxinfo: () => sheet(`<h3>세금계산서 발행 정보</h3><div style="display:grid;gap:10px"><label class="f">상호<input class="inp" value="[예시] 뷰티헤어"></label><label class="f">사업자등록번호<input class="inp" value="123-45-67890"></label><label class="f">받을 이메일<input class="inp" value="tax@example.com"></label></div><button class="btn big brand" style="margin-top:14px" data-act="taxsave">저장</button>`),
+  taxsave: () => { sheet(''); toast('발행 정보를 저장했어요'); },
+  taxview: (d) => sheet(`<h3>${d.m} 세금계산서</h3><p class="muted">국세청 전송 완료 · 승인번호 2026xxxx-xxxx</p><div class="card" style="margin-top:12px"><div class="tot"><span>공급가액</span><span>284,000원</span></div><div class="tot"><span>세액</span><span>28,400원</span></div><div class="tot big"><span>합계</span><span>312,400원</span></div></div><button class="btn big brand" style="margin-top:12px" data-act="pdf">PDF 내려받기</button>`),
+  taxreq: () => sheet(`<h3>건별 발행 요청</h3><p class="muted" style="margin-bottom:10px">발행할 주문을 고르세요</p><div class="card np"><div class="list">${ORDERS.filter(o=>o.st!=='취소완료').map(o=>`<label><input type="checkbox" class="chk taxchk" value="${o.no}"><span style="font-size:13px">${o.d} · ${o.no}</span></label>`).join('')}</div></div><button class="btn big brand" style="margin-top:12px" data-act="taxreqok">발행 요청</button>`),
+  taxreqok: () => { const v = [...document.querySelectorAll('.taxchk:checked')].map(c => c.value); if (!v.length) return toast('주문을 골라주세요'); S.taxReq.unshift(...v); sheet(''); toast('발행 요청을 보냈어요'); go('tax', false); },
+  call: () => toast('(목업) 고객센터 전화 연결'),
+  kakao: () => toast('(목업) 카카오톡 채널 상담으로 이동'),
+  qsend: () => { const t = document.getElementById('qt').value.trim(); if (!t) return toast('제목을 입력해 주세요'); S.qna.unshift({ t: `[${document.getElementById('qtype').value}] ${t}`, d: '오늘', st: '답변대기' }); toast('문의가 접수됐어요'); go('cs/내 문의'); },
+  readall: () => { S.noti.forEach(n => n.read = true); go('noti', false); },
+  notigo: (d) => { const n = S.noti[+d.i]; n.read = true; go(n.go); },
+  kw: (d) => go('search/' + d.k),
+  wish: (d) => { const id = +d.id; S.wish.has(id) ? S.wish.delete(id) : S.wish.add(id); toast(S.wish.has(id) ? '찜했어요' : '찜을 해제했어요'); go(location.hash.slice(1), false); },
+  add: (d) => { addCart(+d.id); toast('장바구니에 담았어요'); },
+  buy: (d) => { addCart(+d.id); go('cart'); },
+  inc: (d) => { S.cart.find(c => c.id === +d.id).q++; go('cart', false); },
+  dec: (d) => { const c = S.cart.find(c => c.id === +d.id); if (c.q > 1) c.q--; go('cart', false); },
+  rm: (d) => { S.cart = S.cart.filter(c => c.id !== +d.id); go('cart', false); },
+  cpsel: () => sheet(`<h3>쿠폰 선택</h3><div style="display:grid;gap:8px"><button class="btn ghost big" data-act="cpuse" data-id="">선택 안 함</button>${S.coupons.filter(c=>c.own&&!c.used).map(c=>`<button class="btn ${S.applied===c.id?'':'ghost'} big" data-act="cpuse" data-id="${c.id}">${c.t}</button>`).join('')}</div>`),
+  cpuse: (d) => { const c = S.coupons.find(x => x.id === d.id); if (c && cartCalc().sum < c.min) { toast(`${won(c.min)} 이상 담아야 쓸 수 있어요`); return; } S.applied = d.id || null; sheet(''); go('cart', false); },
+  pay: (d) => { S.pay = d.k; go('checkout', false); },
+  paynow: () => { const c = cartCalc(); if (!c.items.length) return toast('장바구니가 비어 있어요'); const no = 'BW261113-' + Math.random().toString(36).slice(2, 6).toUpperCase(); S.lastOrder = { no, d: '11/13', st: '결제완료', step: 0, inv: '', items: S.cart.map(x => [x.id, x.q]) }; ORDERS.unshift(S.lastOrder); if (c.cp) c.cp.used = true; S.points += Math.round(c.total * .01); S.cart = []; S.applied = null; go('done'); },
+  defaddr: (d) => { S.addr.forEach((a, i) => a.def = i === +d.i); toast('기본 배송지를 바꿨어요'); go('address', false); },
+  addaddr: () => sheet(`<h3>새 배송지</h3><div style="display:grid;gap:10px"><label class="f">배송지 이름<input class="inp" id="an" placeholder="예: 2호점"></label><label class="f">주소<input class="inp" id="aa" placeholder="주소 검색"></label></div><button class="btn big brand" style="margin-top:14px" data-act="addaddrok">추가</button>`),
+  addaddrok: () => { const n = document.getElementById('an').value.trim() || '새 배송지'; S.addr.push({ n, r: '[예시] 김원장', p: '010-1234-5678', a: document.getElementById('aa').value.trim() || '주소 미입력', def: false }); sheet(''); go('address', false); },
+  pdf: () => toast('(목업) PDF 내려받기'),
+  saved: () => toast('저장했어요'),
+  consent: (d, el) => toast(el.checked ? '수신에 동의했어요' : '수신 동의를 철회했어요'),
+  leave: () => toast('(목업) 회원 탈퇴는 고객센터 확인 후 처리돼요'),
+  logout: () => toast('(목업) 로그아웃'),
+};
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-act]');
+  if (a && A[a.dataset.act]) { if (a.tagName !== 'INPUT') e.preventDefault(); A[a.dataset.act](a.dataset, a); return; }
+  const g = e.target.closest('[data-go]');
+  if (g) { e.preventDefault(); go(g.dataset.go); }
+});
+go(location.hash.slice(1) || 'home', false);
+</script>
+
+</html>
