@@ -32,7 +32,7 @@ export default function ReorderList({ items }: { items: ReorderItem[] }) {
           </label>
         ))}
       </div>
-      <div className="fixed md:static bottom-[60px] inset-x-0 z-30 bg-white/95 md:bg-transparent border-t md:border-0 border-neutral-200 px-4 py-3 md:px-0 safe-bottom">
+      <div className="fixed @3xl:static bottom-[60px] inset-x-0 mx-auto max-w-[480px] z-30 bg-white/95 @3xl:bg-transparent border-t @3xl:border-0 border-neutral-200 px-4 py-3 @3xl:px-0 safe-bottom">
         <button type="button" disabled={!sel.length} className="w-full rounded-2xl bg-brand-600 text-white font-extrabold py-4 disabled:opacity-40"
           onClick={() => { items.filter((i) => sel.includes(i.id)).forEach((i) => addToCart(i.id, i.lastQty)); router.push("/cart"); }}>
           선택한 {sel.length}개 상품 장바구니 담기
