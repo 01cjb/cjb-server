@@ -1,8 +1,8 @@
 // 뷰티웰 PWA 서비스워커 — 정적 자산 캐시 + 오프라인 페이지
-const CACHE = "bw-v1";
+const CACHE = "bw-v2";
 const OFFLINE = "/offline";
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE, "/icons/icon-192.png"])));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE, "/app-icon/192"])));
   self.skipWaiting();
 });
 self.addEventListener("activate", (e) => {
@@ -16,7 +16,7 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(fetch(req).catch(() => caches.match(OFFLINE)));
     return;
   }
-  if (/\/_next\/static\/|\/icons\//.test(req.url)) {
+  if (/\/_next\/static\/|\/icons\/|\/app-icon\//.test(req.url)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => {
       const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); return res;
     })));

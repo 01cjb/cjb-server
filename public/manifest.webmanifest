@@ -2,14 +2,23 @@
   "id": "/",
   "name": "뷰티웰 - 이·미용인을 위한 복지몰",
   "short_name": "뷰티웰",
-  "start_url": "/",
+  "description": "원장님 전용 이·미용 도매 쇼핑몰",
+  "start_url": "/?source=app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#6a2f96",
+  "orientation": "portrait",
+  "background_color": "#f1edf7",
+  "theme_color": "#3b1d5a",
   "lang": "ko",
+  "categories": ["shopping", "business"],
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/app-icon/192", "sizes": "192x192", "type": "image/png" },
+    { "src": "/app-icon/512", "sizes": "512x512", "type": "image/png" },
+    { "src": "/app-icon/maskable", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "재주문", "url": "/reorder", "icons": [{ "src": "/app-icon/192", "sizes": "192x192" }] },
+    { "name": "주문·배송", "url": "/mypage/orders", "icons": [{ "src": "/app-icon/192", "sizes": "192x192" }] },
+    { "name": "장바구니", "url": "/cart", "icons": [{ "src": "/app-icon/192", "sizes": "192x192" }] }
   ]
 }
