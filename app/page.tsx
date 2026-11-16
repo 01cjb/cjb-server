@@ -4,6 +4,7 @@ import Section from "@/components/Section";
 import ProductGrid from "@/components/ProductGrid";
 import ProductCard from "@/components/ProductCard";
 import AddToCartButton from "@/components/home/AddToCartButton";
+import ShopInstall from "@/components/ShopInstall";
 import { IconDoc, IconGift, IconHeadset, IconRepeat, IconShop, IconStar, IconTicket, IconTruck } from "@/components/Icons";
 import { getBanners, getBrands, getCategories, getProducts, getProductsByIds } from "@/lib/data";
 import { getMe, myOrder, myOrders } from "@/lib/me";
@@ -112,6 +113,7 @@ export default async function Home() {
 
       <div className="max-w-6xl mx-auto px-4 pt-4 grid grid-cols-[minmax(0,1fr)] gap-3 @3xl:grid-cols-2 @3xl:gap-4">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 content-start min-w-0">
+          <ShopInstall />
           {lastFirst && (
             <div className="flex items-center gap-3 rounded-[20px] bg-gradient-to-br from-gold-100 to-gold-50 p-4">
               <div className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white text-2xl">🧴</div>

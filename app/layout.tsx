@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest", // 업무 시스템(/work)은 자체 manifest로 덮어씀
 };
 
-export const viewport: Viewport = { themeColor: "#6a2f96", width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: "#3b1d5a", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [categories, me] = await Promise.all([getCategories(), getMe()]);
