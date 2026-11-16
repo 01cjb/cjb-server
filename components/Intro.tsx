@@ -6,7 +6,7 @@ export default function Intro() {
         <span className="bw-intro__mark" />
         <span className="bw-intro__word" />
       </div>
-      <span className="bw-intro__bar" />
+      <span className="bw-intro__bar"><i /></span>
     </div>
   );
 }
