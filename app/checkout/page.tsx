@@ -36,7 +36,7 @@ export default function Checkout() {
   );
 
   return (
-    <form onSubmit={submit} className="max-w-4xl mx-auto px-4 py-6 grid gap-6 md:grid-cols-[1fr_280px]">
+    <form onSubmit={submit} className="max-w-4xl mx-auto px-4 py-6 grid gap-6 @3xl:grid-cols-[1fr_280px]">
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">주문/결제</h1>
         {field("name", "받는 분", "홍길동")}
