@@ -90,7 +90,7 @@ export default function StoreLoginForm({ already, name, testOn, tel }: { already
     <div className="px-5 pt-12 pb-10">
       <div className="text-center">
         {mark}
-        <h1 className="mt-4 text-xl font-extrabold text-plum">원장님 로그인</h1>
+        <h1 className="mt-4 text-xl font-extrabold text-plum">로그인</h1>
         <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">담당자에게 받은 매장 코드와 가입한 연락처,<br />PIN을 입력해 로그인해 주세요.</p>
       </div>
 
