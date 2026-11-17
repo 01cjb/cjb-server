@@ -65,7 +65,7 @@ const TRIGGER: Record<string, string> = {
 const MIGRATION: Record<string, string> = {
   init: "기본 점검용 표", shop: "쇼핑몰 기본(회원·등급·상품·주문·리뷰)", admin: "관리자(상품 이력·대량등록·배송·약관·계약·세금계산서)",
   grants: "DB 접근 권한 정리", staff: "관리자 계정·권한 변경 이력", social: "네이버·카카오 간편 로그인", work: "CJB 업무시스템(직원 계정·메뉴 권한·접속 기록)",
-  channels: "판매 채널 연동(주문 수집)", work_prefs: "업무시스템 개인 설정", logen: "로젠택배 송장", store_login: "매장코드 + PIN 로그인",
+  channels: "판매 채널 연동(주문 수집)", work_prefs: "업무시스템 개인 설정", logen: "로젠택배 송장", store_login: "매장코드 + PIN 로그인", carrier_active: "사용 택배사 표시(로젠택배만 사용)",
 };
 
 async function gradesFromDb(): Promise<{ id: string; name: string; discount_rate: number; description: string | null }[] | null> {
@@ -155,7 +155,9 @@ export async function buildRulesMd(): Promise<string> {
 
   add(`## 7. 배송`);
   add(`- 배송 상태: ${flow("shipments.status")}`, `- 송장을 등록하면 고객 화면에 택배사·송장번호와 배송조회 링크가 보입니다.`);
-  add(`**등록된 택배사 (${carriers.length}곳)**`, "", table(["코드", "택배사"], carriers.map((c) => [c.code, c.name])));
+  const using = carriers.filter((c) => c.active !== false);
+  add(`- **배송은 ${using.map((c) => c.name).join(", ") || "-"}로만 보냅니다.** 송장 등록 화면에서도 이 택배사만 고를 수 있습니다.`);
+  add(`**택배사**`, "", table(["코드", "택배사", "사용"], carriers.map((c) => [c.code, c.name, c.active !== false ? "사용 중" : "사용 안 함 (예전 송장 조회용)"])));
 
   add(`## 8. 세금계산서`);
   add(`- 주문할 때 세금계산서를 요청했고 사업자등록번호가 있는 회원이면, **결제완료가 되는 순간 자동으로 「발행대기」 세금계산서가 만들어집니다.**`,

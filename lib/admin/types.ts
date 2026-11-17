@@ -18,7 +18,7 @@ export type Order = {
   receiver_name: string; receiver_phone: string; address: string; memo?: string | null; invoice_requested: boolean;
   created_at: string; paid_at?: string | null; items?: OrderItem[]; customer_name?: string;
 };
-export type Carrier = { code: string; name: string; tracking_url: string };
+export type Carrier = { code: string; name: string; tracking_url: string; active?: boolean }; // active=false: 지금은 안 쓰는 택배사(예전 송장 조회용)
 export type ShipEvent = { id: number; shipment_id: number; status: string; location?: string | null; description?: string | null; occurred_at: string };
 export type Shipment = {
   id: number; order_id: number; carrier_code: string | null; tracking_no: string | null; status: ShipStatus;

@@ -283,6 +283,12 @@
       "tables": [
         "store_login_attempts"
       ]
+    },
+    {
+      "file": "20261118000000_carrier_active.sql",
+      "date": "2026-11-18",
+      "name": "carrier_active",
+      "tables": []
     }
   ]
 }

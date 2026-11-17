@@ -5,6 +5,7 @@ import Price from "@/components/Price";
 import BuyBox from "@/components/BuyBox";
 import Section from "@/components/Section";
 import ProductGrid from "@/components/ProductGrid";
+import { SHIPPING_FEE_TEXT, SHIPPING_TEXT } from "@/lib/pricing";
 import { getBrands, getCategories, getProduct, getProducts } from "@/lib/data";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,7 +31,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <div className="mt-5 pb-5 border-b border-neutral-200"><Price p={p} large /></div>
           <dl className="grid grid-cols-[90px_1fr] gap-y-2 text-sm py-5 border-b border-neutral-200">
             {p.model_no && (<><dt className="text-neutral-500">모델명</dt><dd>{p.model_no}</dd></>)}
-            <dt className="text-neutral-500">배송비</dt><dd>3,000원 (50,000원 이상 무료배송)</dd>
+            <dt className="text-neutral-500">배송비</dt><dd>{SHIPPING_FEE_TEXT} ({SHIPPING_TEXT})</dd>
             <dt className="text-neutral-500">적립금</dt><dd>구매금액의 1%</dd>
             {p.vip_only && (<><dt className="text-neutral-500">구매조건</dt><dd className="text-accent font-medium">VIP(미용사 인증) 전용 상품</dd></>)}
           </dl>

@@ -3,7 +3,8 @@ import { useState } from "react";
 import type { Carrier } from "@/lib/admin/types";
 import { Msg, useApi } from "./Act";
 
-export function ShipForm({ orderId, carriers }: { orderId: number; carriers: Carrier[] }) {
+export function ShipForm({ orderId, carriers: all }: { orderId: number; carriers: Carrier[] }) {
+  const carriers = all.filter((x) => x.active !== false); // 지금 쓰는 택배사만 선택
   const { call, msg, busy } = useApi();
   const [c, setC] = useState(carriers[0]?.code ?? ""); const [no, setNo] = useState("");
   return (

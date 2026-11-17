@@ -3,6 +3,7 @@ import Link from "next/link";
 import ProductThumb from "@/components/ProductThumb";
 import { useStore } from "@/components/Store";
 import { useQuote, won } from "@/components/useQuote";
+import { SHIPPING_TEXT } from "@/lib/pricing";
 
 export default function CartPage() {
   const { cart, setQty, removeFromCart } = useStore();
@@ -41,7 +42,7 @@ export default function CartPage() {
             {q?.hidden && <p className="rounded-lg bg-white p-3 text-[13px] text-neutral-600">가격은 <b>회원에게만 공개</b>돼요. 로그인하면 금액이 보여요.</p>}
             <div className="flex justify-between"><span>상품금액</span><span>{q && !q.hidden ? won(q.subtotal) : "-"}</span></div>
             <div className="flex justify-between"><span>배송비</span><span>{q && !q.hidden ? won(q.shipping) : "-"}</span></div>
-            <p className="text-xs text-neutral-400">50,000원 이상 무료배송</p>
+            <p className="text-xs text-neutral-400">{SHIPPING_TEXT}</p>
             <div className="flex justify-between text-lg font-bold pt-3 border-t border-neutral-200"><span>결제예정금액</span><span className="text-brand-700">{q && !q.hidden ? won(q.total) : "-"}</span></div>
             <Link href={q?.hidden ? "/login" : "/checkout"} className="block text-center rounded-xl bg-brand-600 text-white font-semibold py-3 mt-3">{q?.hidden ? "로그인하고 주문하기" : "주문하기"}</Link>
           </aside>

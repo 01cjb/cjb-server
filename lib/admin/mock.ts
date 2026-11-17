@@ -26,22 +26,22 @@ export const orders: Order[] = [
 ];
 
 export const carriers: Carrier[] = [
-  { code: "cj", name: "CJ대한통운", tracking_url: "https://trace.cjlogistics.com/next/tracking.html?wblNo={no}" },
-  { code: "hanjin", name: "한진택배", tracking_url: "https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2={no}" },
-  { code: "lotte", name: "롯데택배", tracking_url: "https://www.lotteglogis.com/home/reservation/tracking/linkView?InvNo={no}" },
-  { code: "epost", name: "우체국택배", tracking_url: "https://service.epost.go.kr/trace.RetrieveDomRigiTraceList.comm?sid1={no}" },
-  { code: "logen", name: "로젠택배", tracking_url: "https://www.ilogen.com/web/personal/trace/{no}" },
+  { code: "cj", active: false, name: "CJ대한통운", tracking_url: "https://trace.cjlogistics.com/next/tracking.html?wblNo={no}" },
+  { code: "hanjin", active: false, name: "한진택배", tracking_url: "https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2={no}" },
+  { code: "lotte", active: false, name: "롯데택배", tracking_url: "https://www.lotteglogis.com/home/reservation/tracking/linkView?InvNo={no}" },
+  { code: "epost", active: false, name: "우체국택배", tracking_url: "https://service.epost.go.kr/trace.RetrieveDomRigiTraceList.comm?sid1={no}" },
+  { code: "logen", active: true, name: "로젠택배", tracking_url: "https://www.ilogen.com/web/personal/trace/{no}" },
 ];
 
 export const shipments: Shipment[] = [
-  { id: 1, order_id: 1, carrier_code: "cj", tracking_no: "000000000001", status: "delivered", shipped_at: d(1, 15), delivered_at: d(2, 13), created_at: d(1, 12),
+  { id: 1, order_id: 1, carrier_code: "logen", tracking_no: "000000000001", status: "delivered", shipped_at: d(1, 15), delivered_at: d(2, 13), created_at: d(1, 12),
     events: [
       { id: 1, shipment_id: 1, status: "picked_up", location: "관악 집배점", description: "집화처리", occurred_at: d(1, 15) },
       { id: 2, shipment_id: 1, status: "in_transit", location: "곤지암 Hub", description: "간선상차", occurred_at: d(1, 22) },
       { id: 3, shipment_id: 1, status: "out_for_delivery", location: "관악 서브", description: "배송출발", occurred_at: d(2, 8) },
       { id: 4, shipment_id: 1, status: "delivered", location: "관악구", description: "배송완료", occurred_at: d(2, 13) },
     ] },
-  { id: 2, order_id: 2, carrier_code: "hanjin", tracking_no: "000000000002", status: "in_transit", shipped_at: d(4, 9), created_at: d(3, 16),
+  { id: 2, order_id: 2, carrier_code: "logen", tracking_no: "000000000002", status: "in_transit", shipped_at: d(4, 9), created_at: d(3, 16),
     events: [
       { id: 5, shipment_id: 2, status: "picked_up", location: "관악 영업소", description: "집화", occurred_at: d(4, 9) },
       { id: 6, shipment_id: 2, status: "in_transit", location: "대전 HUB", description: "이동중", occurred_at: d(4, 20) },

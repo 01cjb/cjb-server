@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { SHIPPING_FEE_TEXT, SHIPPING_TEXT } from "@/lib/pricing";
 import { company } from "@/lib/company";
 import { KAKAO_CHANNEL_URL } from "@/components/VipNotice";
 
 export const metadata = { title: "고객센터" };
 
 const FAQ = [
-  ["배송비는 얼마인가요?", "3,000원이며, 50,000원 이상 구매하면 무료배송이에요."],
+  ["배송비는 얼마인가요?", `${SHIPPING_FEE_TEXT}이며, ${SHIPPING_TEXT.replace(" 무료배송", "")} 구매하면 무료배송이에요.`],
   ["VIP가는 어떻게 받나요?", "카카오톡에서 ‘씨제이비인터내셔널’ 채널을 추가하고 미용사 면허증(자격증) 사진을 보내주시면, 확인 후 VIP가가 적용돼요. 자세한 방법은 채널 추가 후 확인해 주세요."],
   ["세금계산서는 어디서 보나요?", "마이페이지 › 세금계산서에서 발행 내역을 볼 수 있어요. 사업자정보를 먼저 입력해 주세요."],
   ["주문 상태와 송장번호는 어디서 보나요?", "마이페이지 › 구매내역에서 주문을 누르면 배송 단계와 송장번호를 볼 수 있어요."],
