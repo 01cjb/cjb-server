@@ -1,7 +1,7 @@
 import Link from "next/link";
 import VipNotice from "@/components/VipNotice";
 
-export const metadata = { title: "VIP 인증 방법 | 뷰티웰" };
+export const metadata = { title: "VIP 인증 방법" };
 
 export default function SalonMember() {
   return (
