@@ -1,0 +1,288 @@
+{
+  "tables": [
+    "admin_audit",
+    "banners",
+    "brands",
+    "carriers",
+    "cart_items",
+    "categories",
+    "channel_connections",
+    "channel_orders",
+    "consent_documents",
+    "contracts",
+    "customer_addresses",
+    "grade_history",
+    "health_check",
+    "logen_waybills",
+    "member_grades",
+    "notices",
+    "order_items",
+    "order_status_logs",
+    "orders",
+    "product_import_batches",
+    "product_import_rows",
+    "product_logs",
+    "products",
+    "profiles",
+    "reviews",
+    "salon_verifications",
+    "shipment_events",
+    "shipments",
+    "social_accounts",
+    "store_login_attempts",
+    "tax_invoices",
+    "user_consents",
+    "wishlists",
+    "work_audit",
+    "work_login_logs",
+    "work_sessions",
+    "work_user_menus",
+    "work_user_prefs",
+    "work_users"
+  ],
+  "checks": {
+    "salon_verifications.status": [
+      "pending",
+      "approved",
+      "rejected"
+    ],
+    "products.status": [
+      "draft",
+      "active",
+      "soldout",
+      "hidden",
+      "cancelled"
+    ],
+    "orders.status": [
+      "pending",
+      "paid",
+      "preparing",
+      "shipped",
+      "delivered",
+      "cancelled"
+    ],
+    "profiles.role": [
+      "customer",
+      "staff",
+      "admin"
+    ],
+    "product_import_batches.status": [
+      "validated",
+      "imported",
+      "partially_imported",
+      "failed",
+      "reverted"
+    ],
+    "profiles.status": [
+      "active",
+      "dormant",
+      "blocked",
+      "withdrawn"
+    ],
+    "shipments.status": [
+      "ready",
+      "picked_up",
+      "in_transit",
+      "out_for_delivery",
+      "delivered",
+      "returned",
+      "failed"
+    ],
+    "contracts.contract_type": [
+      "supply",
+      "agency",
+      "vip",
+      "consignment",
+      "etc"
+    ],
+    "contracts.status": [
+      "draft",
+      "active",
+      "expired",
+      "terminated"
+    ],
+    "tax_invoices.status": [
+      "pending",
+      "issued",
+      "sent",
+      "failed",
+      "cancelled"
+    ],
+    "social_accounts.provider": [
+      "naver",
+      "kakao"
+    ],
+    "work_users.team": [
+      "mgmt",
+      "sales",
+      "design",
+      "logistics",
+      "dev"
+    ],
+    "work_users.status": [
+      "active",
+      "disabled"
+    ]
+  },
+  "triggers": [
+    {
+      "name": "on_auth_user_created",
+      "when": "after insert",
+      "table": "users",
+      "file": "20261105010000_shop.sql"
+    },
+    {
+      "name": "profiles_grade_guard",
+      "when": "before update",
+      "table": "profiles",
+      "file": "20261105010000_shop.sql"
+    },
+    {
+      "name": "profiles_grade_log",
+      "when": "after update",
+      "table": "profiles",
+      "file": "20261106000000_admin.sql"
+    },
+    {
+      "name": "salon_approval",
+      "when": "after update",
+      "table": "salon_verifications",
+      "file": "20261106000000_admin.sql"
+    },
+    {
+      "name": "orders_status",
+      "when": "before update",
+      "table": "orders",
+      "file": "20261106000000_admin.sql"
+    },
+    {
+      "name": "shipments_status",
+      "when": "before update of status",
+      "table": "shipments",
+      "file": "20261106000000_admin.sql"
+    },
+    {
+      "name": "profiles_login_secret_guard",
+      "when": "before update",
+      "table": "profiles",
+      "file": "20261117000000_store_login.sql"
+    }
+  ],
+  "migrations": [
+    {
+      "file": "20261105000000_init.sql",
+      "date": "2026-11-05",
+      "name": "init",
+      "tables": [
+        "health_check"
+      ]
+    },
+    {
+      "file": "20261105010000_shop.sql",
+      "date": "2026-11-05",
+      "name": "shop",
+      "tables": [
+        "member_grades",
+        "profiles",
+        "salon_verifications",
+        "categories",
+        "brands",
+        "products",
+        "banners",
+        "notices",
+        "cart_items",
+        "wishlists",
+        "orders",
+        "order_items",
+        "reviews"
+      ]
+    },
+    {
+      "file": "20261106000000_admin.sql",
+      "date": "2026-11-06",
+      "name": "admin",
+      "tables": [
+        "product_logs",
+        "product_import_batches",
+        "product_import_rows",
+        "customer_addresses",
+        "grade_history",
+        "carriers",
+        "shipments",
+        "shipment_events",
+        "order_status_logs",
+        "consent_documents",
+        "user_consents",
+        "contracts",
+        "tax_invoices"
+      ]
+    },
+    {
+      "file": "20261106010000_grants.sql",
+      "date": "2026-11-06",
+      "name": "grants",
+      "tables": []
+    },
+    {
+      "file": "20261107000000_staff.sql",
+      "date": "2026-11-07",
+      "name": "staff",
+      "tables": [
+        "admin_audit"
+      ]
+    },
+    {
+      "file": "20261108000000_social.sql",
+      "date": "2026-11-08",
+      "name": "social",
+      "tables": [
+        "social_accounts"
+      ]
+    },
+    {
+      "file": "20261110000000_work.sql",
+      "date": "2026-11-10",
+      "name": "work",
+      "tables": [
+        "work_users",
+        "work_user_menus",
+        "work_sessions",
+        "work_login_logs",
+        "work_audit"
+      ]
+    },
+    {
+      "file": "20261112000000_channels.sql",
+      "date": "2026-11-12",
+      "name": "channels",
+      "tables": [
+        "channel_connections",
+        "channel_orders"
+      ]
+    },
+    {
+      "file": "20261113000000_work_prefs.sql",
+      "date": "2026-11-13",
+      "name": "work_prefs",
+      "tables": [
+        "work_user_prefs"
+      ]
+    },
+    {
+      "file": "20261114000000_logen.sql",
+      "date": "2026-11-14",
+      "name": "logen",
+      "tables": [
+        "logen_waybills"
+      ]
+    },
+    {
+      "file": "20261117000000_store_login.sql",
+      "date": "2026-11-17",
+      "name": "store_login",
+      "tables": [
+        "store_login_attempts"
+      ]
+    }
+  ]
+}
