@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import * as mock from "./mock";
 import type { Banner, Brand, Category, Product, ProductQuery } from "./types";
+import { getViewer, maskProduct, maskProducts } from "./viewer";
 
 // Supabase 환경변수가 있으면 실제 DB, 없으면 목업 데이터 사용
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -27,7 +28,22 @@ export async function getBanners(): Promise<Banner[]> {
   return (data as Banner[]) ?? [];
 }
 
+// 화면·공개 API용: 보는 사람에 맞게 가격을 가려서 반환 (서버 계산용은 *Raw 사용)
 export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
+  const v = await getViewer();
+  // 로그인 전에는 가격순 정렬도 막음 (순서로 가격을 짐작할 수 없게)
+  const sort = v === "guest" && (q.sort === "price_asc" || q.sort === "price_desc") ? undefined : q.sort;
+  return maskProducts(await getProductsRaw({ ...q, sort }), v);
+}
+export async function getProduct(id: number): Promise<Product | null> {
+  const p = await getProductRaw(id);
+  return p ? maskProduct(p, await getViewer()) : null;
+}
+export async function getProductsByIds(ids: number[]): Promise<Product[]> {
+  return maskProducts(await getProductsByIdsRaw(ids), await getViewer());
+}
+
+async function getProductsRaw(q: ProductQuery = {}): Promise<Product[]> {
   const cats = await getCategories();
   const catId = q.category ? cats.find((c) => c.slug === q.category)?.id : undefined;
   const brandId = q.brand ? (await getBrands()).find((x) => x.slug === q.brand)?.id : undefined;
@@ -61,13 +77,14 @@ export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
   return (data as Product[]) ?? [];
 }
 
-export async function getProduct(id: number): Promise<Product | null> {
+async function getProductRaw(id: number): Promise<Product | null> {
   if (!useDb) return mock.products.find((p) => p.id === id) ?? null;
   const { data } = await db().from("products").select("*").eq("id", id).maybeSingle();
   return (data as Product) ?? null;
 }
 
-export async function getProductsByIds(ids: number[]): Promise<Product[]> {
+// 주문·견적 계산 전용 (가격 원본) — 결과를 그대로 브라우저에 보내지 말 것
+export async function getProductsByIdsRaw(ids: number[]): Promise<Product[]> {
   if (!ids.length) return [];
   if (!useDb) return mock.products.filter((p) => ids.includes(p.id));
   const { data } = await db().from("products").select("*").in("id", ids);

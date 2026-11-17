@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useStore } from "./Store";
 
-export type Quote = { items: { id: number; name: string; unit: number; qty: number; amount: number; blocked: boolean; thumbnail_url: string | null }[]; subtotal: number; shipping: number; total: number };
+export type Quote = { items: { id: number; name: string; unit: number; qty: number; amount: number; blocked: boolean; thumbnail_url: string | null }[]; subtotal: number; shipping: number; total: number; hidden?: boolean };
 
 export function useQuote() {
   const { cart, grade } = useStore();

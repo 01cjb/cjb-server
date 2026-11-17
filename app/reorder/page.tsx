@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ReorderList, { type ReorderItem } from "@/components/home/ReorderList";
-import { getBrands, getCategories, getProductsByIds } from "@/lib/data";
+import { getBrands, getCategories, getProductsByIdsRaw } from "@/lib/data";
 import { getMe, myOrders } from "@/lib/me";
 import { unitPrice } from "@/lib/pricing";
 
@@ -22,7 +22,7 @@ export default async function Reorder() {
     }
   }
   const ids = [...stat.keys()];
-  const products = ids.length ? await getProductsByIds(ids) : [];
+  const products = ids.length ? await getProductsByIdsRaw(ids) : [];
   const items: ReorderItem[] = products.map((p) => ({
     id: p.id, name: p.name, brand: brands.find((b) => b.id === p.brand_id)?.name, icon: categories.find((c) => c.id === p.category_id)?.icon,
     thumb: p.thumbnail_url, price: unitPrice(p, me.user!.grade_id), soldout: p.status !== "active" || p.stock <= 0, ...stat.get(p.id)!,

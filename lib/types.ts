@@ -11,6 +11,8 @@ export type Product = {
   consumer_price?: number | null;
   price: number;
   salon_price?: number | null;
+  price_hidden?: boolean; // 로그인 전: 가격 비공개(서버에서 가격을 지우고 보냄)
+  has_vip_price?: boolean; // VIP가가 있지만 숫자는 보내지 않음
   stock: number;
   thumbnail_url?: string | null;
   badges: string[];

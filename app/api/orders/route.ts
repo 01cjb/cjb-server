@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProductsByIds } from "@/lib/data";
+import { getProductsByIdsRaw } from "@/lib/data";
 import { quote, type Grade } from "@/lib/pricing";
 import { adminEnabled, createServiceClient, currentUser } from "@/lib/auth";
 import { needsConsent } from "@/lib/consent";
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const user = await currentUser();
   // DB 미연결(목업) 상태에서는 데모 등급 허용, DB 연결 시에는 DB 등급만 사용
   const grade: Grade = adminEnabled() ? user.grade : (["salon", "vip"].includes(body?.grade) ? body.grade : "general");
-  const products = await getProductsByIds(lines.map((l) => Number(l.id)));
+  const products = await getProductsByIdsRaw(lines.map((l) => Number(l.id)));
   const q = quote(products, lines.map((l) => ({ id: Number(l.id), qty: Math.max(1, Number(l.qty) || 1) })), grade);
   if (q.items.some((i) => i.blocked)) return NextResponse.json({ error: "VIP 전용 상품이 포함되어 있습니다." }, { status: 403 });
 
