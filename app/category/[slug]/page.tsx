@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import ScrollRow from "@/components/ScrollRow";
+import VipNotice from "@/components/VipNotice";
 import { Suspense } from "react";
 import ProductGrid from "@/components/ProductGrid";
 import SortBar from "@/components/SortBar";
 import { getBrands, getCategories, getProducts } from "@/lib/data";
+import { getMe } from "@/lib/me";
 import type { ProductQuery } from "@/lib/types";
 
 const special: Record<string, { title: string; flag: NonNullable<ProductQuery["flag"]> | null }> = {
@@ -17,7 +20,7 @@ const special: Record<string, { title: string; flag: NonNullable<ProductQuery["f
 export default async function CategoryPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: ProductQuery["sort"] }> }) {
   const { slug } = await params;
   const { sort } = await searchParams;
-  const [categories, brands] = await Promise.all([getCategories(), getBrands()]);
+  const [categories, brands, me] = await Promise.all([getCategories(), getBrands(), getMe()]);
   const sp = special[slug];
   const cat = categories.find((c) => c.slug === slug);
   if (!sp && !cat) notFound();
@@ -29,12 +32,13 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     <div className="max-w-6xl mx-auto px-4 py-6">
       <nav className="text-xs text-neutral-400 mb-3"><Link href="/">홈</Link> › {title}</nav>
       <h1 className="text-2xl font-bold mb-4">{title}</h1>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4">
+      {slug === "vip" && (me.user?.grade_id ?? "general") === "general" && <VipNotice />}
+      <div className="mb-4"><ScrollRow className="flex gap-2">
         <Link href="/category/all" className={`shrink-0 rounded-full px-4 py-1.5 text-sm border ${slug === "all" ? "bg-neutral-900 text-white border-neutral-900" : "border-neutral-200"}`}>전체</Link>
         {categories.map((c) => (
           <Link key={c.id} href={`/category/${c.slug}`} className={`shrink-0 rounded-full px-4 py-1.5 text-sm border ${c.slug === slug ? "bg-neutral-900 text-white border-neutral-900" : "border-neutral-200"}`}>{c.name}</Link>
         ))}
-      </div>
+      </ScrollRow></div>
       <Suspense><SortBar count={items.length} /></Suspense>
       <ProductGrid items={items} brands={brands} categories={categories} ranked={slug === "best"} />
     </div>

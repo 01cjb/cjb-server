@@ -8,7 +8,7 @@ export default async function Salon() {
   const list = await listSalonRequests();
   return (
     <>
-      <H1>미용실 회원 인증</H1>
+      <H1>VIP 인증 (미용사)</H1>
       <Table head={["상호", "대표자", "사업자번호", "연락처", "상태", "신청일", "처리"]} empty={!list.length}>
         {list.map((s) => (
           <tr key={s.id}><td>{s.salon_name}</td><td>{s.owner_name}</td><td className="tabular-nums">{s.business_no}</td><td>{s.phone}</td>
@@ -16,7 +16,7 @@ export default async function Salon() {
             <td className="space-x-1 whitespace-nowrap">{s.status === "pending" && <><Act url={`/api/admin/salon/${s.id}`} method="PATCH" body={{ status: "approved" }} label="승인" tone="primary" /><Act url={`/api/admin/salon/${s.id}`} method="PATCH" body={{ status: "rejected" }} ask="반려 사유" label="반려" tone="danger" /></>}</td></tr>
         ))}
       </Table>
-      <p className="text-xs text-neutral-400 mt-2">승인하면 해당 회원 등급이 자동으로 ‘미용실회원’이 되고 사업자정보가 고객정보에 반영됩니다.</p>
+      <p className="text-xs text-neutral-400 mt-2">승인하면 해당 회원 등급이 자동으로 ‘VIP’(미용사 인증)가 되고 사업자정보가 고객정보에 반영됩니다.</p>
     </>
   );
 }

@@ -96,7 +96,7 @@ export async function Store({ q }: P) {
   return (
     <>
       <Tabs cur={s} items={[{ key: "all", label: "전체", href: "?s=all", count: all.length }, ...Object.entries(PRODUCT_STATUS).map(([k, l]) => ({ key: k, label: l, href: `?s=${k}`, count: all.filter((p) => p.status === k).length }))]} />
-      <Table head={["상품", "판매가", "미용실회원가", "재고", "표시", "상태"]} empty={!list.length}>
+      <Table head={["상품", "판매가", "VIP가", "재고", "표시", "상태"]} empty={!list.length}>
         {list.map((p) => (
           <tr key={p.id}><td className="font-medium">{p.name}<span className="block font-mono text-[11px] text-neutral-400">{p.sku ?? p.model_no ?? `#${p.id}`}</span></td>
             <td className="tabular-nums">{won(p.price)}</td><td className="tabular-nums">{won(p.salon_price)}</td><td className={`tabular-nums ${p.stock <= Low ? "font-semibold text-rose-600" : ""}`}>{p.stock}</td>
@@ -290,8 +290,7 @@ const PLANS: Record<string, string[]> = {
   design: ["메인 배너·기획전 관리", "상세페이지 이미지 자산", "디자인 요청·작업 현황"],
   marketing: ["채널별 수신동의 현황", "카카오 알림톡·문자 캠페인 발송", "캠페인 성과"],
   payments: ["토스페이먼츠 결제 내역(카드·간편결제·계좌이체·가상계좌)", "주문 취소·부분 환불", "가상계좌 입금 확인·정산 예정액"],
-  "salon-cert": ["인증 신청 목록(상호·대표자·사업자번호)", "사업자등록증·면허증 서류 확인", "승인·반려 처리와 결과 알림"],
-  vip: ["VIP 인증 신청 목록·증빙 서류", "인증 기준 관리(계약 매장·지정 매장 등)", "VIP 승인·해제 이력"],
+  "salon-cert": ["미용사 인증 신청 목록(매장·이름·연락처)", "면허증·사업자등록증 서류 확인", "승인(VIP가 적용)·반려와 결과 알림", "VIP 해제 이력"],
   cs: ["1:1 문의 목록(유형·주문번호·답변 상태)", "답변 작성과 답변 알림", "자주 묻는 질문(FAQ) 관리"],
   coupons: ["쿠폰 만들기(정률·정액·카테고리·최소 금액·기간)", "쿠폰 발급·다운로드 현황", "포인트 적립률·지급·차감 내역"],
   events: ["이벤트·기획전 등록(배너·기간·대상 상품)", "진행·예정·종료 현황", "이벤트별 매출"],

@@ -60,7 +60,7 @@ export const products: Product[] = seed.map((p, i) => ({
 
 export const banners: Banner[] = [
   { id: 1, title: "SERIE EXPERT 3 TYPE", subtitle: "로레알 프로페셔널 · 모발·두피 타입별 헤어케어 토탈 솔루션", link: "/category/haircare", bg_color: "#f9d5e5", sort: 1 },
-  { id: 2, title: "신규 회원 2,000원 쿠폰", subtitle: "가입 즉시 지급 · 미용실회원 인증 시 회원가 적용", link: "/login", bg_color: "#e9d5ff", sort: 2 },
+  { id: 2, title: "신규 회원 2,000원 쿠폰", subtitle: "가입 즉시 지급 · 미용사 인증 시 VIP가 적용", link: "/login", bg_color: "#e9d5ff", sort: 2 },
   { id: 3, title: "이·미용가전 기획전", subtitle: "바비리스 프로 · 파나소닉 · 코메트 전문가용 클리퍼", link: "/category/appliance", bg_color: "#dbeafe", sort: 3 },
-  { id: 4, title: "★ VIP 전용관 ★", subtitle: "VIP 회원만을 위한 특별가 상품", link: "/category/vip", bg_color: "#fde68a", sort: 4 },
+  { id: 4, title: "미용사 인증하고 VIP가로", subtitle: "인증 후 모든 상품 VIP가 · VIP 전용 상품", link: "/category/vip", bg_color: "#fde68a", sort: 4 },
 ];

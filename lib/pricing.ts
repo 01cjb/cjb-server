@@ -11,7 +11,7 @@ export function quote(products: Product[], lines: { id: number; qty: number }[],
       const p = products.find((x) => x.id === l.id);
       if (!p) return null;
       const unit = unitPrice(p, grade);
-      const blocked = p.vip_only && grade !== "vip";
+      const blocked = p.vip_only && grade === "general";
       return { id: p.id, name: p.name, unit, qty: l.qty, amount: unit * l.qty, blocked, thumbnail_url: p.thumbnail_url ?? null, brand_id: p.brand_id, category_id: p.category_id };
     })
     .filter((x): x is NonNullable<typeof x> => !!x);

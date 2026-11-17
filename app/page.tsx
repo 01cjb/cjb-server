@@ -1,11 +1,12 @@
 import Link from "next/link";
+import ScrollRow from "@/components/ScrollRow";
 import HeroSlider from "@/components/HeroSlider";
 import Section from "@/components/Section";
 import ProductGrid from "@/components/ProductGrid";
 import ProductCard from "@/components/ProductCard";
 import AddToCartButton from "@/components/home/AddToCartButton";
 import ShopInstall from "@/components/ShopInstall";
-import { IconDoc, IconGift, IconHeadset, IconRepeat, IconShop, IconStar, IconTicket, IconTruck } from "@/components/Icons";
+import { IconFlame, IconGift, IconHeadset, IconRepeat, IconStar, IconTag, IconTicket, IconTruck } from "@/components/Icons";
 import { getBanners, getBrands, getCategories, getProducts, getProductsByIds } from "@/lib/data";
 import { getMe, myOrder, myOrders } from "@/lib/me";
 import { won } from "@/lib/fmt";
@@ -21,11 +22,11 @@ const kstMonth = (iso: string) => new Date(new Date(iso).getTime() + 9 * 3600e3)
 const MENU = [
   { href: "/mypage/orders", label: "주문·배송", Icon: IconTruck, dot: "ship" },
   { href: "/reorder", label: "재주문", Icon: IconRepeat },
-  { href: "/benefits", label: "쿠폰·포인트", Icon: IconTicket },
-  { href: "/events", label: "이벤트", Icon: IconGift },
+  { href: "/brands", label: "브랜드관", Icon: IconTag },
+  { href: "/category/best", label: "BEST", Icon: IconFlame },
   { href: "/category/vip", label: "VIP 전용관", Icon: IconStar },
-  { href: "/salon-member", label: "미용실회원관", Icon: IconShop },
-  { href: "/mypage/invoices", label: "세금계산서", Icon: IconDoc },
+  { href: "/events", label: "이벤트", Icon: IconGift },
+  { href: "/benefits", label: "쿠폰·포인트", Icon: IconTicket },
   { href: "/cs", label: "고객센터", Icon: IconHeadset },
 ];
 
@@ -105,7 +106,7 @@ export default async function Home() {
             <div>
               <p className="text-[13px] opacity-80">이·미용 전문가를 위한 복지몰</p>
               <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">로그인하고 확인하세요</em></h1>
-              <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link><Link href="/salon-member" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">미용실회원 인증</Link></div>
+              <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link><Link href="/salon-member" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">VIP 전용관 안내</Link></div>
             </div>
           )}
         </div>
@@ -149,9 +150,9 @@ export default async function Home() {
                 <Link href="/mypage/orders" className="rounded-[14px] bg-[#f6f2f9] p-3"><small className="text-[11px] text-neutral-500">진행 중</small><b className="block text-lg mt-1 tabular-nums">{live.filter((o) => ACTIVE.includes(o.status)).length}<span className="text-xs font-semibold"> 건</span></b></Link>
               </div>
               {user.grade_id === "general" ? (
-                <Link href="/salon-member" className="mt-2.5 flex justify-between border-t border-[#ece6f1] pt-3 text-[12.5px]"><span>미용실회원 인증하면 <b className="text-gold-ink">회원가</b>로 구매해요</span><span>›</span></Link>
+                <Link href="/salon-member" className="mt-2.5 flex justify-between border-t border-[#ece6f1] pt-3 text-[12.5px]"><span>미용사 인증하면 <b className="text-gold-ink">VIP가</b>로 구매해요</span><span>›</span></Link>
               ) : (
-                <Link href="/mypage/invoices" className="mt-2.5 flex justify-between border-t border-[#ece6f1] pt-3 text-[12.5px]"><span>세금계산서 <b>발행 내역 보기</b></span><span>›</span></Link>
+                <Link href="/category/vip" className="mt-2.5 flex justify-between border-t border-[#ece6f1] pt-3 text-[12.5px]"><span><b className="text-gold-ink">VIP가 적용 중</b> · VIP 전용 상품 보기</span><span>›</span></Link>
               )}
             </div>
           ) : (
@@ -170,13 +171,13 @@ export default async function Home() {
 
       {freq.length > 0 && (
         <Section title="원장님이 자주 산 상품" sub="지난 주문 기준" more="/reorder">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4">
+          <ScrollRow className="flex gap-3">
             {freq.map((p) => (
               <div key={p.id} className="w-36 @3xl:w-44 shrink-0">
                 <ProductCard p={p} brand={brands.find((b) => b.id === p.brand_id)?.name} icon={categories.find((c) => c.id === p.category_id)?.icon} />
               </div>
             ))}
-          </div>
+          </ScrollRow>
         </Section>
       )}
 

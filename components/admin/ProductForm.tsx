@@ -35,7 +35,7 @@ export default function ProductForm({ p, categories, brands }: { p?: Product | n
       <L l="브랜드"><select className={inp} value={f.brand_id} onChange={(e) => set("brand_id", e.target.value ? Number(e.target.value) : "")}><option value="">선택 안 함</option>{brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></L>
       <L l="소비자가"><input className={inp} type="number" value={f.consumer_price} onChange={(e) => set("consumer_price", e.target.value)} /></L>
       <L l="판매가 (일반회원) *"><input className={inp} type="number" required value={f.price} onChange={(e) => set("price", e.target.value)} /></L>
-      <L l="미용실회원가"><input className={inp} type="number" value={f.salon_price} onChange={(e) => set("salon_price", e.target.value)} /></L>
+      <L l="VIP가"><input className={inp} type="number" value={f.salon_price} onChange={(e) => set("salon_price", e.target.value)} /></L>
       <L l="재고"><input className={inp} type="number" value={f.stock} onChange={(e) => set("stock", e.target.value)} /></L>
       <L l="요약설명" wide><input className={inp} value={f.summary} onChange={(e) => set("summary", e.target.value)} /></L>
       <L l="대표이미지 URL" wide><input className={inp} value={f.thumbnail_url} onChange={(e) => set("thumbnail_url", e.target.value)} placeholder="Supabase Storage 업로드 후 주소" /></L>

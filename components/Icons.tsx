@@ -21,3 +21,5 @@ export const IconStar = ({ className }: P) => s(<><path d="M12 3l2.6 5.6 6 .7-4.
 export const IconShop = ({ className }: P) => s(<><path d="M4 20V9l8-5 8 5v11M9 20v-6h6v6" /></>, className);
 export const IconDoc = ({ className }: P) => s(<><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5" /></>, className);
 export const IconHeadset = ({ className }: P) => s(<><path d="M4 13a8 8 0 1 1 16 0v4a2 2 0 0 1-2 2h-1v-6h3M4 13h3v6H6a2 2 0 0 1-2-2z" /></>, className);
+export const IconTag = ({ className }: P) => s(<><path d="M3 12V4h8l10 10-8 8z" /><circle cx="7.5" cy="8.5" r="1.4" /></>, className);
+export const IconFlame = ({ className }: P) => s(<><path d="M12 21c-4 0-7-2.7-7-6.5 0-3.2 2.2-5 3.6-7 .5 1.7 1.4 2.8 2.6 3.3C11 7.5 12.5 5 15 3c-.3 2.6.6 4.6 2.1 6.4C18.5 11 19 12.4 19 14.5 19 18.3 16 21 12 21z" /></>, className);

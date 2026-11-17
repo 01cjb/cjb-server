@@ -45,7 +45,7 @@ export type SalonVerification = { id: number; user_id: string | null; salon_name
 
 export const ORDER_STATUS: Record<OrderStatus, string> = { pending: "입금대기", paid: "결제완료", preparing: "배송준비", shipped: "배송중", delivered: "배송완료", cancelled: "취소" };
 export const SHIP_STATUS: Record<ShipStatus, string> = { ready: "출고대기", picked_up: "집화", in_transit: "이동중", out_for_delivery: "배송출발", delivered: "배송완료", returned: "반송", failed: "배송실패" };
-export const GRADE_NAME: Record<Grade, string> = { general: "일반회원", salon: "미용실회원", vip: "VIP" };
+export const GRADE_NAME: Record<Grade, string> = { general: "일반회원", salon: "VIP", vip: "VIP" }; // 미용사 인증 = VIP (salon·vip 둘 다 VIP가)
 export const CONTRACT_TYPE: Record<Contract["contract_type"], string> = { supply: "공급계약", agency: "대리점", vip: "VIP 특약", consignment: "위탁판매", etc: "기타" };
 export const INVOICE_STATUS: Record<TaxInvoice["status"], string> = { pending: "발행대기", issued: "발행완료", sent: "전송완료", failed: "발행실패", cancelled: "취소" };
 export const PRODUCT_STATUS: Record<string, string> = { active: "판매중", soldout: "품절", hidden: "숨김", draft: "임시저장", cancelled: "등록취소" };

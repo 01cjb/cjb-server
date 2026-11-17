@@ -5,7 +5,7 @@ export const metadata = { title: "고객센터" };
 
 const FAQ = [
   ["배송비는 얼마인가요?", "3,000원이며, 50,000원 이상 구매하면 무료배송이에요."],
-  ["미용실회원가는 어떻게 받나요?", "미용실회원관에서 사업자 인증을 신청하면 영업일 기준 1~2일 안에 승인되고, 승인되면 미용실회원가가 적용돼요."],
+  ["VIP가는 어떻게 받나요?", "카카오톡에서 ‘씨제이비인터내셔널’ 채널을 추가하고 미용사 면허증(자격증) 사진을 보내주시면, 확인 후 VIP가가 적용돼요. 자세한 방법은 채널 추가 후 확인해 주세요."],
   ["세금계산서는 어디서 보나요?", "마이페이지 › 세금계산서에서 발행 내역을 볼 수 있어요. 사업자정보를 먼저 입력해 주세요."],
   ["주문 상태와 송장번호는 어디서 보나요?", "마이페이지 › 구매내역에서 주문을 누르면 배송 단계와 송장번호를 볼 수 있어요."],
   ["적립금은 얼마나 쌓이나요?", "구매 금액의 1%가 적립돼요."],
@@ -35,7 +35,7 @@ export default function CS() {
       </div>
       <div className="divide-y divide-[#ece6f1] rounded-[20px] border border-[#ece6f1] bg-white text-sm">
         <Link href="/mypage/orders" className="flex justify-between px-4 py-3.5">주문·배송 조회<span className="text-neutral-400">›</span></Link>
-        <Link href="/salon-member" className="flex justify-between px-4 py-3.5">미용실회원 인증<span className="text-neutral-400">›</span></Link>
+        <Link href="/salon-member" className="flex justify-between px-4 py-3.5">VIP 인증<span className="text-neutral-400">›</span></Link>
         <Link href="/mypage/invoices" className="flex justify-between px-4 py-3.5">세금계산서<span className="text-neutral-400">›</span></Link>
       </div>
     </div>

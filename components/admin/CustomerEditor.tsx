@@ -18,7 +18,7 @@ export default function CustomerEditor({ c }: { c: Customer }) {
       <div className="grid gap-3 md:grid-cols-4">
         <F l="이름"><input className={inp} value={f.name} onChange={s("name")} /></F>
         <F l="연락처"><input className={inp} value={f.phone} onChange={s("phone")} /></F>
-        <F l="회원등급"><select className={inp} value={f.grade_id} onChange={s("grade_id")}><option value="general">일반회원</option><option value="salon">미용실회원</option><option value="vip">VIP</option></select></F>
+        <F l="회원등급"><select className={inp} value={f.grade_id} onChange={s("grade_id")}><option value="general">일반회원</option><option value="salon">VIP (미용사 인증)</option><option value="vip">VIP (수동 지정)</option></select></F>
         <F l="계정상태"><select className={inp} value={f.status} onChange={s("status")}><option value="active">정상</option><option value="dormant">휴면</option><option value="blocked">정지</option><option value="withdrawn">탈퇴</option></select></F>
         {f.grade_id !== c.grade_id && <div className="md:col-span-4"><F l="등급 변경 사유 (이력에 기록)"><input className={inp} value={f.reason} onChange={s("reason")} placeholder="예: 사업자 인증 완료, 연 매출 기준 VIP 승급" /></F></div>}
       </div>

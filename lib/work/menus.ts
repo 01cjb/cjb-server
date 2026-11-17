@@ -23,8 +23,7 @@ export const MENUS: Menu[] = [
   { key: "payments", label: "결제·환불", team: "mgmt", status: "soon", desc: "뷰티웰 결제 내역·취소·환불 (앱: 장바구니·결제)", source: "토스페이먼츠 연동 예정" },
   // 영업 / 영업지원
   { key: "clients", label: "고객사 관리", team: "sales", status: "live", desc: "회원·사업자 정보·계약" },
-  { key: "salon-cert", label: "미용실회원 인증", team: "sales", status: "soon", desc: "사업자·면허 서류 확인 후 승인·반려 (앱: 미용실회원관)" },
-  { key: "vip", label: "VIP 인증", team: "sales", status: "soon", desc: "VIP 인증 신청 심사·등급 부여 (앱: VIP 전용관)" },
+  { key: "salon-cert", label: "VIP 인증 (미용사)", team: "sales", status: "soon", desc: "미용사 인증 서류 확인 후 승인·반려 → 승인 시 VIP가 적용 (앱: VIP 전용관)" },
   { key: "cs", label: "고객 문의", team: "sales", status: "soon", desc: "1:1 문의 답변·FAQ 관리 (앱: 고객센터)" },
   // 디자인 / 마케팅
   { key: "store", label: "온라인 스토어 관리", team: "design", status: "live", desc: "상품 판매 상태·가격" },
