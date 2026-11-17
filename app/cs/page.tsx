@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company } from "@/lib/company";
+import { KAKAO_CHANNEL_URL } from "@/components/VipNotice";
 
 export const metadata = { title: "고객센터" };
 
@@ -22,7 +23,7 @@ export default function CS() {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <a href={`tel:${company.tel}`} className="rounded-2xl border border-[#ece6f1] bg-white py-3.5 text-center text-sm font-bold text-plum">전화하기</a>
-        <a href={`mailto:${company.email}`} className="rounded-2xl bg-gold py-3.5 text-center text-sm font-bold text-plum">메일 문의</a>
+        <a href={`${KAKAO_CHANNEL_URL}/chat`} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-[#FEE500] py-3.5 text-center text-sm font-bold text-[#191919]">카카오톡 문의</a>
       </div>
       <h2 className="mt-3 text-[15px] font-bold">자주 묻는 질문</h2>
       <div className="divide-y divide-[#ece6f1] overflow-hidden rounded-[20px] border border-[#ece6f1] bg-white">
