@@ -9,11 +9,11 @@ import { useStore } from "./Store";
 import type { Category } from "@/lib/types";
 
 const menus = [
-  { href: "/category/best", label: "BEST 추천상품", cls: "text-gold font-bold" },
+  { href: "/category/vip", label: "★VIP 전용관★", cls: "text-gold font-bold" },
+  { href: "/category/best", label: "BEST 추천상품", cls: "font-bold" },
   { href: "/category/new", label: "NEW 신상품", cls: "font-bold" },
   { href: "/category/timesale", label: "반짝할인", cls: "" },
   { href: "/brands", label: "브랜드관", cls: "" },
-  { href: "/category/vip", label: "★VIP 전용관★", cls: "text-gold font-bold" },
   { href: "/events", label: "이벤트", cls: "" },
 ];
 

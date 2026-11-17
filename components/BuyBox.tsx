@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "./Store";
@@ -14,6 +15,17 @@ export default function BuyBox({ p }: { p: Product }) {
   const soldout = p.status === "soldout" || p.stock <= 0;
 
   const add = () => { addToCart(p.id, qty); setToast(true); setTimeout(() => setToast(false), 1800); };
+
+  if (p.price_hidden)
+    return (
+      <div className="pt-5 space-y-3">
+        <p className="rounded-xl bg-neutral-50 px-4 py-3 text-sm text-neutral-600">가격은 <b>회원에게만 공개</b>돼요. 로그인하면 가격 확인과 주문을 할 수 있어요.</p>
+        <div className="flex gap-2 fixed @3xl:static bottom-[64px] inset-x-0 mx-auto max-w-[480px] z-30 bg-white @3xl:bg-transparent p-3 @3xl:p-0 border-t @3xl:border-0 border-neutral-200">
+          <div className="grid place-items-center size-12 border border-neutral-300 rounded-xl shrink-0"><WishButton id={p.id} /></div>
+          <Link href="/login" className="flex-1 grid place-items-center rounded-xl bg-brand-600 py-3 text-white font-semibold">로그인하고 가격 보기</Link>
+        </div>
+      </div>
+    );
 
   return (
     <div className="pt-5 space-y-4">

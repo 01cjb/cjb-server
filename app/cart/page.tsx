@@ -30,7 +30,7 @@ export default function CartPage() {
                       <span className="w-8 text-center">{i.qty}</span>
                       <button className="px-2.5 py-1" onClick={() => setQty(i.id, i.qty + 1)}>+</button>
                     </div>
-                    <b className="text-sm">{won(i.amount)}</b>
+                    <b className="text-sm">{q.hidden ? "회원공개" : won(i.amount)}</b>
                   </div>
                 </div>
                 <button onClick={() => removeFromCart(i.id)} className="text-neutral-400 text-sm self-start" aria-label="삭제">✕</button>
@@ -38,11 +38,12 @@ export default function CartPage() {
             ))}
           </ul>
           <aside className="rounded-2xl bg-neutral-50 p-5 h-fit space-y-2 text-sm">
-            <div className="flex justify-between"><span>상품금액</span><span>{q ? won(q.subtotal) : "-"}</span></div>
-            <div className="flex justify-between"><span>배송비</span><span>{q ? won(q.shipping) : "-"}</span></div>
+            {q?.hidden && <p className="rounded-lg bg-white p-3 text-[13px] text-neutral-600">가격은 <b>회원에게만 공개</b>돼요. 로그인하면 금액이 보여요.</p>}
+            <div className="flex justify-between"><span>상품금액</span><span>{q && !q.hidden ? won(q.subtotal) : "-"}</span></div>
+            <div className="flex justify-between"><span>배송비</span><span>{q && !q.hidden ? won(q.shipping) : "-"}</span></div>
             <p className="text-xs text-neutral-400">50,000원 이상 무료배송</p>
-            <div className="flex justify-between text-lg font-bold pt-3 border-t border-neutral-200"><span>결제예정금액</span><span className="text-brand-700">{q ? won(q.total) : "-"}</span></div>
-            <Link href="/checkout" className="block text-center rounded-xl bg-brand-600 text-white font-semibold py-3 mt-3">주문하기</Link>
+            <div className="flex justify-between text-lg font-bold pt-3 border-t border-neutral-200"><span>결제예정금액</span><span className="text-brand-700">{q && !q.hidden ? won(q.total) : "-"}</span></div>
+            <Link href={q?.hidden ? "/login" : "/checkout"} className="block text-center rounded-xl bg-brand-600 text-white font-semibold py-3 mt-3">{q?.hidden ? "로그인하고 주문하기" : "주문하기"}</Link>
           </aside>
         </div>
       )}

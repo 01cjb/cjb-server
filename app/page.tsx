@@ -192,14 +192,6 @@ export default async function Home() {
       <Section title="NEW 신제품" sub="새로 입고된 전문가용 제품" more="/category/new">
         <ProductGrid items={fresh} {...ctx} />
       </Section>
-
-      <Section title="브랜드관" more="/brands">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-          {brands.map((b) => (
-            <Link key={b.id} href={`/brands?b=${b.slug}`} className="shrink-0 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm hover:border-brand-500 hover:text-brand-600">{b.name}</Link>
-          ))}
-        </div>
-      </Section>
     </>
   );
 }

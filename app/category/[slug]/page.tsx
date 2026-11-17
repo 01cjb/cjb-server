@@ -17,9 +17,9 @@ const special: Record<string, { title: string; flag: NonNullable<ProductQuery["f
   all: { title: "전체상품", flag: null },
 };
 
-export default async function CategoryPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: ProductQuery["sort"] }> }) {
+export default async function CategoryPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: ProductQuery["sort"]; as?: string }> }) {
   const { slug } = await params;
-  const { sort } = await searchParams;
+  const { sort, as } = await searchParams;
   const [categories, brands, me] = await Promise.all([getCategories(), getBrands(), getMe()]);
   const sp = special[slug];
   const cat = categories.find((c) => c.slug === slug);
@@ -32,7 +32,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     <div className="max-w-6xl mx-auto px-4 py-6">
       <nav className="text-xs text-neutral-400 mb-3"><Link href="/">홈</Link> › {title}</nav>
       <h1 className="text-2xl font-bold mb-4">{title}</h1>
-      {slug === "vip" && (me.user?.grade_id ?? "general") === "general" && <VipNotice />}
+      {slug === "vip" && (as === "general" || (me.user?.grade_id ?? "general") === "general") && <VipNotice />}
       <div className="mb-4"><ScrollRow className="flex gap-2">
         <Link href="/category/all" className={`shrink-0 rounded-full px-4 py-1.5 text-sm border ${slug === "all" ? "bg-neutral-900 text-white border-neutral-900" : "border-neutral-200"}`}>전체</Link>
         {categories.map((c) => (
