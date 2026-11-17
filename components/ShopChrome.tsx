@@ -26,7 +26,7 @@ export function PhoneShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-[#e9e2f1]">
       <Intro />
-      <div className="@container relative mx-auto min-h-dvh max-w-[480px] bg-cream shadow-[0_0_48px_rgba(59,29,90,.14)]">{children}</div>
+      <div className="@container relative mx-auto min-h-dvh max-w-[480px] bw-lav shadow-[0_0_48px_rgba(59,29,90,.14)]">{children}</div>
     </div>
   );
 }
