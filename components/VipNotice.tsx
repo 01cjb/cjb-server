@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 // 카카오톡 채널 주소: Vercel 환경변수 NEXT_PUBLIC_KAKAO_CHANNEL_URL (예: https://pf.kakao.com/_xxxxx)
-export const KAKAO_CHANNEL_URL = process.env.NEXT_PUBLIC_KAKAO_CHANNEL_URL || "";
+export const KAKAO_CHANNEL_URL = process.env.NEXT_PUBLIC_KAKAO_CHANNEL_URL || "https://pf.kakao.com/_tbTBxb";
 export const KAKAO_CHANNEL_NAME = "씨제이비인터내셔널";
 
 export function KakaoButton({ className = "" }: { className?: string }) {
@@ -41,7 +41,7 @@ export default function VipNotice({ compact = false }: { compact?: boolean }) {
           ))}
         </ol>
       )}
-      <p className="mt-3 text-xs text-neutral-500">자세한 인증 방법은 카카오톡 채널 추가 후 확인해 주세요.</p>
+      <p className="mt-3 text-xs text-neutral-500">인증은 사이트가 아닌 <b className="text-neutral-700">카카오톡 채널</b>에서 진행돼요. 자세한 방법은 채널 추가 후 확인해 주세요.</p>
       <div className="mt-3 flex gap-2">
         <KakaoButton className="flex-1" />
         {compact && <Link href="/salon-member" className="rounded-xl border border-neutral-300 bg-white px-3 py-3 text-sm font-semibold">인증 방법</Link>}
