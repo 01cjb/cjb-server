@@ -10,7 +10,7 @@ export default function BuyBox({ p }: { p: Product }) {
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [toast, setToast] = useState(false);
-  const blocked = p.vip_only && grade !== "vip";
+  const blocked = p.vip_only && grade === "general"; // 미용사 인증(VIP) 회원만
   const soldout = p.status === "soldout" || p.stock <= 0;
 
   const add = () => { addToCart(p.id, qty); setToast(true); setTimeout(() => setToast(false), 1800); };
@@ -25,7 +25,7 @@ export default function BuyBox({ p }: { p: Product }) {
           <button className="px-3 py-1.5" onClick={() => setQty((q) => q + 1)} aria-label="수량 증가">+</button>
         </div>
       </div>
-      {blocked && <p className="text-sm text-accent">VIP 회원만 구매할 수 있는 상품입니다.</p>}
+      {blocked && <p className="text-sm text-accent">미용사 인증(VIP) 회원만 구매할 수 있는 상품입니다.</p>}
       <div className="flex gap-2 fixed @3xl:static bottom-[64px] inset-x-0 mx-auto max-w-[480px] z-30 bg-white @3xl:bg-transparent p-3 @3xl:p-0 border-t @3xl:border-0 border-neutral-200">
         <div className="grid place-items-center size-12 border border-neutral-300 rounded-xl shrink-0"><WishButton id={p.id} /></div>
         <button disabled={blocked || soldout} onClick={add} className="flex-1 rounded-xl border border-brand-600 text-brand-600 font-semibold disabled:opacity-40">장바구니</button>

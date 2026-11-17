@@ -5,9 +5,8 @@ import { GRADE_NAME } from "@/lib/admin/types";
 export const metadata = { title: "쿠폰·포인트" };
 
 const GRADES = [
-  { id: "general", t: "일반회원", d: "판매가로 구매 · 신규가입 2,000원 쿠폰" },
-  { id: "salon", t: "미용실회원", d: "미용실회원가 적용 · 세금계산서 발행", href: "/salon-member", cta: "인증하기" },
-  { id: "vip", t: "VIP", d: "미용실회원가 + VIP 전용관 · 계약 할인", href: "/category/vip", cta: "VIP 전용관" },
+  { id: "general", t: "일반회원", d: "로그인하면 기본가로 구매 · 신규가입 2,000원 쿠폰" },
+  { id: "vip", t: "VIP (미용사 인증)", d: "VIP가로 구매 · VIP 전용 상품", href: "/salon-member", cta: "인증하기" },
 ] as const;
 
 export default async function Benefits() {
@@ -29,7 +28,7 @@ export default async function Benefits() {
       <div className="divide-y divide-[#ece6f1] rounded-[20px] border border-[#ece6f1] bg-white">
         {GRADES.map((x) => (
           <div key={x.id} className="flex items-center gap-3 px-4 py-3.5">
-            <div className="flex-1"><b className="text-sm">{x.t}</b>{g === x.id && <span className="ml-2 rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-ink">내 등급</span>}<p className="text-xs text-neutral-500 mt-0.5">{x.d}</p></div>
+            <div className="flex-1"><b className="text-sm">{x.t}</b>{(g === x.id || (x.id === "vip" && g === "salon")) && <span className="ml-2 rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-ink">내 등급</span>}<p className="text-xs text-neutral-500 mt-0.5">{x.d}</p></div>
             {"href" in x && <Link href={x.href} className="shrink-0 rounded-lg border border-[#ece6f1] px-3 py-1.5 text-xs font-semibold text-plum">{x.cta}</Link>}
           </div>
         ))}

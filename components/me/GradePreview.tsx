@@ -1,6 +1,6 @@
 "use client";
 import { useStore } from "@/components/Store";
-const grades = [{ id: "general", name: "일반회원" }, { id: "salon", name: "미용실회원" }, { id: "vip", name: "VIP" }] as const;
+const grades = [{ id: "general", name: "일반회원" }, { id: "vip", name: "VIP" }] as const;
 export default function GradePreview() {
   const { grade, setGrade } = useStore();
   return (

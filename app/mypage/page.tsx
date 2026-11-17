@@ -7,7 +7,7 @@ import Pill from "@/components/admin/Pill";
 import { company } from "@/lib/company";
 import { dt, won } from "@/lib/fmt";
 
-const BENEFIT = { general: "판매가 적용 · 신규가입 쿠폰", salon: "미용실회원가 적용 · 세금계산서 발행", vip: "미용실회원가 + VIP 전용관 · 계약 할인" };
+const BENEFIT = { general: "기본가 적용 · 미용사 인증하면 VIP가", salon: "VIP가 적용 · VIP 전용 상품", vip: "VIP가 적용 · VIP 전용 상품" };
 
 export default async function MyPage() {
   const me = await getMe();
@@ -29,7 +29,7 @@ export default async function MyPage() {
           <Link href="/mypage/contracts">계약<b className="block text-lg tabular-nums">{contracts.filter((c) => c.status === "active").length}</b></Link>
         </div>
       </div>
-      {u.grade_id === "general" && <Link href="/salon-member" className="block rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm"><b className="text-brand-700">미용실 원장님이신가요?</b> 사업자 인증하고 미용실회원가로 구매하세요 ›</Link>}
+      {u.grade_id === "general" && <Link href="/salon-member" className="block rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm"><b className="text-brand-700">미용사이신가요?</b> 미용사 인증하고 VIP가로 구매하세요 ›</Link>}
       {!u.business_no && u.grade_id !== "general" && <Link href="/mypage/profile" className="block rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">세금계산서를 받으려면 <b>사업자정보</b>를 입력해 주세요 ›</Link>}
       <div>
         <div className="flex justify-between items-end mb-2"><h2 className="font-semibold">최근 구매</h2><Link href="/mypage/orders" className="text-sm text-neutral-500">전체보기 ›</Link></div>

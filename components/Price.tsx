@@ -20,9 +20,9 @@ export default function Price({ p, large = false }: { p: Product; large?: boolea
         <span className="font-bold">{won(sell)}<span className="text-[0.7em] font-medium">원</span></span>
       </div>
       {!isSalon && p.salon_price && (
-        <div className={`text-brand-600 ${large ? "text-sm" : "text-[11px]"}`}>미용실회원가 {won(p.salon_price)}원</div>
+        <div className={`font-semibold text-gold-ink ${large ? "text-sm" : "text-[11px]"}`}>VIP가 · 미용사 인증 후 공개</div>
       )}
-      {isSalon && <div className={`text-brand-600 ${large ? "text-sm" : "text-[11px]"}`}>미용실회원가 적용</div>}
+      {isSalon && p.salon_price && <div className={`font-semibold text-brand-600 ${large ? "text-sm" : "text-[11px]"}`}>VIP가 적용</div>}
     </div>
   );
 }

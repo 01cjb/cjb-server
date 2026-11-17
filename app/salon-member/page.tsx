@@ -14,12 +14,12 @@ export default function SalonMember() {
   return (
     <div className="max-w-xl mx-auto px-4 py-8">
       <div className="rounded-2xl bg-brand-50 p-6 text-center">
-        <div className="text-4xl">💈</div>
-        <h1 className="text-2xl font-bold mt-2">미용실회원관</h1>
-        <p className="text-sm text-neutral-600 mt-2">미용실·이용원 사업자 인증 시 <b className="text-brand-700">미용실회원가</b>가 적용됩니다.</p>
+        <div className="text-4xl">⭐</div>
+        <h1 className="text-2xl font-bold mt-2">VIP 인증 신청</h1>
+        <p className="text-sm text-neutral-600 mt-2">미용사 인증을 마치면 모든 상품에 <b className="text-brand-700">VIP가</b>가 적용되고, VIP 전용 상품도 구매할 수 있어요.</p>
       </div>
       <div className="grid grid-cols-3 gap-2 my-6 text-center text-xs">
-        {[["1", "인증 신청"], ["2", "서류 확인"], ["3", "회원가 적용"]].map(([n, t]) => (
+        {[["1", "인증 신청"], ["2", "서류 확인"], ["3", "VIP가 적용"]].map(([n, t]) => (
           <div key={n} className="rounded-xl border border-neutral-200 py-3"><b className="block text-brand-600 text-lg">{n}</b>{t}</div>
         ))}
       </div>

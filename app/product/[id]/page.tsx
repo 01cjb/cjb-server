@@ -32,7 +32,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             {p.model_no && (<><dt className="text-neutral-500">모델명</dt><dd>{p.model_no}</dd></>)}
             <dt className="text-neutral-500">배송비</dt><dd>3,000원 (50,000원 이상 무료배송)</dd>
             <dt className="text-neutral-500">적립금</dt><dd>구매금액의 1%</dd>
-            {p.vip_only && (<><dt className="text-neutral-500">구매조건</dt><dd className="text-accent font-medium">VIP 회원 전용 상품</dd></>)}
+            {p.vip_only && (<><dt className="text-neutral-500">구매조건</dt><dd className="text-accent font-medium">VIP(미용사 인증) 전용 상품</dd></>)}
           </dl>
           <BuyBox p={p} />
         </div>
