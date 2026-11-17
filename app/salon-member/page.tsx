@@ -4,9 +4,11 @@ import { getMe } from "@/lib/me";
 
 export const metadata = { title: "VIP 인증 방법" };
 
-export default async function SalonMember() {
+// ?as=general → 일반 회원 화면 미리보기 (안내 문구만 보여서 노출돼도 무방)
+export default async function SalonMember({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
+  const { as } = await searchParams;
   const me = await getMe();
-  const isVip = !!me.user && me.user.grade_id !== "general";
+  const isVip = as !== "general" && !!me.user && me.user.grade_id !== "general";
 
   if (isVip)
     return (
