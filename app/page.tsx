@@ -106,7 +106,7 @@ export default async function Home() {
             <div>
               <p className="text-[13px] opacity-80">이·미용 전문가를 위한 복지몰</p>
               <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">로그인하고 확인하세요</em></h1>
-              <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link><Link href="/salon-member" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">VIP 전용관 안내</Link></div>
+              <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link></div>
             </div>
           )}
         </div>
