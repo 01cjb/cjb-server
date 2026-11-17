@@ -30,7 +30,6 @@ export default async function SalonMember() {
         <div className="text-4xl">⭐</div>
         <h1 className="text-2xl font-bold mt-2">VIP 인증 방법</h1>
         <p className="text-sm text-white/80 mt-2">미용사 면허증(자격증)을 인증하면 모든 상품에 <b className="text-gold">VIP가</b>가 적용되고, VIP 전용 상품도 구매할 수 있어요.</p>
-        <Link href="/category/vip" className="mt-4 inline-flex items-center gap-1 rounded-xl border border-gold/70 px-4 py-2.5 text-sm font-bold text-gold">★ VIP 전용관 둘러보기 →</Link>
       </div>
       <div className="mt-6"><VipNotice /></div>
       <ul className="mt-2 space-y-1.5 text-xs text-neutral-500 list-disc pl-4">
