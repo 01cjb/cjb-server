@@ -20,13 +20,15 @@
 }
 
 html { -webkit-tap-highlight-color: transparent; }
-body { @apply bg-cream text-neutral-900 antialiased; }
+body { @apply text-neutral-900 antialiased; background: #e9e3f1; }
+/* [테스트] 로그인 화면과 같은 연보라 배경 */
+.bw-lav { background: radial-gradient(420px 260px at 85% 120px, rgba(138,75,192,.18), transparent 70%), radial-gradient(360px 240px at -60px 420px, rgba(244,201,93,.16), transparent 70%), #f1edf7; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 
 /* ---------- 첫 화면 인트로 (세션당 한 번) ---------- */
-.bw-intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: var(--color-cream); animation: bw-intro-out .35s ease 2.3s forwards; }
+.bw-intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: #f1edf7; animation: bw-intro-out .35s ease 2.3s forwards; }
 html[data-intro="done"] .bw-intro { display: none; }
 .bw-intro__logo { position: relative; width: 298px; height: 72px; }
 .bw-intro__mark, .bw-intro__word { position: absolute; top: 0; height: 72px; background: url(/logo/full.png) no-repeat; background-size: 298px 72px; }
