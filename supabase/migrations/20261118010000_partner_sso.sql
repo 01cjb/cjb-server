@@ -12,3 +12,13 @@ create table if not exists public.partner_login_tickets (
 );
 create index if not exists partner_login_tickets_user_idx on public.partner_login_tickets(user_id, created_at desc);
 alter table public.partner_login_tickets enable row level security;
+
+-- 연락처로 회원 찾기 (서버 전용). 조회할 번호를 주소(URL)가 아닌 요청 본문으로 보내기 위해 함수로 둔다
+-- → 제휴사가 보낸 전화번호가 접속 기록(URL 로그)에 남지 않는다.
+create or replace function public.partner_find_member(phones text[])
+returns table (id uuid, status text)
+language sql stable security definer set search_path = public as $$
+  select p.id, p.status from public.profiles p where p.phone = any(phones) limit 3
+$$;
+revoke all on function public.partner_find_member(text[]) from public, anon, authenticated;
+grant execute on function public.partner_find_member(text[]) to service_role;
