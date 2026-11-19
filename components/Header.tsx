@@ -75,6 +75,8 @@ export default function Header({ categories, session, loggedIn }: { categories: 
               {menus.map((m) => (
                 <Link key={m.href} href={m.href} onClick={() => setOpen(false)} className="rounded-full border border-neutral-200 px-3 py-1.5 text-[13px] hover:bg-brand-50">{m.label}</Link>
               ))}
+              {/* 웰리케어로 이동 — 로그인 상태면 그쪽도 자동 로그인 (app/go/wellycare) */}
+              <a href="/go/wellycare" className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-[13px] font-semibold text-brand-700">웰리케어 ↗</a>
             </div>
             <p className="font-bold mb-2">전체 카테고리</p>
             <ul className="grid gap-1 @3xl:grid-cols-4">
