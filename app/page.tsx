@@ -84,7 +84,7 @@ export default async function Home() {
             <div className="@3xl:grid @3xl:grid-cols-[1fr_1.1fr] @3xl:gap-10 @3xl:items-end">
               <div>
                 <p className="text-[13px] opacity-80">{who}, 안녕하세요</p>
-                <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">{active.status === "shipped" || active.status === "preparing" ? "주문하신 상품이" : "최근 주문"}<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">{HEAD[active.status]}</em></h1>
+                <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">{active.status === "shipped" || active.status === "preparing" ? "주문하신 상품이" : "최근 주문"}<br /><em className="not-italic inline-block mt-1 rounded-md bg-gold px-2 pt-[5px] pb-[2.5px] leading-none text-plum">{HEAD[active.status]}</em></h1>
                 {ship && <p className="text-[13px] opacity-85 mt-1.5">{carrier} · 송장 {ship.tracking_no}</p>}
               </div>
               <Link href={`/mypage/orders/${active.order_no}`} className="block mt-4 @3xl:mt-0 rounded-[18px] bg-plum-2 px-4 py-3.5">
@@ -99,13 +99,13 @@ export default async function Home() {
           ) : user ? (
             <div>
               <p className="text-[13px] opacity-80">{who}, 안녕하세요</p>
-              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">오늘 필요한 재료,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">뷰티웰에서 바로 주문하세요</em></h1>
+              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">오늘 필요한 재료,<br /><em className="not-italic inline-block mt-1 rounded-md bg-gold px-2 pt-[5px] pb-[2.5px] leading-none text-plum">뷰티웰에서 바로 주문하세요</em></h1>
               <div className="flex gap-2 mt-4"><Link href="/reorder" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">재주문하기</Link><Link href="/categories" className="rounded-xl bg-white/10 font-semibold text-sm px-4 py-2.5">카테고리 보기</Link></div>
             </div>
           ) : (
             <div>
               <p className="text-[13px] opacity-80">이·미용 전문가를 위한 복지몰</p>
-              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic text-plum bg-gold rounded-md px-1.5">로그인하고 확인하세요</em></h1>
+              <h1 className="text-[22px] @3xl:text-3xl font-extrabold leading-snug mt-1">원장님 전용 도매가,<br /><em className="not-italic inline-block mt-1 rounded-md bg-gold px-2 pt-[5px] pb-[2.5px] leading-none text-plum">로그인하고 확인하세요</em></h1>
               <div className="flex gap-2 mt-4"><Link href="/login" className="rounded-xl bg-gold text-plum font-bold text-sm px-4 py-2.5">로그인 / 회원가입</Link></div>
             </div>
           )}
