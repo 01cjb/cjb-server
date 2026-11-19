@@ -16,7 +16,7 @@
   --color-gold-100: #fbecc0;
   --color-gold-ink: #7a5a12;
   --color-cream: #f1edf7; /* 로그인 화면과 같은 연보라 (예전 아이보리 #fbf7f3) */
-  --font-sans: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-sans: var(--font-pretendard), "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
 }
 
 html { -webkit-tap-highlight-color: transparent; }

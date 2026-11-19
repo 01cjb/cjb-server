@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,6 +10,12 @@ import { MainShell, PhoneShell, ShopOnly } from "@/components/ShopChrome";
 import { getCategories } from "@/lib/data";
 import { company } from "@/lib/company";
 import { getMe } from "@/lib/me";
+
+// 쇼핑몰 글꼴: Pretendard (SIL 오픈 폰트 라이선스, 상업용 무료). 서버에서 직접 제공 → 어느 기기에서나 같은 글씨로 보임
+const pretendard = localFont({
+  src: "../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
+  weight: "45 920", display: "swap", variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
   title: { default: `${company.mall} - 뷰티/이·미용인을 위한 복지몰`, template: `%s | ${company.mall}` },
@@ -24,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const serverGrade = me.mock ? null : me.user?.grade_id ?? "general";
   const session = me.mock ? { mock: true, name: null, admin: true } : { mock: false, name: me.user?.name ?? null, admin: me.user?.role === "admin" || me.user?.role === "staff" };
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" className={pretendard.variable} suppressHydrationWarning>
       <head>
         {/* 인트로는 세션당 한 번만 (두 번째부터는 그리기 전에 숨김) */}
         <script dangerouslySetInnerHTML={{ __html: "try{if(sessionStorage.getItem('bw.intro'))document.documentElement.dataset.intro='done';sessionStorage.setItem('bw.intro','1')}catch(e){}" }} />
