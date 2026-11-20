@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import LogoWhite from "./LogoWhite";
 import ScrollRow from "./ScrollRow";
@@ -20,6 +20,9 @@ const menus = [
 export default function Header({ categories, session, loggedIn }: { categories: Category[]; session: { mock: boolean; name: string | null; admin: boolean }; loggedIn: boolean }) {
   const { cart, wish } = useStore();
   const router = useRouter();
+  const pathname = usePathname();
+  // 뒤로 가기: 홈이 아닌 화면에서만 표시. 돌아갈 화면이 없으면(주소로 바로 들어온 경우) 홈으로
+  const back = () => { if (typeof window !== "undefined" && window.history.length > 1) router.back(); else router.push("/"); };
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const cartCount = cart.reduce((a, l) => a + l.qty, 0);
@@ -37,6 +40,11 @@ export default function Header({ categories, session, loggedIn }: { categories: 
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
+        {pathname !== "/" && (
+          <button type="button" onClick={back} aria-label="뒤로 가기" className="-ml-2 -mr-2 grid size-10 shrink-0 place-items-center rounded-full active:bg-white/10">
+            <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+        )}
         <LogoWhite />
         <form onSubmit={submit} className="hidden @3xl:flex flex-1 max-w-md mx-auto items-center bg-white/10 rounded-full px-4">
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="#펌제 #바리깡 #로레알 상품을 검색하세요" className="flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-white/50" />
