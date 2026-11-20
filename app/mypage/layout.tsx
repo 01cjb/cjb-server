@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ScrollRow from "@/components/ScrollRow";
 import { redirect } from "next/navigation";
 import { adminEnabled, createServiceClient, currentUser } from "@/lib/auth";
 import { needsConsent } from "@/lib/consent";
@@ -12,7 +13,8 @@ export default async function MyLayout({ children }: { children: React.ReactNode
   }
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <nav className="flex gap-1 overflow-x-auto no-scrollbar mb-6 -mx-1">{nav.map(([h, l]) => <Link key={h} href={h} className="shrink-0 rounded-full border border-neutral-200 px-3.5 py-1.5 text-sm hover:border-brand-400">{l}</Link>)}</nav>
+      {/* PC에서도 화살표·마우스 끌기로 옆으로 넘길 수 있게 */}
+      <nav className="mb-6"><ScrollRow className="flex gap-1.5">{nav.map(([h, l]) => <Link key={h} href={h} className="shrink-0 rounded-full border border-neutral-200 bg-white px-3.5 py-1.5 text-sm hover:border-brand-400">{l}</Link>)}</ScrollRow></nav>
       {children}
     </div>
   );
