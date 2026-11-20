@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/gen-rules.mjs && next build",
+    "rules": "node scripts/gen-rules.mjs",
     "start": "next start",
     "db:link": "supabase link --project-ref sforkxsrudzidwdjoisw",
     "db:pull": "supabase db pull",

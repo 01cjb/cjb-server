@@ -1,7 +1,10 @@
 import type { Product } from "./types";
 export type Grade = "general" | "salon" | "vip";
-export const FREE_SHIPPING = 50000;
+export const FREE_SHIPPING = 60000; // 이 금액 이상이면 무료배송 (화면 안내·운영규칙 문서도 이 값을 씀)
 export const SHIPPING_FEE = 3000;
+const w = (n: number) => n.toLocaleString("ko-KR") + "원";
+export const SHIPPING_TEXT = `${w(FREE_SHIPPING)} 이상 무료배송`;
+export const SHIPPING_FEE_TEXT = w(SHIPPING_FEE);
 
 export const unitPrice = (p: Product, grade: Grade) => (grade !== "general" && p.salon_price ? p.salon_price : p.price);
 

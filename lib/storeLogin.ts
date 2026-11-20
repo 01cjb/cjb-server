@@ -30,12 +30,14 @@ export async function newStoreCode() {
   throw new Error("매장 코드를 만들지 못했습니다. 다시 시도해 주세요.");
 }
 
-// 최근 15분 안에 틀린 시도 5번이면 잠시 막음
+// 최근 LOCK_MINUTES분 안에 틀린 시도 LOCK_FAILS번이면 잠시 막음 (운영규칙 문서에도 이 값이 표시됨)
+export const LOCK_FAILS = 5;
+export const LOCK_MINUTES = 15;
 export async function tooManyFails(code: string) {
-  const since = new Date(Date.now() - 15 * 60_000).toISOString();
+  const since = new Date(Date.now() - LOCK_MINUTES * 60_000).toISOString();
   const { count } = await createServiceClient().from("store_login_attempts").select("id", { count: "exact", head: true })
     .eq("store_code", code).eq("ok", false).gte("created_at", since);
-  return (count ?? 0) >= 5;
+  return (count ?? 0) >= LOCK_FAILS;
 }
 export async function logAttempt(code: string, ok: boolean, ip: string | null) {
   await createServiceClient().from("store_login_attempts").insert({ store_code: code, ok, ip });
