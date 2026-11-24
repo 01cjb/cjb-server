@@ -433,7 +433,7 @@ export async function Org() {
             <p className="mb-2 rounded-lg bg-indigo-700 px-2 py-1.5 text-center text-xs font-semibold text-white">기술 AI</p>
             <div className="space-y-1.5">
               <Card name="Claude" sub="PM · 개발·자동화" tone="border-indigo-200 bg-indigo-50" />
-              <Card name="AI 비서" sub="준비 중" />
+              <Card name="미니 (Mini)" sub="AI 비서 · 업무 보고" tone="border-indigo-200 bg-indigo-50" />
             </div>
           </div>
         </div>

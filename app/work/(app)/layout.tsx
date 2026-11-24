@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Sidebar, { type NavGroup } from "@/components/work/Sidebar";
+import Mini from "@/components/work/Mini";
 import { getWorkMe, workLive } from "@/lib/work/auth";
 import { MENUS, TEAMS, teamLabel } from "@/lib/work/menus";
 import { applyOrder, getMenuOrder } from "@/lib/work/prefs";
@@ -22,6 +23,7 @@ export default async function WorkApp({ children }: { children: React.ReactNode 
       <div className="md:pl-60">
         <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">{children}</div>
       </div>
+      <Mini userName={me.name} />
     </>
   );
 }
