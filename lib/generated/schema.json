@@ -319,18 +319,18 @@
       ]
     },
     {
-      "file": "20261118000000_carrier_active.sql",
-      "date": "2026-11-18",
-      "name": "carrier_active",
-      "tables": []
-    },
-    {
       "file": "20261118010000_partner_sso.sql",
       "date": "2026-11-18",
       "name": "partner_sso",
       "tables": [
         "partner_login_tickets"
       ]
+    },
+    {
+      "file": "20261118020000_carrier_active.sql",
+      "date": "2026-11-18",
+      "name": "carrier_active",
+      "tables": []
     },
     {
       "file": "20261124000000_work_docs.sql",
