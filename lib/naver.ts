@@ -37,4 +37,5 @@ export async function naverProfile(accessToken: string): Promise<NaverProfile | 
 }
 
 // 외부 주소로 튕기지 않도록 내부 경로만 허용
-export const safeNext = (n: string | null | undefined) => (n && n.startsWith("/") && !n.startsWith("//") ? n : "/mypage");
+// 우리 사이트 안의 주소만 허용 ("//", "/\\" 처럼 바깥 사이트로 풀리는 주소는 막음)
+export const safeNext = (n: string | null | undefined) => (n && /^\/(?![\/\\])/.test(n) && !/[\\\r\n]/.test(n) ? n : "/mypage");

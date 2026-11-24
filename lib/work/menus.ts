@@ -1,10 +1,11 @@
 // 사내 업무 시스템 메뉴 목록 — 개인별 권한은 이 key로 체크합니다 (work_user_menus.menu_key)
 // status: live = 데이터 연결됨 / soon = 화면만 준비 (외부 데이터 연동 예정)
 
-export type TeamKey = "mgmt" | "sales" | "design" | "logistics" | "dev"; // dev: 예전 팀 값(디자인팀으로 통합)
+export type TeamKey = "common" | "mgmt" | "sales" | "design" | "logistics" | "dev"; // dev: 예전 팀 값(디자인팀으로 통합)
 export type Menu = { key: string; label: string; team: TeamKey; status: "live" | "soon"; desc: string; source?: string };
 
 export const TEAMS: { key: TeamKey; label: string; short: string }[] = [
+  { key: "common", label: "공통 / 서류·조직", short: "공통" },
   { key: "mgmt", label: "경영 / 경영지원팀", short: "경영지원" },
   { key: "sales", label: "영업 / 영업지원팀", short: "영업" },
   { key: "design", label: "디자인 / 마케팅팀", short: "디자인·마케팅" },
@@ -12,6 +13,10 @@ export const TEAMS: { key: TeamKey; label: string; short: string }[] = [
 ];
 
 export const MENUS: Menu[] = [
+  // 공통 — 전 부서가 함께 쓰는 메뉴
+  { key: "docs", label: "서류 보관함", team: "common", status: "live", desc: "업무별 서류 보관함과 지시함" },
+  { key: "org", label: "조직도", team: "common", status: "live", desc: "부서별 구성원과 담당 업무" },
+  { key: "tech-ai", label: "기술 AI", team: "common", status: "live", desc: "기술 서류와 AI 담당 안내 (PM: Claude)" },
   // 경영 / 경영지원 — 이카운트 연동 예정
   { key: "tax", label: "세무", team: "mgmt", status: "live", desc: "세금계산서 발행 현황", source: "이카운트 연동 예정" },
   { key: "accounting", label: "회계", team: "mgmt", status: "soon", desc: "전표·계정과목·결산", source: "이카운트" },
@@ -44,6 +49,9 @@ export const MENUS: Menu[] = [
   { key: "frontend", label: "프론트엔드", team: "design", status: "live", desc: "화면·배포 상태" },
   { key: "backend", label: "백엔드", team: "design", status: "live", desc: "DB·API·파이프라인 상태" },
 ];
+
+// 직원이 소속될 수 있는 부서 (공통은 메뉴 묶음일 뿐 소속 부서가 아님)
+export const USER_TEAMS = TEAMS.filter((t) => t.key !== "common");
 
 export const MENU_BY_KEY = Object.fromEntries(MENUS.map((m) => [m.key, m])) as Record<string, Menu>;
 const team = (t: string) => TEAMS.find((x) => x.key === (t === "dev" ? "design" : t));

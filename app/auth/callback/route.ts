@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { adminEnabled, createServiceClient } from "@/lib/auth";
 import { needsConsent } from "@/lib/consent";
+import { safeNext } from "@/lib/naver";
 
 // 이메일 인증·비밀번호 재설정·카카오 로그인(Supabase OAuth) 후 돌아오는 곳
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const next = url.searchParams.get("next");
-  const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/mypage";
+  const dest = safeNext(url.searchParams.get("next"));
   const fail = (code: string) => NextResponse.redirect(new URL(`/login?error=${code}`, url.origin));
 
   // 카카오에서 동의 취소 등으로 돌아온 경우

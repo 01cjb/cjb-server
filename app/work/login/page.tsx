@@ -7,7 +7,7 @@ import { DEMO_LOGIN } from "@/lib/work/mock";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "로그인" };
 
-const safeNext = (n?: string) => (n && n.startsWith("/work") && !n.startsWith("//") ? n : "/work");
+const safeNext = (n?: string) => (n && /^\/work(\/|$|\?)/.test(n) && !/[\\\r\n]/.test(n) ? n : "/work");
 
 export default async function WorkLogin({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { next } = await searchParams;

@@ -1,7 +1,7 @@
 import "server-only";
 import { createServiceClient } from "@/lib/auth";
 import { workLive, type WorkUser } from "./auth";
-import { MENUS, TEAMS } from "./menus";
+import { MENUS, USER_TEAMS } from "./menus";
 import { digits, hashPin, isPin, randomPin, weakPin } from "./pin";
 import * as mock from "./mock";
 
@@ -11,7 +11,7 @@ export type LoginLog = { id: number; name: string | null; phone: string | null; 
 const db = () => createServiceClient();
 const COLS = "id,name,phone,team,position,is_owner,status,failed_count,locked_until,pin_set_at,memo,last_login_at,created_at";
 const MENU_KEYS = new Set(MENUS.map((m) => m.key));
-const TEAM_KEYS = new Set(TEAMS.map((t) => t.key));
+const TEAM_KEYS = new Set(USER_TEAMS.map((t) => t.key));
 
 export async function listUsers(): Promise<UserRow[]> {
   if (!workLive()) return mock.users().map((u) => ({ ...u, menus: mock.menus(u.id) }));

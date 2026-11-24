@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { requireWork } from "@/lib/work/auth";
 
+// 업무 시스템에 로그인한 직원만 사용 (외부에서 우리 AI 요금을 쓰지 못하게)
 export async function POST(req: Request) {
+  const { deny } = await requireWork();
+  if (deny) return deny;
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return NextResponse.json({ error: "ANTHROPIC_API_KEY not set" }, { status: 500 });
 

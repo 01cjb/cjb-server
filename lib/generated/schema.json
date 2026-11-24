@@ -19,6 +19,8 @@
     "order_items",
     "order_status_logs",
     "orders",
+    "partner_login_tickets",
+    "pm_directives",
     "product_import_batches",
     "product_import_rows",
     "product_logs",
@@ -34,6 +36,8 @@
     "user_consents",
     "wishlists",
     "work_audit",
+    "work_directives",
+    "work_docs",
     "work_login_logs",
     "work_sessions",
     "work_user_menus",
@@ -122,6 +126,36 @@
     "work_users.status": [
       "active",
       "disabled"
+    ],
+    "work_docs.box": [
+      "mgmt",
+      "sales",
+      "design",
+      "logistics",
+      "tech"
+    ],
+    "work_directives.to_team": [
+      "all",
+      "mgmt",
+      "sales",
+      "design",
+      "logistics"
+    ],
+    "work_directives.status": [
+      "open",
+      "doing",
+      "done"
+    ],
+    "pm_directives.priority": [
+      "low",
+      "normal",
+      "high"
+    ],
+    "pm_directives.status": [
+      "open",
+      "doing",
+      "done",
+      "hold"
     ]
   },
   "triggers": [
@@ -289,6 +323,24 @@
       "date": "2026-11-18",
       "name": "carrier_active",
       "tables": []
+    },
+    {
+      "file": "20261118010000_partner_sso.sql",
+      "date": "2026-11-18",
+      "name": "partner_sso",
+      "tables": [
+        "partner_login_tickets"
+      ]
+    },
+    {
+      "file": "20261124000000_work_docs.sql",
+      "date": "2026-11-24",
+      "name": "work_docs",
+      "tables": [
+        "work_docs",
+        "work_directives",
+        "pm_directives"
+      ]
     }
   ]
 }
