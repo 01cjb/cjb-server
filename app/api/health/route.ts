@@ -22,5 +22,6 @@ export async function GET() {
     db = error ? { ok: false, error: error.message } : { ok: true };
   }
 
-  return NextResponse.json({ ok: true, time: new Date().toISOString(), env, db });
+  // 어떤 비밀키가 등록돼 있는지는 밖으로 알리지 않음 (배포 점검용 ok 값만)
+  return NextResponse.json({ ok: true, time: new Date().toISOString(), db: { ok: db.ok } });
 }

@@ -77,7 +77,7 @@ export default function UsersManager({ users, teams, menus, meId }: { users: U[]
         <form onSubmit={create} className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
           <input className={input} placeholder="이름 *" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} required maxLength={30} />
           <input className={input} placeholder="연락처 010-0000-0000" value={fmtPhone(f.phone)} onChange={(e) => setF({ ...f, phone: digits(e.target.value).slice(0, 11) })} inputMode="tel" />
-          <select className={input} value={f.team} onChange={(e) => setF({ ...f, team: e.target.value })}>{teams.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}</select>
+          <select className={input} value={f.team} onChange={(e) => setF({ ...f, team: e.target.value })}>{teams.filter((t) => t.key !== "common").map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}</select>
           <input className={input} placeholder="직책 (팀장·사원…)" value={f.position} onChange={(e) => setF({ ...f, position: e.target.value })} maxLength={20} />
           <input className={input} placeholder="PIN (비우면 자동 발급)" value={f.pin} onChange={(e) => setF({ ...f, pin: digits(e.target.value).slice(0, 6) })} inputMode="numeric" />
           <button className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white">등록</button>
@@ -173,7 +173,7 @@ function EditRow({ u, teams, onCancel, onSave }: { u: U; teams: Team[]; onCancel
     <tr className="bg-brand-50/40">
       <td className="px-2 py-2"><input className={`${input} w-28`} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} /></td>
       <td className="px-2 py-2"><input className={`${input} w-36`} value={fmtPhone(v.phone)} onChange={(e) => setV({ ...v, phone: digits(e.target.value).slice(0, 11) })} placeholder="미등록" /></td>
-      <td className="px-2 py-2"><select className={input} value={v.team} onChange={(e) => setV({ ...v, team: e.target.value })}>{teams.map((t) => <option key={t.key} value={t.key}>{t.short}</option>)}</select></td>
+      <td className="px-2 py-2"><select className={input} value={v.team} onChange={(e) => setV({ ...v, team: e.target.value })}>{teams.filter((t) => t.key !== "common").map((t) => <option key={t.key} value={t.key}>{t.short}</option>)}</select></td>
       <td className="px-2 py-2"><input className={`${input} w-24`} value={v.position} onChange={(e) => setV({ ...v, position: e.target.value })} /></td>
       <td className="px-2 py-2 text-xs" colSpan={2}><label className="flex items-center gap-1.5"><input type="checkbox" className="accent-brand-600" checked={v.is_owner} onChange={(e) => setV({ ...v, is_owner: e.target.checked })} />대표 권한</label></td>
       <td className="whitespace-nowrap px-3 py-2 text-right text-xs"><button className="mr-2 font-semibold text-brand-700 underline" onClick={() => onSave(v)}>저장</button><button className="text-neutral-500 underline" onClick={onCancel}>취소</button></td>

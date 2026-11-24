@@ -12,6 +12,9 @@ import LogenExcel from "./LogenExcel";
 import { dayCounts, waybillDay } from "@/lib/carriers/logen-excel";
 import { listWaybills, logenConfig, waybillTargets } from "@/lib/carriers/logen";
 import Pill from "@/components/admin/Pill";
+import { DirectiveActions, DirectiveForm, DocDelete, DocUpload } from "./DocsForms";
+import { DIRECTIVE_STATUS, TO_TEAMS, listDirectives, listDocs, listOrg, myBoxes, type Directive } from "@/lib/work/docs";
+import { USER_TEAMS } from "@/lib/work/menus";
 import { Table, Tabs } from "@/components/admin/Table";
 
 // 메뉴별 화면 — 기존 쇼핑몰 DB를 조회 전용으로 보여줌 (수정은 이후 단계에서 메뉴별로 추가)
@@ -310,6 +313,141 @@ export function Soon({ menu }: P) {
   );
 }
 
+// ---------- 서류 보관함 · 지시함 · 조직도 · 기술 AI ----------
+const kb = (n: number | null) => (n == null ? "" : n >= 1048576 ? `${(n / 1048576).toFixed(1)}MB` : `${Math.max(1, Math.round(n / 1024))}KB`);
+const TO_LABEL = Object.fromEntries(TO_TEAMS.map((t) => [t.key, t.label])) as Record<string, string>;
+const STATUS_TONE: Record<string, string> = { open: "bg-amber-50 text-amber-700", doing: "bg-sky-50 text-sky-700", done: "bg-emerald-50 text-emerald-700" };
+
+function DirectiveList({ list, empty }: { list: Directive[]; empty: string }) {
+  if (!list.length) return <p className="rounded-xl border border-dashed border-neutral-200 bg-white p-6 text-center text-sm text-neutral-500">{empty}</p>;
+  return (
+    <ul className="space-y-2">
+      {list.map((d) => (
+        <li key={d.id} className="rounded-xl border border-neutral-200 bg-white p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_TONE[d.status]}`}>{DIRECTIVE_STATUS[d.status]}</span>
+            <p className="font-semibold">{d.title}</p>
+            {d.due_date && <span className="text-xs text-neutral-500">기한 {d.due_date}</span>}
+          </div>
+          <p className="mt-1 text-xs text-neutral-500">{d.from_name ?? "-"} → {TO_LABEL[d.to_team] ?? d.to_team}{d.to_name ? ` · ${d.to_name}` : ""} · {dt(d.created_at)}</p>
+          {d.body && <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-700">{d.body}</p>}
+          {d.result && <p className="mt-2 whitespace-pre-wrap rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700"><span className="mr-1 text-xs font-semibold text-neutral-500">결과 보고</span>{d.result}</p>}
+          <div className="mt-3"><DirectiveActions id={d.id} status={d.status} result={d.result} /></div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export async function Docs({ q, me }: P) {
+  const boxes = myBoxes(me);
+  const cur = q.box === "directive" || boxes.some((b) => b.key === q.box) ? q.box! : boxes[0]?.key ?? "directive";
+  const tabs = [...boxes.map((b) => ({ key: b.key, label: b.label, href: `/work/m/docs?box=${b.key}` })), { key: "directive", label: "지시함", href: "/work/m/docs?box=directive" }];
+  if (cur === "directive") {
+    const [list, org] = await Promise.all([listDirectives(me), listOrg()]);
+    const open = list.filter((d) => d.status !== "done");
+    return (
+      <>
+        <Tabs items={tabs.map((t) => (t.key === "directive" ? { ...t, count: open.length } : t))} cur={cur} />
+        <Note>지시를 내리면 받는 부서 사람들이 여기서 확인하고, 진행 상태와 결과를 남깁니다. 내가 보낸 지시와 우리 부서가 받은 지시만 보입니다(대표는 전체).</Note>
+        <div className="mb-4"><DirectiveForm teams={TO_TEAMS} users={org.map((u) => ({ id: u.id, name: u.name, team: u.team }))} /></div>
+        <DirectiveList list={list} empty="아직 지시가 없습니다." />
+      </>
+    );
+  }
+  const list = await listDocs(me, cur);
+  const label = boxes.find((b) => b.key === cur)?.label ?? "서류";
+  return (
+    <>
+      <Tabs items={tabs} cur={cur} />
+      <Note>업무별 보관함입니다. 자기 부서 보관함만 보이고, 대표는 전체를 봅니다. 파일은 로그인한 직원만 내려받을 수 있습니다.</Note>
+      <div className="mb-4"><DocUpload box={cur} boxLabel={label} /></div>
+      <Table head={["제목", "첨부", "올린 사람", "올린 날", ""]} empty={!list.length}>
+        {list.map((d) => (
+          <tr key={d.id}>
+            <td><p className="font-medium">{d.title}</p>{d.body && <p className="mt-0.5 whitespace-pre-wrap text-xs text-neutral-500">{d.body}</p>}</td>
+            <td className="text-xs">
+              {d.file_name && <a href={`/api/work/docs/${d.id}`} className="block text-brand-700 underline">{d.file_name} <span className="text-neutral-400">{kb(d.file_size)}</span></a>}
+              {d.link_url && <a href={d.link_url} target="_blank" rel="noopener noreferrer" className="block text-brand-700 underline">링크 열기 ↗</a>}
+              {!d.file_name && !d.link_url && <span className="text-neutral-400">-</span>}
+            </td>
+            <td className="text-xs">{d.created_by_name ?? "-"}</td>
+            <td className="text-xs whitespace-nowrap">{day(d.created_at)}</td>
+            <td>{(me.is_owner || d.created_by === me.id) && <DocDelete id={d.id} />}</td>
+          </tr>
+        ))}
+      </Table>
+    </>
+  );
+}
+
+export async function Org() {
+  const users = await listOrg();
+  const owners = users.filter((u) => u.is_owner);
+  const of = (k: string) => users.filter((u) => !u.is_owner && (u.team === k || (k === "design" && u.team === "dev")));
+  const Card = ({ name, sub, tone }: { name: string; sub: string; tone?: string }) => (
+    <div className={`rounded-lg border px-3 py-2 text-center ${tone ?? "border-neutral-200 bg-white"}`}><p className="text-sm font-semibold">{name}</p><p className="text-[11px] text-neutral-500">{sub}</p></div>
+  );
+  return (
+    <>
+      <Note>직원 등록(사용자·권한) 내용으로 자동으로 그려집니다. 부서나 직책을 바꾸려면 대표가 「사용자·권한」에서 수정하세요.</Note>
+      <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="mx-auto flex max-w-xs flex-col items-center gap-2">
+          {owners.length ? owners.map((u) => <Card key={u.id} name={u.name} sub={u.position ?? "대표"} tone="border-brand-300 bg-brand-50" />) : <Card name="대표" sub="미등록" />}
+        </div>
+        <div className="mx-auto my-4 h-6 w-px bg-neutral-300" />
+        <div className="grid gap-4 border-t border-neutral-300 pt-4 md:grid-cols-2 lg:grid-cols-5">
+          {USER_TEAMS.map((t) => (
+            <div key={t.key}>
+              <p className="mb-2 rounded-lg bg-neutral-800 px-2 py-1.5 text-center text-xs font-semibold text-white">{t.label}</p>
+              <div className="space-y-1.5">
+                {of(t.key).map((u) => <Card key={u.id} name={u.name} sub={u.position ?? "-"} />)}
+                {!of(t.key).length && <p className="rounded-lg border border-dashed border-neutral-200 py-2 text-center text-xs text-neutral-400">담당자 없음</p>}
+              </div>
+            </div>
+          ))}
+          <div>
+            <p className="mb-2 rounded-lg bg-indigo-700 px-2 py-1.5 text-center text-xs font-semibold text-white">기술 AI</p>
+            <div className="space-y-1.5">
+              <Card name="Claude" sub="PM · 개발·자동화" tone="border-indigo-200 bg-indigo-50" />
+              <Card name="AI 비서" sub="준비 중" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export async function TechAi({ me }: P) {
+  const list = await listDocs(me, "tech");
+  return (
+    <>
+      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+        {[["PM", "Claude"], ["맡은 일", "개발 · 자동화 · 점검"], ["기술 서류", `${list.length}건`]].map(([k, v]) => (
+          <div key={k} className="rounded-xl border border-neutral-200 bg-white p-4"><p className="text-xs text-neutral-500">{k}</p><p className="mt-1 text-lg font-semibold">{v}</p></div>
+        ))}
+      </div>
+      <Note>보안 점검 보고서, 연동 안내서, 전체 코드 문서처럼 기술 관련 서류를 모아 두는 곳입니다. 전 직원이 볼 수 있습니다.</Note>
+      <div className="mb-4"><DocUpload box="tech" boxLabel="기술 AI 서류" /></div>
+      <Table head={["제목", "첨부", "올린 사람", "올린 날", ""]} empty={!list.length}>
+        {list.map((d) => (
+          <tr key={d.id}>
+            <td><p className="font-medium">{d.title}</p>{d.body && <p className="mt-0.5 whitespace-pre-wrap text-xs text-neutral-500">{d.body}</p>}</td>
+            <td className="text-xs">
+              {d.file_name && <a href={`/api/work/docs/${d.id}`} className="block text-brand-700 underline">{d.file_name} <span className="text-neutral-400">{kb(d.file_size)}</span></a>}
+              {d.link_url && <a href={d.link_url} target="_blank" rel="noopener noreferrer" className="block text-brand-700 underline">링크 열기 ↗</a>}
+            </td>
+            <td className="text-xs">{d.created_by_name ?? "-"}</td>
+            <td className="text-xs whitespace-nowrap">{day(d.created_at)}</td>
+            <td>{(me.is_owner || d.created_by === me.id) && <DocDelete id={d.id} />}</td>
+          </tr>
+        ))}
+      </Table>
+    </>
+  );
+}
+
 export const VIEWS: Record<string, (p: P) => React.ReactNode | Promise<React.ReactNode>> = {
-  tax: Tax, revenue: Revenue, clients: Clients, store: Store, inventory: Inventory, orders: Orders, shipping: Shipping, waybill: Waybill, frontend: Frontend, backend: Backend, channels: Channels,
+  docs: Docs, org: Org, "tech-ai": TechAi, tax: Tax, revenue: Revenue, clients: Clients, store: Store, inventory: Inventory, orders: Orders, shipping: Shipping, waybill: Waybill, frontend: Frontend, backend: Backend, channels: Channels,
 };
