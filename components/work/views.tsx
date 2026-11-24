@@ -339,16 +339,40 @@ function DirectiveList({ list, empty }: { list: Directive[]; empty: string }) {
   );
 }
 
+// 서류 보관함: 첫 화면은 폴더 목록, 폴더를 누르면 그 안의 서류가 보임
+function Folder({ href, label, sub, tone }: { href: string; label: string; sub: string; tone?: string }) {
+  return (
+    <a href={href} className="group flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-5 transition hover:border-brand-400 hover:shadow-sm">
+      <svg viewBox="0 0 48 40" className={`h-12 w-14 shrink-0 ${tone ?? "text-amber-400"}`} fill="currentColor" aria-hidden><path d="M4 6a4 4 0 0 1 4-4h10.3a4 4 0 0 1 2.9 1.2L24.6 7H40a4 4 0 0 1 4 4v3H4V6Z" opacity=".7" /><rect x="2" y="11" width="44" height="27" rx="4" /></svg>
+      <span className="min-w-0"><span className="block truncate font-semibold group-hover:text-brand-700">{label}</span><span className="block text-xs text-neutral-500">{sub}</span></span>
+    </a>
+  );
+}
+const Crumb = ({ label }: { label: string }) => (
+  <p className="mb-4 flex items-center gap-2 text-sm"><a href="/work/m/docs" className="rounded-lg px-2 py-1 font-semibold text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">‹ 서류 보관함</a><span className="text-neutral-400">/</span><span className="font-semibold">{label}</span></p>
+);
+
 export async function Docs({ q, me }: P) {
   const boxes = myBoxes(me);
-  const cur = q.box === "directive" || boxes.some((b) => b.key === q.box) ? q.box! : boxes[0]?.key ?? "directive";
-  const tabs = [...boxes.map((b) => ({ key: b.key, label: b.label, href: `/work/m/docs?box=${b.key}` })), { key: "directive", label: "지시함", href: "/work/m/docs?box=directive" }];
-  if (cur === "directive") {
-    const [list, org] = await Promise.all([listDirectives(me), listOrg()]);
-    const open = list.filter((d) => d.status !== "done");
+  const cur = q.box === "directive" || boxes.some((b) => b.key === q.box) ? q.box! : "";
+  if (!cur) {
+    const [counts, dirs] = await Promise.all([Promise.all(boxes.map((b) => listDocs(me, b.key).then((l) => l.length))), listDirectives(me)]);
+    const open = dirs.filter((d) => d.status !== "done").length;
     return (
       <>
-        <Tabs items={tabs.map((t) => (t.key === "directive" ? { ...t, count: open.length } : t))} cur={cur} />
+        <Note>폴더를 누르면 그 안의 서류가 보입니다. 자기 부서 폴더만 보이고, 대표는 전체를 봅니다.</Note>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {boxes.map((b, i) => <Folder key={b.key} href={`/work/m/docs?box=${b.key}`} label={b.label} sub={`서류 ${counts[i]}건`} />)}
+          <Folder href="/work/m/docs?box=directive" label="지시함" sub={`진행 중 ${open}건 · 전체 ${dirs.length}건`} tone="text-sky-400" />
+        </div>
+      </>
+    );
+  }
+  if (cur === "directive") {
+    const [list, org] = await Promise.all([listDirectives(me), listOrg()]);
+    return (
+      <>
+        <Crumb label="지시함" />
         <Note>지시를 내리면 받는 부서 사람들이 여기서 확인하고, 진행 상태와 결과를 남깁니다. 내가 보낸 지시와 우리 부서가 받은 지시만 보입니다(대표는 전체).</Note>
         <div className="mb-4"><DirectiveForm teams={TO_TEAMS} users={org.map((u) => ({ id: u.id, name: u.name, team: u.team }))} /></div>
         <DirectiveList list={list} empty="아직 지시가 없습니다." />
@@ -359,8 +383,7 @@ export async function Docs({ q, me }: P) {
   const label = boxes.find((b) => b.key === cur)?.label ?? "서류";
   return (
     <>
-      <Tabs items={tabs} cur={cur} />
-      <Note>업무별 보관함입니다. 자기 부서 보관함만 보이고, 대표는 전체를 봅니다. 파일은 로그인한 직원만 내려받을 수 있습니다.</Note>
+      <Crumb label={label} />
       <div className="mb-4"><DocUpload box={cur} boxLabel={label} /></div>
       <Table head={["제목", "첨부", "올린 사람", "올린 날", ""]} empty={!list.length}>
         {list.map((d) => (
