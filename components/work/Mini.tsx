@@ -16,6 +16,10 @@ export default function Mini({ userName }: { userName: string }) {
   const [listening, setListening] = useState(false);
   const [canHear, setCanHear] = useState(false);
   const [canSpeak, setCanSpeak] = useState(false);
+  const [rate, setRate] = useState(0.85);
+  const [voices, setVoices] = useState<string[]>([]);
+  const [voiceName, setVoiceName] = useState("");
+  const [setup, setSetup] = useState(false);
   const rec = useRef<Rec | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
@@ -24,23 +28,42 @@ export default function Mini({ userName }: { userName: string }) {
     const w = window as unknown as { SpeechRecognition?: new () => Rec; webkitSpeechRecognition?: new () => Rec };
     setCanHear(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
     setCanSpeak("speechSynthesis" in window);
-    try { setSpeak(localStorage.getItem("mini.speak") === "1"); } catch { /* 저장소를 못 쓰는 환경 */ }
-    return () => { try { window.speechSynthesis?.cancel(); rec.current?.stop(); } catch { /* 무시 */ } };
+    try {
+      setSpeak(localStorage.getItem("mini.speak") === "1");
+      const r = Number(localStorage.getItem("mini.rate")); if (r >= 0.6 && r <= 1.3) setRate(r);
+      setVoiceName(localStorage.getItem("mini.voice") ?? "");
+    } catch { /* 저장소를 못 쓰는 환경 */ }
+    // 음성 목록은 조금 늦게 준비되는 브라우저가 있어 준비되면 다시 읽음
+    const load = () => { try { setVoices(window.speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith("ko")).map((v) => v.name)); } catch { /* 무시 */ } };
+    load();
+    try { window.speechSynthesis?.addEventListener("voiceschanged", load); } catch { /* 무시 */ }
+    return () => { try { window.speechSynthesis?.removeEventListener("voiceschanged", load); window.speechSynthesis?.cancel(); rec.current?.stop(); } catch { /* 무시 */ } };
   }, []);
   useEffect(() => { box.current?.scrollTo({ top: box.current.scrollHeight, behavior: "smooth" }); }, [msgs, busy]);
   useEffect(() => { if (open) setTimeout(() => input.current?.focus(), 50); else { try { window.speechSynthesis?.cancel(); } catch { /* 무시 */ } } }, [open]);
 
+  // 목소리 고르기: 자연스러운 음성(엣지의 Natural/Online, 크롬의 Google 한국어)을 먼저, 없으면 기기 기본 한국어 음성
+  function pickVoice(): SpeechSynthesisVoice | undefined {
+    const ko = window.speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith("ko"));
+    if (voiceName) { const v = ko.find((x) => x.name === voiceName); if (v) return v; }
+    return ko.find((v) => /natural|online/i.test(v.name)) ?? ko.find((v) => /google/i.test(v.name)) ?? ko[0];
+  }
   function say(t: string) {
     if (!canSpeak) return;
     try {
       const s = window.speechSynthesis; s.cancel();
-      const u = new SpeechSynthesisUtterance(t.replace(/[*#_`>-]+/g, " "));
-      u.lang = "ko-KR"; u.rate = 1.05;
-      const v = s.getVoices().find((x) => x.lang?.toLowerCase().startsWith("ko"));
-      if (v) u.voice = v;
-      s.speak(u);
+      // 문장 단위로 끊어 읽어 숨 쉴 틈을 줌
+      const parts = t.replace(/[*#_`>]+/g, " ").split(/(?<=[.!?。]|다\.|요\.)\s+|\n+/).map((x) => x.trim()).filter(Boolean);
+      const v = pickVoice();
+      for (const part of parts) {
+        const u = new SpeechSynthesisUtterance(part);
+        u.lang = "ko-KR"; u.rate = rate; u.pitch = 1;
+        if (v) u.voice = v;
+        s.speak(u);
+      }
     } catch { /* 음성 없는 기기 */ }
   }
+  const save = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* 무시 */ } };
   function toggleSpeak() {
     const n = !speak; setSpeak(n);
     try { localStorage.setItem("mini.speak", n ? "1" : "0"); if (!n) window.speechSynthesis?.cancel(); } catch { /* 무시 */ }
@@ -87,8 +110,30 @@ export default function Mini({ userName }: { userName: string }) {
             <span className="grid size-8 place-items-center rounded-full bg-white/15 text-sm font-bold">M</span>
             <div className="min-w-0 flex-1"><p className="text-sm font-semibold">미니 <span className="font-normal text-white/70">Mini</span></p><p className="text-[11px] text-white/70">CJB 업무 시스템 AI 비서</p></div>
             {canSpeak && <button onClick={toggleSpeak} aria-pressed={speak} title="답변을 소리로 듣기" className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-white/40 ${speak ? "bg-white text-brand-700" : "text-white"}`}>{speak ? "소리 켬" : "소리 끔"}</button>}
+            {canSpeak && <button onClick={() => setSetup(!setup)} aria-expanded={setup} aria-label="음성 설정" title="음성 설정" className="grid size-8 place-items-center rounded-full hover:bg-white/15">
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" /></svg>
+            </button>}
             <button onClick={() => setOpen(false)} aria-label="닫기" className="grid size-8 place-items-center rounded-full hover:bg-white/15">✕</button>
           </div>
+          {setup && (
+            <div className="space-y-2 border-b border-neutral-200 bg-white px-4 py-3 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-12 shrink-0 text-neutral-500">빠르기</span>
+                {([[0.7, "느리게"], [0.85, "조금 느리게"], [1, "보통"], [1.15, "빠르게"]] as const).map(([r, l]) => (
+                  <button key={r} onClick={() => { setRate(r); save("mini.rate", String(r)); }} className={`rounded-full px-2.5 py-1 ring-1 ${rate === r ? "bg-brand-600 text-white ring-brand-600" : "text-neutral-600 ring-neutral-200"}`}>{l}</button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-12 shrink-0 text-neutral-500">목소리</span>
+                <select value={voiceName} onChange={(e) => { setVoiceName(e.target.value); save("mini.voice", e.target.value); }} className="min-w-0 flex-1 rounded-lg border border-neutral-200 px-2 py-1.5">
+                  <option value="">자동 (가장 자연스러운 음성)</option>
+                  {voices.map((v) => <option key={v} value={v}>{v}</option>)}
+                </select>
+                <button onClick={() => say("안녕하세요, 미니예요. 이 목소리와 빠르기로 읽어 드릴게요.")} className="shrink-0 rounded-full px-2.5 py-1 font-semibold text-brand-700 ring-1 ring-brand-300">들어 보기</button>
+              </div>
+              <p className="text-neutral-400">목소리는 이 기기에 설치된 것만 고를 수 있어요. 엣지 브라우저에는 더 자연스러운 목소리(이름에 Natural)가 있습니다.</p>
+            </div>
+          )}
           <div ref={box} className="flex-1 space-y-2 overflow-y-auto bg-neutral-50 p-3 text-sm">
             <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white px-3 py-2 shadow-sm">안녕하세요 {userName}님, 미니예요. 무엇을 도와드릴까요?</div>
             {!msgs.length && <div className="flex flex-wrap gap-1.5 pt-1">{QUICK.map((q) => <button key={q} onClick={() => send(q)} className="rounded-full bg-white px-3 py-1.5 text-xs text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">{q}</button>)}</div>}
