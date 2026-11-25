@@ -3,7 +3,7 @@ import { requireWork } from "@/lib/work/auth";
 import { importSabangnetLogen } from "@/lib/carriers/logen-excel";
 import { importVuka } from "@/lib/channels/vuka-excel";
 
-// 주문 엑셀 올리기: source=sabangnet(사방넷 「로젠택배 양식」) / vuka(뷰카 엑셀출력)
+// 주문 엑셀 올리기: source=sabangnet(사방넷 「로젠택배 양식」, 금액을 넣으려면 settle=「정산양식」도 함께) / vuka(뷰카 엑셀출력)
 export async function POST(req: Request) {
   const { deny } = await requireWork({ menu: "waybill" });
   if (deny) return deny;
@@ -16,6 +16,11 @@ export async function POST(req: Request) {
   try {
     const buf = await file.arrayBuffer();
     if (form?.get("source") === "vuka") return NextResponse.json({ source: "vuka", ...(await importVuka(buf, date)) });
+    const settle = form?.get("settle");
+    if (settle instanceof File && settle.size > 0) {
+      if (settle.size > 10 * 1024 * 1024 || !/\.xlsx$/i.test(settle.name)) return NextResponse.json({ error: "정산양식은 10MB 이하 xlsx 파일만 올릴 수 있습니다." }, { status: 400 });
+      return NextResponse.json({ source: "sabangnet", ...(await importSabangnetLogen(buf, date, await settle.arrayBuffer())) });
+    }
     return NextResponse.json({ source: "sabangnet", ...(await importSabangnetLogen(buf, date)) });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 400 });

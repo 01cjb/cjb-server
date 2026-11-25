@@ -8,6 +8,7 @@ export default function LogenExcel({ date, counts }: { date: string; counts: { c
   const path = usePathname();
   const sp = useSearchParams();
   const file = useRef<HTMLInputElement>(null);
+  const settle = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [src, setSrc] = useState<"sabangnet" | "vuka">("sabangnet");
   const [msg, setMsg] = useState<{ t: string; bad?: boolean } | null>(null);
@@ -22,14 +23,17 @@ export default function LogenExcel({ date, counts }: { date: string; counts: { c
     if (!f) return setMsg({ t: src === "vuka" ? "뷰카에서 엑셀출력한 파일을 선택하세요." : "사방넷에서 받은 「로젠택배 양식」 엑셀을 선택하세요.", bad: true });
     setBusy(true); setMsg(null);
     const fd = new FormData(); fd.set("file", f); fd.set("date", date); fd.set("source", src);
+    const sf = src === "sabangnet" ? settle.current?.files?.[0] : null;
+    if (sf) fd.set("settle", sf);
     const r = await fetch("/api/work/waybill/import", { method: "POST", body: fd });
     const j = await r.json().catch(() => ({}));
     setBusy(false);
     if (!r.ok) return setMsg({ t: j.error ?? "올리기 실패", bad: true });
     if (file.current) file.current.value = "";
+    if (settle.current) settle.current.value = "";
     setMsg({ t: j.source === "vuka"
       ? `뷰카 주문 ${j.orders}건 저장 (상품 ${j.total}줄) · 출고 대기 ${j.pending}건 · 이미 배송중 ${j.shipped}건${j.skipped ? ` · 건너뜀 ${j.skipped}줄` : ""}`
-      : `사방넷 주문 ${j.saved}건 저장 (${j.date})${j.skipped ? ` · 건너뜀 ${j.skipped}건` : ""}` });
+      : `사방넷 주문 ${j.saved}건 저장 (${j.date})${j.priced != null ? ` · 금액 ${j.priced}건 ${Number(j.amount).toLocaleString()}원` : " · 금액 없음(정산양식을 함께 올리면 금액이 들어갑니다)"}${j.skipped ? ` · 건너뜀 ${j.skipped}건` : ""}${j.errors?.length ? ` · ${j.errors[0]}` : ""}` });
     router.refresh();
   }
 
@@ -55,9 +59,10 @@ export default function LogenExcel({ date, counts }: { date: string; counts: { c
           </div>
           <p className="mt-0.5 text-xs text-neutral-500">{src === "vuka"
             ? "뷰카 「배송(준비)중」 또는 「주문현황」 → 엑셀출력 파일. 송장번호가 있는 주문은 배송중으로 저장돼 출고 목록에서 빠집니다."
-            : "사방넷 주문서확인처리 → 다운로드 「로젠택배 양식」 파일. 같은 주문번호는 덮어씁니다."}</p>
+            : "사방넷 주문서확인처리 → 다운로드 「로젠택배 양식」 파일. 같은 날 받은 「정산양식」을 함께 올리면 주문 금액도 들어갑니다. 같은 주문번호는 덮어씁니다."}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <input ref={file} type="file" accept=".xlsx" className="max-w-[220px] text-xs" />
+            {src === "sabangnet" && <label className="flex items-center gap-1 text-xs text-neutral-500">정산양식(금액용·선택)<input ref={settle} type="file" accept=".xlsx" className="max-w-[200px] text-xs" /></label>}
             <button onClick={upload} disabled={busy} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-700 ring-1 ring-brand-300 disabled:opacity-40">{busy ? "올리는 중…" : "올리기"}</button>
           </div>
         </div>

@@ -28,9 +28,32 @@ const cellText = (v: ExcelJS.CellValue): string => {
 };
 
 // ---------- 1) 사방넷 엑셀 올리기 ----------
-export type ImportResult = { total: number; saved: number; skipped: number; date: string; errors: string[] };
+export type ImportResult = { total: number; saved: number; skipped: number; date: string; errors: string[]; priced?: number; amount?: number };
 
-export async function importSabangnetLogen(buf: ArrayBuffer, date: string): Promise<ImportResult> {
+// 사방넷 「정산양식」에서 줄별 금액 읽기 (주문번호 칸이 없어 수취인·수량·상품명으로 로젠 양식 줄과 짝지음)
+type Settle = { name: string; qty: number; item: string; mall: string; mallId: string; price: number; settle: number; settleTotal: number; ship: number; used: boolean };
+const sq = (t: string) => t.replace(/[\s/]/g, "");
+const won = (t: string) => Number(t.replace(/[^\d.-]/g, "")) || 0;
+async function readSettle(buf: ArrayBuffer): Promise<Settle[]> {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf);
+  const ws = wb.worksheets[0];
+  if (!ws) throw new Error("정산양식 엑셀에 시트가 없습니다.");
+  const head: Record<string, number> = {};
+  ws.getRow(1).eachCell((c, col) => { const t = sq(cellText(c.value)); if (t && !(t in head)) head[t] = col; });
+  const col = (...names: string[]) => { for (const n of names) { const k = Object.keys(head).find((h) => h.startsWith(n)); if (k) return head[k]; } return 0; };
+  const C = { name: col("수취인명"), qty: col("수량"), item: col("쇼핑몰상품명", "사방넷상품명"), opt: col("옵션"), mall: col("쇼핑몰명"), id: col("아이디"), price: col("판매가"), settle: col("정산가"), total: col("정산합계"), ship: col("배송비") };
+  if (!C.name || !C.qty || !C.item || !C.price) throw new Error("사방넷 「정산양식」 엑셀이 아닙니다. (수취인명·수량·상품명·판매가 칸이 필요합니다)");
+  const get = (r: ExcelJS.Row, c: number) => (c ? cellText(r.getCell(c).value).trim() : "");
+  const out: Settle[] = [];
+  ws.eachRow((r, i) => {
+    if (i === 1 || !get(r, C.name) || !get(r, C.mall)) return;
+    out.push({ name: get(r, C.name), qty: won(get(r, C.qty)) || 1, item: sq(get(r, C.item) + get(r, C.opt)), mall: get(r, C.mall), mallId: get(r, C.id), price: won(get(r, C.price)), settle: won(get(r, C.settle)), settleTotal: won(get(r, C.total)), ship: won(get(r, C.ship)), used: false });
+  });
+  return out;
+}
+
+export async function importSabangnetLogen(buf: ArrayBuffer, date: string, settleBuf?: ArrayBuffer | null): Promise<ImportResult> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("날짜 형식이 올바르지 않습니다.");
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(buf);
@@ -46,6 +69,15 @@ export async function importSabangnetLogen(buf: ArrayBuffer, date: string): Prom
   if (missing.length) throw new Error("사방넷 「로젠택배 양식」 엑셀이 아닙니다. (수취인명·우편번호·주소·연락처·주문번호·상품명·수량 칸이 필요합니다)");
   const get = (r: ExcelJS.Row, k?: string) => (k ? cellText(r.getCell(head[k]).value).trim() : "");
 
+  const settle = settleBuf ? await readSettle(settleBuf) : [];
+  const pick = (name: string, qty: number, item: string) => {
+    const it = sq(item);
+    const free = settle.filter((x) => !x.used && x.name === name);
+    const m = free.find((x) => x.qty === qty && (it.startsWith(x.item) || x.item.startsWith(it))) ?? free.find((x) => x.qty === qty && it.slice(0, 12) === x.item.slice(0, 12)) ?? (free.length === 1 ? free[0] : free.find((x) => x.qty === qty));
+    if (m) m.used = true;
+    return m;
+  };
+  let priced = 0, amount = 0;
   const orderedAt = new Date(`${date}T12:00:00+09:00`).toISOString();
   const rows: Record<string, unknown>[] = [];
   const errors: string[] = [];
@@ -59,12 +91,17 @@ export async function importSabangnetLogen(buf: ArrayBuffer, date: string): Prom
     // 주문번호 없는 줄 = 엑셀에 직접 적어 넣은 주문(수기). 날짜+행번호로 구분
     const manual = !no;
     const item = get(r, need.item).replace(/\/\s*$/, "").trim();
+    const qty = Number(get(r, need.qty)) || 1;
+    const st = settle.length ? pick(name, qty, item) : undefined;
+    // 주문 금액 = 판매가 × 수량 (판매가가 없으면 정산합계)
+    const amt = st ? (st.price ? st.price * qty : st.settleTotal) : 0;
+    if (st) { priced++; amount += amt; }
     rows.push({
-      channel: "sabangnet", external_order_id: manual ? `수기-${date.replace(/-/g, "")}-${String(i).padStart(3, "0")}` : no, order_place: manual ? "수기" : "사방넷", ordered_at: orderedAt, paid: true, canceled: false,
+      channel: "sabangnet", external_order_id: manual ? `수기-${date.replace(/-/g, "")}-${String(i).padStart(3, "0")}` : no, order_place: manual ? "수기" : st?.mall ? `사방넷 · ${st.mall}` : "사방넷", ordered_at: orderedAt, paid: true, canceled: false,
       status: "preparing", status_code: "출고대기", receiver_name: name, buyer_name: name, receiver_phone: get(r, need.tel),
       zipcode: zipRaw(get(r, need.zip)), address: get(r, need.addr), shipping_message: get(r, need.msg) || null,
-      total_amount: 0, items: [{ name: item, qty: Number(get(r, need.qty)) || 1 }],
-      raw: { file_row: i, source: "sabangnet-logen-excel" }, synced_at: new Date().toISOString(),
+      total_amount: amt, items: [{ name: item, qty, ...(st ? { price: amt } : {}) }],
+      raw: { file_row: i, source: "sabangnet-logen-excel", ...(st ? { settle: { mall: st.mall, mall_id: st.mallId, price: st.price, settle: st.settle, settle_total: st.settleTotal, ship: st.ship } } : {}) }, synced_at: new Date().toISOString(),
     });
   });
 
@@ -84,7 +121,8 @@ export async function importSabangnetLogen(buf: ArrayBuffer, date: string): Prom
       if (error) throw new Error("저장 실패: " + error.message);
     }
   }
-  return { total: rows.length + bad, saved: uniq.length, skipped, date, errors: errors.slice(0, 10) };
+  if (settle.length && priced < rows.length) errors.push(`정산양식과 짝이 안 맞은 줄 ${rows.length - priced}건 (금액 0원으로 저장)`);
+  return { total: rows.length + bad, saved: uniq.length, skipped, date, errors: errors.slice(0, 10), ...(settle.length ? { priced, amount } : {}) };
 }
 
 // ---------- 2) 로젠 양식 엑셀 만들기 ----------
