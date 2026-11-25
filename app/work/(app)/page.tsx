@@ -12,7 +12,8 @@ import { dt, won } from "@/lib/fmt";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "대시보드" };
 
-export default async function WorkHome() {
+export default async function WorkHome({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const me = (await getWorkMe())!;
   if (canSee(me, "orders")) await syncIfStale(5);
   const [d, products, contracts, customers, uo] = await Promise.all([dashboard(), listAdminProducts(), listContracts(), listCustomers(), unifiedOrders()]);
@@ -23,6 +24,20 @@ export default async function WorkHome() {
   const toShipN = uo.filter((o) => o.status === "paid" || o.status === "preparing").length;
   const shippedN = uo.filter((o) => o.status === "shipped").length;
   const expiring = contracts.filter((c) => c.status === "active" && c.end_date && new Date(c.end_date).getTime() - Date.now() < 30 * 86400_000).length;
+
+  // 최근 주문: 채널별로 골라 보기. 「전체」에서는 채널마다 최근 3건씩은 꼭 보이게 하고 나머지는 최신순으로 채움
+  const chKeys = Object.keys(CHANNELS).filter((k) => uo.some((o) => o.channel === k));
+  const ch = sp.ch && chKeys.includes(sp.ch) ? sp.ch : "all";
+  const pool = ch === "all" ? uo : uo.filter((o) => o.channel === ch);
+  const RECENT = 12;
+  let recent = pool.slice(0, RECENT);
+  if (ch === "all") {
+    const must = new Set(chKeys.flatMap((k) => uo.filter((o) => o.channel === k).slice(0, 3).map((o) => o.key)));
+    const rest = uo.filter((o) => !must.has(o.key)).slice(0, Math.max(0, RECENT - must.size));
+    const keep = new Set([...must, ...rest.map((o) => o.key)]);
+    recent = uo.filter((o) => keep.has(o.key));
+  }
+  const chTabs: [string, string, number][] = [["all", "전체", uo.length], ...chKeys.map((k) => [k, CHANNELS[k], uo.filter((o) => o.channel === k).length] as [string, string, number])];
 
   // [라벨, 값, 링크, 필요한 메뉴, 강조]
   const cards: [string, string | number, string, string, boolean][] = [
@@ -58,10 +73,20 @@ export default async function WorkHome() {
 
       {canSee(me, "orders") && (
         <section className="mb-8">
-          <h2 className="mb-2 text-sm font-semibold">최근 주문 (뷰티웰·카페24·사방넷·뷰카)</h2>
-          <Table head={["채널", "주문번호", "주문자", "금액", "상태", "일시"]} empty={!uo.length}>
-            {uo.slice(0, 8).map((o) => <tr key={o.key}><td className="text-xs">{o.place && o.place.includes("·") ? o.place : CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">최근 주문 <span className="font-normal text-neutral-400">전체 {uo.length}건</span></h2>
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              {chTabs.map(([k, l, n]) => (
+                <Link key={k} href={k === "all" ? "/work" : `/work?ch=${k}`} className={`rounded-full px-2.5 py-1 ${ch === k ? "bg-brand-600 font-semibold text-white" : "bg-white text-neutral-600 ring-1 ring-neutral-200"}`}>{l} <span className="opacity-60">{n}</span></Link>
+              ))}
+            </div>
+          </div>
+          <Table head={["채널", "주문번호", "주문자", "금액", "상태", "일시"]} empty={!recent.length}>
+            {recent.map((o) => <tr key={o.key}><td className="text-xs">{o.place && o.place.includes("·") ? o.place : CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
           </Table>
+          <div className="mt-2 text-right">
+            <Link href={ch === "all" ? "/work/m/orders" : `/work/m/orders?c=${ch}`} className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-700 ring-1 ring-brand-300 hover:bg-brand-50">더보기 ({ch === "all" ? uo.length : pool.length}건 전체 보기) →</Link>
+          </div>
         </section>
       )}
 
