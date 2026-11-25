@@ -51,8 +51,8 @@ export default async function WorkHome({ searchParams }: { searchParams: Promise
     ["재고 부족", products.filter((p) => p.status !== "cancelled" && p.stock <= Low).length, "/work/m/inventory", "inventory", true],
     ["계산서 처리", d.invoicePending, "/work/m/tax?s=pending", "tax", d.invoicePending > 0],
     ["오늘 매출", won(salesToday), "/work/m/revenue", "revenue", false],
-    ["고객사", customers.filter((c) => c.role === "customer").length, "/work/m/clients", "clients", false],
     [`${Number(today.slice(5, 7))}월 누적 매출`, won(salesMonth), "/work/m/revenue", "revenue", false],
+    ["고객사", customers.filter((c) => c.role === "customer").length, "/work/m/clients", "clients", false],
     ["판매중 상품", d.products.active ?? 0, "/work/m/store?s=active", "store", false],
   ];
   const mine = cards.filter((c) => canSee(me, c[3]));
