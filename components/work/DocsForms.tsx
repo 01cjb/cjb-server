@@ -8,7 +8,7 @@ const btn = "rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white 
 type Msg = { t: string; bad?: boolean } | null;
 const Note = ({ m }: { m: Msg }) => (m ? <p className={`mt-2 text-sm ${m.bad ? "text-red-600" : "text-emerald-700"}`}>{m.t}</p> : null);
 
-export function DocUpload({ box, boxLabel }: { box: string; boxLabel: string }) {
+export function DocUpload({ box, boxLabel, folder, dated }: { box: string; boxLabel: string; folder?: string; dated?: boolean }) {
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const [busy, setBusy] = useState(false);
@@ -17,6 +17,7 @@ export function DocUpload({ box, boxLabel }: { box: string; boxLabel: string }) 
     e.preventDefault();
     const fd = new FormData(form.current!);
     fd.set("box", box);
+    if (folder) fd.set("folder", folder);
     const f = fd.get("file");
     if (f instanceof File && f.size > 4 * 1024 * 1024) return setMsg({ t: "파일은 4MB 이하만 올릴 수 있습니다. 큰 파일은 링크로 올려 주세요.", bad: true });
     setBusy(true); setMsg(null);
@@ -30,9 +31,10 @@ export function DocUpload({ box, boxLabel }: { box: string; boxLabel: string }) 
     <form ref={form} onSubmit={submit} className="rounded-xl border border-neutral-200 bg-white p-4">
       <p className="mb-3 text-sm font-semibold">{boxLabel}에 올리기</p>
       <div className="grid gap-2 md:grid-cols-2">
-        <input name="title" required maxLength={120} placeholder="제목 (예: 11월 거래처 정산내역)" className={input} />
+        <input name="title" required={!dated} maxLength={120} placeholder={dated ? "제목 (비우면 파일 이름)" : "제목 (예: 11월 거래처 정산내역)"} className={input} />
         <input name="link_url" placeholder="링크 (선택 · 구글시트 등 https://…)" className={input} />
         <textarea name="body" rows={2} maxLength={4000} placeholder="설명 (선택)" className={`${input} md:col-span-2`} />
+        {dated && !folder && <label className="flex items-center gap-2 text-xs text-neutral-500 md:col-span-2">넣을 날짜 폴더 <input name="folder" type="date" defaultValue={new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10)} className={`${input} max-w-[180px]`} /></label>}
         <input name="file" type="file" className="text-xs md:col-span-2" />
       </div>
       <div className="mt-3 flex items-center gap-3">

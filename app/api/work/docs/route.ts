@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const file = form.get("file");
   const r = await createDoc(me!, {
     box: String(form.get("box") ?? ""), title: String(form.get("title") ?? ""), body: String(form.get("body") ?? ""),
-    link_url: String(form.get("link_url") ?? ""), file: file instanceof File ? file : null,
+    link_url: String(form.get("link_url") ?? ""), file: file instanceof File ? file : null, folder: String(form.get("folder") ?? ""),
   });
   if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 });
   return NextResponse.json({ ok: true });
