@@ -22,8 +22,8 @@ export async function listPm(opts: { openOnly?: boolean; days?: number } = {}): 
 }
 
 // 자동 정산 시간표 (한국 시간). Claude가 이 시각에 깨어나 크롬에서 정산을 진행합니다.
-// 월요일 09:30·15:00 / 화~금 11:00·15:00
-export const SETTLE_SLOTS: Record<number, string[]> = { 1: ["09:30", "15:00"], 2: ["11:00", "15:00"], 3: ["11:00", "15:00"], 4: ["11:00", "15:00"], 5: ["11:00", "15:00"] };
+// 월요일 09:30·15:00 / 화~금 15:00
+export const SETTLE_SLOTS: Record<number, string[]> = { 1: ["09:30", "15:00"], 2: ["15:00"], 3: ["15:00"], 4: ["15:00"], 5: ["15:00"] };
 export const SKIP_PREFIX = "[정산 건너뛰기]";
 const canSettle = (me: WorkMe) => me.is_owner || me.menus.includes("orders") || me.menus.includes("waybill");
 export const todaySlots = () => SETTLE_SLOTS[new Date(Date.now() + 9 * 3600e3).getUTCDay()] ?? [];
