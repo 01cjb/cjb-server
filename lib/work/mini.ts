@@ -4,7 +4,7 @@ import { teamLabel } from "./menus";
 import { DIRECTIVE_STATUS, listDirectives, listDocs, myBoxes } from "./docs";
 import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
 import { MINI_KNOWLEDGE } from "./mini-knowledge";
-import { PM_STATUS, SETTLE_PREFIX, cancelSettle, listPm, reserveSettle } from "./pm";
+import { PM_STATUS, SETTLE_PREFIX, SKIP_PREFIX, listPm, skipSettle, todaySlots, unskipSettle } from "./pm";
 
 // 업무 시스템 AI 비서 「미니」
 // 원칙: 고객 개인정보(이름·연락처·주소)는 AI로 보내지 않습니다. 건수·상품명·제목 같은 업무 정보만 보냅니다.
@@ -62,37 +62,39 @@ export async function workContext(me: WorkMe): Promise<string> {
   }
   if (canSettle(me)) {
     try {
-      const pm = (await listPm({ days: 2 })).filter((r) => r.title.startsWith(SETTLE_PREFIX));
-      out.push(`[정산 예약] ${pm.length ? "" : "없음"}`);
-      for (const r of pm.slice(0, 8)) out.push(`- 예약번호 ${r.id} · ${r.title.replace(SETTLE_PREFIX, "").trim()} · ${PM_STATUS[r.status] ?? r.status} · 요청 ${r.requested_by ?? "-"}${r.result ? ` · 결과: ${r.result.slice(0, 300)}` : ""}`);
-    } catch { out.push("[정산 예약] 정보를 불러오지 못했습니다."); }
+      const slots = todaySlots();
+      out.push(`[자동 정산] 오늘 예정 시각: ${slots.length ? slots.join(", ") : "없음(주말)"} — 시간표: 월요일 09:30·15:00, 화~금 11:00·15:00`);
+      const pm = (await listPm({ days: 2 })).filter((r) => r.title.startsWith(SETTLE_PREFIX) || r.title.startsWith(SKIP_PREFIX));
+      for (const r of pm.slice(0, 8)) out.push(`- 번호 ${r.id} · ${r.title} · ${PM_STATUS[r.status] ?? r.status} · ${r.requested_by ?? "-"}${r.result ? ` · 결과: ${r.result.slice(0, 300)}` : ""}`);
+      if (!pm.length) out.push("- 최근 이틀간 정산 기록·건너뛰기 표시 없음");
+    } catch { out.push("[자동 정산] 정보를 불러오지 못했습니다."); }
   }
   return out.join("\n");
 }
 
 const canSettle = (me: WorkMe) => me.is_owner || me.menus.includes("orders") || me.menus.includes("waybill");
 
-// 미니가 쓸 수 있는 도구: 정산 예약 넣기·취소 (PM 지시함에 기록만 함. 실제 정산은 Claude가 그 시각에 진행)
+// 미니가 쓸 수 있는 도구: 오늘 자동 정산 회차 건너뛰기·되돌리기 (PM 지시함에 표시만 함. 실제 정산은 Claude가 진행)
 const TOOLS = [
-  { name: "reserve_settlement", description: "주문 취합(정산)을 오늘 특정 시각에 Claude가 진행하도록 예약한다. 직원이 시각을 분명히 말했을 때만 쓴다. 시각을 말하지 않았으면 먼저 몇 시에 할지 묻는다.", input_schema: { type: "object", properties: { time: { type: "string", description: "24시간 형식 HH:MM (예: 11:00, 15:00). 오전 9시~오후 4시" }, round: { type: "string", enum: ["1차", "2차", ""], description: "차수. 말하지 않았으면 빈 문자열" }, note: { type: "string", description: "직원이 덧붙인 요청 사항. 고객 이름·연락처·주소는 넣지 않는다" } }, required: ["time"] } },
-  { name: "cancel_settlement", description: "아직 시작하지 않은 정산 예약을 취소한다. [정산 예약] 목록의 예약번호를 쓴다.", input_schema: { type: "object", properties: { id: { type: "number", description: "예약번호" } }, required: ["id"] } },
+  { name: "skip_settlement", description: "오늘 자동 정산 중 한 회차를 건너뛰게 한다. 직원이 어느 시각 회차인지 분명히 말했을 때만 쓴다. 모호하면 먼저 묻는다.", input_schema: { type: "object", properties: { time: { type: "string", description: "건너뛸 회차 시각 HH:MM. [자동 정산]의 오늘 예정 시각 중 하나" }, note: { type: "string", description: "이유 등 메모. 고객 이름·연락처·주소는 넣지 않는다" } }, required: ["time"] } },
+  { name: "undo_skip", description: "건너뛰기 표시를 취소해 그 회차를 다시 정산하게 한다. [자동 정산] 목록의 번호를 쓴다.", input_schema: { type: "object", properties: { id: { type: "number", description: "건너뛰기 표시의 번호" } }, required: ["id"] } },
 ];
 async function runTool(me: WorkMe, name: string, input: Record<string, unknown>): Promise<string> {
-  if (name === "reserve_settlement") {
-    const r = await reserveSettle(me, { time: String(input.time ?? ""), round: String(input.round ?? ""), note: String(input.note ?? "") });
-    return r.ok ? `${r.already ? "이미 같은 예약이 있습니다" : "예약을 저장했습니다"}: ${r.title} (예약번호 ${r.id}). Claude가 그 시각 직후 확인해 시작합니다. 대표님 PC와 크롬이 켜져 있고 사방넷·뷰카에 로그인되어 있어야 합니다.` : `예약 실패: ${r.error}`;
+  if (name === "skip_settlement") {
+    const r = await skipSettle(me, { time: String(input.time ?? ""), note: String(input.note ?? "") });
+    return r.ok ? `${r.already ? "이미 건너뛰기로 표시되어 있습니다" : "건너뛰기로 표시했습니다"}: ${r.title} (번호 ${r.id}). Claude가 그 회차는 정산하지 않습니다.` : `실패: ${r.error}`;
   }
-  if (name === "cancel_settlement") { const r = await cancelSettle(me, Number(input.id)); return r.ok ? "예약을 취소했습니다." : `취소 실패: ${r.error}`; }
+  if (name === "undo_skip") { const r = await unskipSettle(me, Number(input.id)); return r.ok ? "건너뛰기를 취소했습니다. 그 회차는 예정대로 정산합니다." : `실패: ${r.error}`; }
   return "알 수 없는 요청입니다.";
 }
 
 const SYSTEM = (ctx: string) => `당신은 (주)씨제이비인터내셔널 사내 업무 시스템의 AI 비서 「${MINI_NAME}」입니다.
 - 직원의 질문에 한국어 존댓말로, 짧고 분명하게 답합니다. 음성으로도 읽히므로 표·기호·마크다운을 쓰지 말고 문장으로 말합니다. 보통 2~5문장, 업무 보고는 항목별로 한 줄씩.
 - 숫자와 현황은 아래 [현재 업무 현황]에 있는 사실만, 일하는 방법은 [업무 지식]에 있는 내용만 근거로 답합니다. 거기 없는 숫자나 사실은 지어내지 말고 "지금 제가 볼 수 있는 정보에는 없습니다"라고 말합니다.
-- 주문 취합·정산을 지금 해 달라는 요청에는, 미니가 직접 실행하지는 못하지만 시각을 정해 주면 Claude가 진행하도록 예약해 둘 수 있다고 말하고 몇 시에 할지 묻습니다. 방법을 물으면 [업무 지식]의 절차를 순서대로 짧게 안내합니다.
+- 주문 취합·정산을 지금 해 달라는 요청에는, 미니가 직접 실행하지는 못하며 Claude가 정해진 시각에 자동으로 진행한다고 말하고 오늘 예정 시각을 알려 줍니다. 그 시각 밖에 당장 필요하면 대표님이 Claude 대화창에 "정산시작해줘"라고 하도록 안내합니다. 방법을 물으면 [업무 지식]의 절차를 순서대로 짧게 안내합니다.
 - 고객의 이름·연락처·주소 같은 개인정보는 가지고 있지 않으며, 물어도 알려 줄 수 없다고 안내합니다.
-- 당신은 정보를 읽고 정리해 줄 뿐, 주문·송장·지시를 직접 바꾸지는 못합니다. 그런 요청은 해당 메뉴에서 하도록 안내합니다. 단 하나 예외로, 정산 예약은 도구로 넣고 취소할 수 있습니다.
-- 정산 예약: 직원이 "11시에 1차 정산 예약해 줘"처럼 시각을 말하면 reserve_settlement 도구로 예약합니다. 시각이 없으면 몇 시에 할지 먼저 묻습니다. 예약 뒤에는 예약한 시각, Claude가 그 시각 직후(몇 분 안)에 시작한다는 점, PC·크롬이 켜져 있고 사방넷·뷰카에 로그인되어 있어야 한다는 점을 짧게 알립니다. 정산 진행 상황을 물으면 [정산 예약]의 상태와 결과를 그대로 알려 줍니다.
+- 당신은 정보를 읽고 정리해 줄 뿐, 주문·송장·지시를 직접 바꾸지는 못합니다. 그런 요청은 해당 메뉴에서 하도록 안내합니다. 단 하나 예외로, 오늘 자동 정산 회차를 건너뛰게 하거나 되돌리는 것은 도구로 할 수 있습니다.
+- 자동 정산: 정산은 Claude가 [자동 정산] 시간표대로 알아서 진행합니다. 직원이 "오늘 11시 정산 하지 마"처럼 말하면 skip_settlement 도구로 표시합니다. 정산 진행 상황을 물으면 [자동 정산]의 기록과 결과를 그대로 알려 줍니다. 기록이 없으면 아직 진행 기록이 없다고 말합니다.
 - 업무와 관계없는 가벼운 질문에도 친절히 짧게 답합니다.
 
 [업무 지식]
