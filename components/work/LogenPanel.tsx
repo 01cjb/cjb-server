@@ -13,8 +13,8 @@ const ST: Record<string, [string, string]> = {
 };
 const when = (s: string) => new Date(s).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
-export default function LogenPanel({ targets, rows, ready, missing, env, mock }: {
-  targets: Target[]; rows: Row[]; ready: boolean; missing: string[]; env: string; mock: boolean;
+export default function LogenPanel({ targets, rows, ready, missing, env, mock, date }: {
+  targets: Target[]; rows: Row[]; ready: boolean; missing: string[]; env: string; mock: boolean; date?: string;
 }) {
   const router = useRouter();
   const [sel, setSel] = useState<string[]>([]);
@@ -73,7 +73,7 @@ export default function LogenPanel({ targets, rows, ready, missing, env, mock }:
 
       <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
         <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-2.5">
-          <p className="text-sm font-semibold">출력할 주문 <span className="text-neutral-400">{targets.length}</span></p>
+          <p className="text-sm font-semibold">출력할 주문 <span className="text-neutral-400">{targets.length}</span>{date && <span className="ml-2 text-xs font-normal text-neutral-500">{date} 주문만 · 다른 날은 위의 출고일을 바꾸세요</span>}</p>
           <button onClick={register} disabled={!can || !sel.length || !!busy} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-40">
             {busy === "reg" ? "등록 중…" : `선택 ${sel.length}건 로젠에 등록`}
           </button>
@@ -103,7 +103,7 @@ export default function LogenPanel({ targets, rows, ready, missing, env, mock }:
               </tbody>
             </table>
           </div>
-        ) : <p className="px-4 py-8 text-center text-sm text-neutral-400">송장 출력할 주문이 없습니다 (결제완료·배송준비 상태, 송장번호 없는 주문)</p>}
+        ) : <p className="px-4 py-8 text-center text-sm text-neutral-400">이 날짜에 송장 출력할 주문이 없습니다 (결제완료·배송준비 상태, 송장번호 없는 주문)</p>}
       </div>
 
       {rows.length > 0 && (

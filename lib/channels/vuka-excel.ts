@@ -71,7 +71,9 @@ export async function importVuka(buf: ArrayBuffer, fallbackDate: string): Promis
   });
 
   const rows = [...map.values()].map((o) => {
-    const day = /^\d{4}-\d{2}-\d{2}$/.test(o.day) ? o.day : fallbackDate;
+    // 날짜는 올린 날(정산·출고일) 기준. 뷰카 주문일은 전날인 경우가 많아, 주문일로 넣으면 그날 송장 목록·매출에서 빠짐
+    const day = fallbackDate;
+    const orderDay = /^\d{4}-\d{2}-\d{2}$/.test(o.day) ? o.day : null;
     const done = /완료/.test(o.status) && /배송/.test(o.status);
     const shipped = !!o.slip || /배송중|출고/.test(o.status) || done;
     const status = /취소/.test(o.status) ? "cancelled" : /반품/.test(o.status) ? "returned" : /교환/.test(o.status) ? "exchanged" : done ? "delivered" : shipped ? "shipped" : "preparing";
@@ -81,7 +83,7 @@ export async function importVuka(buf: ArrayBuffer, fallbackDate: string): Promis
       paid: true, canceled: status === "cancelled", status, status_code: o.status.split(/\s|송장/)[0] || null,
       buyer_name: o.shop || o.name, receiver_name: o.name, receiver_phone: o.tel, zipcode: o.zip || null, address: o.addr, shipping_message: o.msg || null,
       total_amount: o.amount, items: o.items.map((it) => ({ name: it.name, qty: it.qty, price: it.price, ...(o.slip ? { carrier, tracking_no: o.slip, status_text: "배송중" } : {}) })),
-      raw: { source: "vuka-excel", shop: o.shop }, synced_at: new Date().toISOString(),
+      raw: { source: "vuka-excel", shop: o.shop, order_day: orderDay }, synced_at: new Date().toISOString(),
     };
   });
 

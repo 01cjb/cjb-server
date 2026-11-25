@@ -219,8 +219,8 @@ export async function Waybill({ q }: P) {
   return (
     <>
       <LogenExcel date={date} counts={dayCounts(day)} />
-      <LogenPanel ready={lc.ready} missing={lc.missing} env={lc.env} mock={!adminEnabled()} rows={rows}
-        targets={targets.map((o) => ({ key: o.key, channel: o.channel, orderNo: o.orderNo, receiver: o.receiver ?? o.buyer, address: o.address ?? null,
+      <LogenPanel ready={lc.ready} missing={lc.missing} env={lc.env} mock={!adminEnabled()} rows={rows} date={date}
+        targets={targets.filter((o) => (o.orderedAt ? new Date(new Date(o.orderedAt).getTime() + 9 * 3600e3).toISOString().slice(0, 10) : "") === date).map((o) => ({ key: o.key, channel: o.channel, orderNo: o.orderNo, receiver: o.receiver ?? o.buyer, address: o.address ?? null,
           item: o.items.length > 1 ? `${o.items[0]?.name} 외 ${o.items.length - 1}건` : o.items[0]?.name ?? "", orderedAt: o.orderedAt }))} />
       <h2 className="mb-2 text-base font-bold">뷰티웰 배송 송장</h2>
       <Note>송장번호 미입력 <b className="text-rose-600">{missing}건</b>.</Note>
