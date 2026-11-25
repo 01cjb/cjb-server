@@ -58,9 +58,9 @@ export default async function WorkHome() {
 
       {canSee(me, "orders") && (
         <section className="mb-8">
-          <h2 className="mb-2 text-sm font-semibold">최근 주문 (뷰티웰·카페24)</h2>
+          <h2 className="mb-2 text-sm font-semibold">최근 주문 (뷰티웰·카페24·사방넷·뷰카)</h2>
           <Table head={["채널", "주문번호", "주문자", "금액", "상태", "일시"]} empty={!uo.length}>
-            {uo.slice(0, 8).map((o) => <tr key={o.key}><td className="text-xs">{CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{won(o.total)}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
+            {uo.slice(0, 8).map((o) => <tr key={o.key}><td className="text-xs">{o.place && o.place.includes("·") ? o.place : CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
           </Table>
         </section>
       )}
