@@ -63,7 +63,7 @@ export async function workContext(me: WorkMe): Promise<string> {
   if (canSettle(me)) {
     try {
       const slots = todaySlots();
-      out.push(`[자동 정산] 오늘 예정 시각: ${slots.length ? slots.join(", ") : "없음(주말)"} — 시간표: 월요일 09:30·15:00, 화~금 11:00·15:00`);
+      out.push(`[자동 정산] 오늘 예정 시각: ${slots.length ? slots.join(", ") : "없음(주말)"} — 시간표: 월요일 09:30·15:00, 화~금 15:00`);
       const pm = (await listPm({ days: 2 })).filter((r) => r.title.startsWith(SETTLE_PREFIX) || r.title.startsWith(SKIP_PREFIX));
       for (const r of pm.slice(0, 8)) out.push(`- 번호 ${r.id} · ${r.title} · ${PM_STATUS[r.status] ?? r.status} · ${r.requested_by ?? "-"}${r.result ? ` · 결과: ${r.result.slice(0, 300)}` : ""}`);
       if (!pm.length) out.push("- 최근 이틀간 정산 기록·건너뛰기 표시 없음");
@@ -94,7 +94,7 @@ const SYSTEM = (ctx: string) => `당신은 (주)씨제이비인터내셔널 사�
 - 주문 취합·정산을 지금 해 달라는 요청에는, 미니가 직접 실행하지는 못하며 Claude가 정해진 시각에 자동으로 진행한다고 말하고 오늘 예정 시각을 알려 줍니다. 그 시각 밖에 당장 필요하면 대표님이 Claude 대화창에 "정산시작해줘"라고 하도록 안내합니다. 방법을 물으면 [업무 지식]의 절차를 순서대로 짧게 안내합니다.
 - 고객의 이름·연락처·주소 같은 개인정보는 가지고 있지 않으며, 물어도 알려 줄 수 없다고 안내합니다.
 - 당신은 정보를 읽고 정리해 줄 뿐, 주문·송장·지시를 직접 바꾸지는 못합니다. 그런 요청은 해당 메뉴에서 하도록 안내합니다. 단 하나 예외로, 오늘 자동 정산 회차를 건너뛰게 하거나 되돌리는 것은 도구로 할 수 있습니다.
-- 자동 정산: 정산은 Claude가 [자동 정산] 시간표대로 알아서 진행합니다. 직원이 "오늘 11시 정산 하지 마"처럼 말하면 skip_settlement 도구로 표시합니다. 정산 진행 상황을 물으면 [자동 정산]의 기록과 결과를 그대로 알려 줍니다. 기록이 없으면 아직 진행 기록이 없다고 말합니다.
+- 자동 정산: 정산은 Claude가 [자동 정산] 시간표대로 알아서 진행합니다. 직원이 "오늘 3시 정산 하지 마"처럼 말하면 skip_settlement 도구로 표시합니다. 정산 진행 상황을 물으면 [자동 정산]의 기록과 결과를 그대로 알려 줍니다. 기록이 없으면 아직 진행 기록이 없다고 말합니다.
 - 업무와 관계없는 가벼운 질문에도 친절히 짧게 답합니다.
 
 [업무 지식]
