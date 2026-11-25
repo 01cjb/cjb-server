@@ -5,6 +5,7 @@ import { INVOICE_STATUS, ORDER_STATUS, SHIP_STATUS } from "@/lib/admin/types";
 import Pill from "@/components/admin/Pill";
 import Timeline from "@/components/Timeline";
 import RequestInvoice from "@/components/me/RequestInvoice";
+import CancelOrder from "@/components/me/CancelOrder";
 import { dt, trackUrl, won } from "@/lib/fmt";
 
 const STEPS = ["paid", "preparing", "shipped", "delivered"] as const;
@@ -20,6 +21,16 @@ export default async function MyOrderDetail({ params }: { params: Promise<{ no: 
         <ol className="grid grid-cols-4 text-center text-xs">
           {STEPS.map((s, i) => <li key={s} className={`border-t-4 pt-2 ${i <= step ? "border-brand-600 text-brand-700 font-semibold" : "border-neutral-200 text-neutral-400"}`}>{ORDER_STATUS[s]}</li>)}
         </ol>
+      )}
+      {o.status === "pending" && (
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+          <h2 className="mb-1 font-semibold">입금을 기다리고 있습니다</h2>
+          <p className="mb-3 text-neutral-600">아직 결제되지 않은 주문입니다. 주문을 원하지 않으면 지금 바로 취소할 수 있습니다.</p>
+          <CancelOrder orderNo={o.order_no} />
+        </section>
+      )}
+      {(o.status === "paid" || o.status === "preparing") && (
+        <p className="rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-500">결제가 끝난 주문의 취소·환불은 고객센터로 문의해 주세요.</p>
       )}
       <section className="rounded-xl border border-neutral-200 p-4">
         <h2 className="font-semibold text-sm mb-3">배송조회</h2>
