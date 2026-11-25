@@ -134,7 +134,7 @@ export default function Mini({ userName }: { userName: string }) {
               <p className="text-neutral-400">목소리는 이 기기에 설치된 것만 고를 수 있어요. 엣지 브라우저에는 더 자연스러운 목소리(이름에 Natural)가 있습니다.</p>
             </div>
           )}
-          <div ref={box} className="flex-1 space-y-2 overflow-y-auto bg-neutral-50 p-3 text-sm">
+          <div ref={box} className="min-h-0 flex-1 space-y-2 overflow-y-auto bg-neutral-50 p-3 text-sm">
             <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white px-3 py-2 shadow-sm">안녕하세요 {userName}님, 미니예요. 무엇을 도와드릴까요?</div>
             {!msgs.length && <div className="flex flex-wrap gap-1.5 pt-1">{QUICK.map((q) => <button key={q} onClick={() => send(q)} className="rounded-full bg-white px-3 py-1.5 text-xs text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">{q}</button>)}</div>}
             {msgs.map((m, i) => (

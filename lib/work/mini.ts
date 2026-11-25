@@ -103,6 +103,9 @@ ${MINI_KNOWLEDGE}
 [현재 업무 현황]
 ${ctx}`;
 
+// 답 한 번의 최대 길이. 모델이 답을 쓰기 전에 생각하는 분량도 여기에 포함되므로 넉넉히 둠(700일 때 답이 중간에 끊기거나 비어서 나옴)
+const MAX_TOKENS = 4096;
+
 export type MiniMsg = { role: "user" | "assistant"; content: string };
 
 export async function askMini(me: WorkMe, history: MiniMsg[]): Promise<{ ok: true; text: string } | { ok: false; error: string; status: number }> {
@@ -119,7 +122,7 @@ export async function askMini(me: WorkMe, history: MiniMsg[]): Promise<{ ok: tru
     const convo: { role: string; content: unknown }[] = [...msgs];
     let j: { content?: Block[]; stop_reason?: string; error?: { type?: string; message?: string } } = {};
     for (let step = 0; step < 3; step++) {
-      const r = await fetch(`${API}/messages`, { method: "POST", headers: HEAD(key), body: JSON.stringify({ model, max_tokens: 700, system, messages: convo, ...(tools ? { tools } : {}) }) });
+      const r = await fetch(`${API}/messages`, { method: "POST", headers: HEAD(key), body: JSON.stringify({ model, max_tokens: MAX_TOKENS, system, messages: convo, ...(tools ? { tools } : {}) }) });
       j = await r.json().catch(() => ({}));
       if (!r.ok) {
         const t = j?.error?.type as string | undefined;
@@ -134,8 +137,11 @@ export async function askMini(me: WorkMe, history: MiniMsg[]): Promise<{ ok: tru
       for (const u of uses) results.push({ type: "tool_result", tool_use_id: u.id, content: await runTool(me, u.name ?? "", u.input ?? {}) });
       convo.push({ role: "assistant", content: j.content }, { role: "user", content: results });
     }
-    const text = (j.content ?? []).filter((c) => c.type === "text").map((c) => c.text ?? "").join("").trim();
-    return { ok: true, text: text || "답을 만들지 못했습니다. 다시 물어봐 주세요." };
+    const body = (j.content ?? []).filter((c) => c.type === "text").map((c) => c.text ?? "").join("").trim();
+    if (!body) return { ok: true, text: "답을 만들지 못했습니다. 다시 물어봐 주세요." };
+    // 그래도 길이 한도에 걸려 끊겼으면 끊긴 사실을 알림
+    const cut = j.stop_reason === "max_tokens";
+    return { ok: true, text: cut ? `${body}\n\n(답이 길어 여기까지만 나왔습니다. "계속"이라고 하면 이어서 말씀드립니다.)` : body };
   } catch (e) {
     return { ok: false, error: (e as Error).message || "미니 연결에 실패했습니다.", status: 502 };
   }

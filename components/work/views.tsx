@@ -129,10 +129,23 @@ export async function Inventory() {
 export async function Orders({ q }: P) {
   await syncIfStale(5); // 카페24: 마지막 수집 5분 지났으면 화면 열 때 자동 수집
   const s = q.s ?? "all", c = q.c ?? "all";
-  const all = await unifiedOrders();
+  // 날짜 지정: from~to (한국 날짜). 하나만 넣으면 그 하루. 비우면 전체 기간
+  const isDay = (v?: string) => /^\d{4}-\d{2}-\d{2}$/.test(v ?? "");
+  let from = isDay(q.from) ? q.from! : "", to = isDay(q.to) ? q.to! : "";
+  if (from && !to) to = from;
+  if (to && !from) from = to;
+  if (from > to) [from, to] = [to, from];
+  const kday = (iso: string) => (iso ? new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(0, 10) : "");
+  const every = await unifiedOrders();
+  const all = from ? every.filter((o) => { const d = kday(o.orderedAt); return d >= from && d <= to; }) : every;
   const byCh = c === "all" ? all : all.filter((o) => o.channel === c);
   const list = s === "all" ? byCh : byCh.filter((o) => o.status === s);
-  const qs = (k: string, v: string) => { const p = new URLSearchParams({ c, s }); p.set(k, v); return `?${p}`; };
+  const qs = (k: string, v: string) => { const p = new URLSearchParams({ c, s }); if (from) { p.set("from", from); p.set("to", to); } p.set(k, v); return `?${p}`; };
+  const today = kday(new Date().toISOString());
+  const shift = (n: number) => new Date(Date.now() + 9 * 3600e3 + n * 86400e3).toISOString().slice(0, 10);
+  const range = (a: string, b: string) => { const p = new URLSearchParams({ c, s }); if (a) { p.set("from", a); p.set("to", b); } return `?${p}`; };
+  const quick: [string, string, string][] = [["오늘", today, today], ["어제", shift(-1), shift(-1)], ["최근 7일", shift(-6), today], ["이번 달", `${today.slice(0, 8)}01`, today], ["전체 기간", "", ""]];
+  const sum = list.filter((o) => !["cancelled", "returned", "pending"].includes(o.status)).reduce((n, o) => n + (o.total || 0), 0);
   const conn = await getConnection();
   return (
     <>
@@ -144,6 +157,17 @@ export async function Orders({ q }: P) {
         ))}
         <span className="ml-auto text-xs text-neutral-400">{conn ? `카페24 마지막 수집 ${dt(conn.last_sync_at)}${conn.last_sync_ok === false ? " · 실패" : ""}` : "카페24 미연결 — 판매채널 연동 메뉴에서 연결"}</span>
       </div>
+      <form method="get" className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm">
+        <input type="hidden" name="c" value={c} /><input type="hidden" name="s" value={s} />
+        <span className="text-xs font-semibold text-neutral-500">날짜</span>
+        <input type="date" name="from" defaultValue={from} className="rounded-lg border border-neutral-200 px-2 py-1 text-sm" />
+        <span className="text-neutral-400">~</span>
+        <input type="date" name="to" defaultValue={to} className="rounded-lg border border-neutral-200 px-2 py-1 text-sm" />
+        <button className="rounded-lg bg-brand-600 px-3 py-1 text-sm font-semibold text-white">보기</button>
+        <span className="mx-1 h-4 w-px bg-neutral-200" />
+        {quick.map(([l, a, b]) => <a key={l} href={range(a, b)} className={`rounded-full px-2.5 py-1 text-xs ${from === a && to === b ? "bg-neutral-900 font-semibold text-white" : "text-neutral-600 ring-1 ring-neutral-200"}`}>{l}</a>)}
+        <span className="ml-auto text-xs text-neutral-500">{from ? (from === to ? from : `${from} ~ ${to}`) : "전체 기간"} · {list.length}건 · 매출 {won(sum)}</span>
+      </form>
       <Tabs cur={s} items={[{ key: "all", label: "전체", href: qs("s", "all"), count: byCh.length }, ...Object.entries(STATUS_LABEL).map(([k, l]) => ({ key: k, label: l, href: qs("s", k), count: byCh.filter((o) => o.status === k).length })).filter((t) => t.count || ["pending", "paid", "preparing", "shipped", "delivered", "cancelled"].includes(t.key))]} />
       <Table head={["채널", "주문번호", "주문자", "받는 분", "상품", "금액", "상태", "주문일시"]} empty={!list.length}>
         {list.map((o) => (
@@ -151,7 +175,7 @@ export async function Orders({ q }: P) {
             <td className="whitespace-nowrap"><span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${channelColor(o.channel)}`}>{CHANNELS[o.channel] ?? o.channel}</span><span className="block text-[11px] text-neutral-400">{o.place ?? ""}</span></td>
             <td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? "-"}</td><td>{o.receiver ?? "-"}<span className="block text-xs text-neutral-400">{o.receiverPhone ?? ""}</span></td>
             <td className="max-w-[240px] text-xs">{o.items.length ? `${o.items[0].name}${o.items[0].option ? ` (${o.items[0].option})` : ""} × ${o.items[0].qty}${o.items.length > 1 ? ` 외 ${o.items.length - 1}건` : ""}` : "-"}</td>
-            <td className="tabular-nums">{won(o.total)}</td>
+            <td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td>
             <td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} />{o.statusText && o.channel !== "beautywell" && <span className="block text-[11px] text-neutral-400">{o.statusText}</span>}</td>
             <td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td>
           </tr>
