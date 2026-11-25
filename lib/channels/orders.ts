@@ -5,6 +5,12 @@ import { listOrders } from "@/lib/admin/repo";
 // 업무 시스템용 통합 주문 목록: 뷰티웰(자사몰) + 외부 채널(카페24, 사방넷 엑셀 …)
 
 export const CHANNELS: Record<string, string> = { beautywell: "뷰티웰", cafe24: "카페24", sabangnet: "사방넷", vuka: "뷰카" };
+// 채널별 색 (표의 채널 표시·탭에서 같이 씀)
+export const CHANNEL_COLOR: Record<string, string> = {
+  beautywell: "bg-brand-50 text-brand-700 ring-brand-200", cafe24: "bg-sky-50 text-sky-700 ring-sky-200",
+  sabangnet: "bg-amber-50 text-amber-800 ring-amber-200", vuka: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+};
+export const channelColor = (c: string) => CHANNEL_COLOR[c] ?? "bg-neutral-100 text-neutral-600 ring-neutral-200";
 export const STATUS_LABEL: Record<string, string> = {
   pending: "입금대기", paid: "결제완료", preparing: "배송준비", shipped: "배송중", delivered: "배송완료",
   cancelled: "취소", returned: "반품", exchanged: "교환",
