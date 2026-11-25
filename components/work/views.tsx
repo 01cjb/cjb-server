@@ -362,7 +362,7 @@ export async function Docs({ q, me }: P) {
       <>
         <Note>폴더를 누르면 그 안의 서류가 보입니다. 자기 부서 폴더만 보이고, 대표는 전체를 봅니다.</Note>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {boxes.map((b, i) => <Folder key={b.key} href={`/work/m/docs?box=${b.key}`} label={b.label} sub={`서류 ${counts[i]}건`} />)}
+          {boxes.map((b, i) => <Folder key={b.key} href={`/work/m/docs?box=${b.key}`} label={b.label} sub={`서류 ${counts[i]}건`} tone={b.key === DATED_BOX ? "text-pink-400" : undefined} />)}
           <Folder href="/work/m/docs?box=directive" label="지시함" sub={`진행 중 ${open}건 · 전체 ${dirs.length}건`} tone="text-sky-400" />
         </div>
       </>
@@ -392,7 +392,7 @@ export async function Docs({ q, me }: P) {
         <div className="mb-4"><DocUpload box={cur} boxLabel={label} dated /></div>
         {folders.length ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {folders.map((f) => <Folder key={f.folder} href={`/work/m/docs?box=${cur}&d=${encodeURIComponent(f.folder)}`} label={f.folder} sub={`파일 ${f.count}개`} />)}
+            {folders.map((f) => <Folder key={f.folder} href={`/work/m/docs?box=${cur}&d=${encodeURIComponent(f.folder)}`} label={f.folder} sub={`파일 ${f.count}개`} tone="text-pink-300" />)}
           </div>
         ) : <p className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-sm text-neutral-500">아직 보관된 정산 파일이 없습니다.</p>}
       </>
