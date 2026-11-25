@@ -13,7 +13,7 @@ import { dayCounts, waybillDay } from "@/lib/carriers/logen-excel";
 import { listWaybills, logenConfig, waybillTargets } from "@/lib/carriers/logen";
 import Pill from "@/components/admin/Pill";
 import { DirectiveActions, DirectiveForm, DocDelete, DocUpload } from "./DocsForms";
-import { DIRECTIVE_STATUS, TO_TEAMS, listDirectives, listDocs, listOrg, myBoxes, type Directive } from "@/lib/work/docs";
+import { DIRECTIVE_STATUS, TO_TEAMS, listDirectives, listDocs, listOrg, myBoxes, type Directive, DATED_BOX, listFolders } from "@/lib/work/docs";
 import { USER_TEAMS } from "@/lib/work/menus";
 import { Table, Tabs } from "@/components/admin/Table";
 
@@ -379,12 +379,31 @@ export async function Docs({ q, me }: P) {
       </>
     );
   }
-  const list = await listDocs(me, cur);
   const label = boxes.find((b) => b.key === cur)?.label ?? "서류";
+  // 날짜별 보관함(정산 파일 서류): 폴더 → 날짜 폴더 → 파일
+  const dated = cur === DATED_BOX;
+  const sub = dated && (/^\d{4}-\d{2}-\d{2}$/.test(q.d ?? "") || q.d === "날짜 없음") ? q.d! : "";
+  if (dated && !sub) {
+    const folders = await listFolders(me, cur);
+    return (
+      <>
+        <Crumb label={label} />
+        <Note>날짜 폴더를 누르면 그날 정산 파일(정산·뷰카·본사)이 보입니다. 자동 정산이 끝나면 그날 폴더에 파일이 들어갑니다. 고객 이름·주소가 든 파일이라 대표와 주문·송장 메뉴 권한이 있는 직원만 봅니다.</Note>
+        <div className="mb-4"><DocUpload box={cur} boxLabel={label} dated /></div>
+        {folders.length ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {folders.map((f) => <Folder key={f.folder} href={`/work/m/docs?box=${cur}&d=${encodeURIComponent(f.folder)}`} label={f.folder} sub={`파일 ${f.count}개`} />)}
+          </div>
+        ) : <p className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-sm text-neutral-500">아직 보관된 정산 파일이 없습니다.</p>}
+      </>
+    );
+  }
+  const list = await listDocs(me, cur, sub || undefined);
   return (
     <>
-      <Crumb label={label} />
-      <div className="mb-4"><DocUpload box={cur} boxLabel={label} /></div>
+      <Crumb label={sub ? `${label} › ${sub}` : label} />
+      {sub && <p className="-mt-2 mb-3 text-xs"><a href={`/work/m/docs?box=${cur}`} className="text-brand-700 underline">← 날짜 폴더 목록</a></p>}
+      <div className="mb-4"><DocUpload box={cur} boxLabel={sub ? `${sub} 폴더` : label} folder={sub && sub !== "날짜 없음" ? sub : undefined} dated={dated} /></div>
       <Table head={["제목", "첨부", "올린 사람", "올린 날", ""]} empty={!list.length}>
         {list.map((d) => (
           <tr key={d.id}>
