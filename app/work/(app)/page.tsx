@@ -49,9 +49,9 @@ export default async function WorkHome({ searchParams }: { searchParams: Promise
     ["출고 필요", toShipN, "/work/m/orders?s=paid", "orders", toShipN > 0],
     ["배송중", shippedN, "/work/m/orders?s=shipped", "orders", false],
     ["재고 부족", products.filter((p) => p.status !== "cancelled" && p.stock <= Low).length, "/work/m/inventory", "inventory", true],
-    ["계산서 처리", d.invoicePending, "/work/m/tax?s=pending", "tax", d.invoicePending > 0],
     ["오늘 매출", won(salesToday), "/work/m/revenue", "revenue", false],
     [`${Number(today.slice(5, 7))}월 누적 매출`, won(salesMonth), "/work/m/revenue", "revenue", false],
+    ["계산서 처리", d.invoicePending, "/work/m/tax?s=pending", "tax", d.invoicePending > 0],
     ["고객사", customers.filter((c) => c.role === "customer").length, "/work/m/clients", "clients", false],
     ["판매중 상품", d.products.active ?? 0, "/work/m/store?s=active", "store", false],
   ];
