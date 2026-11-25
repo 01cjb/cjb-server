@@ -4,7 +4,7 @@ import { adminEnabled } from "@/lib/auth";
 import { day, dt, trackUrl, won } from "@/lib/fmt";
 import type { Menu } from "@/lib/work/menus";
 import type { WorkMe } from "@/lib/work/auth";
-import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
+import { CHANNELS, STATUS_LABEL, channelColor, unifiedOrders } from "@/lib/channels/orders";
 import { cafe24Config, getConnection, syncIfStale } from "@/lib/channels/cafe24";
 import SyncButton from "./SyncButton";
 import LogenPanel from "./LogenPanel";
@@ -148,7 +148,7 @@ export async function Orders({ q }: P) {
       <Table head={["채널", "주문번호", "주문자", "받는 분", "상품", "금액", "상태", "주문일시"]} empty={!list.length}>
         {list.map((o) => (
           <tr key={o.key}>
-            <td className="whitespace-nowrap"><span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${o.channel === "cafe24" ? "bg-sky-50 text-sky-700" : "bg-brand-50 text-brand-700"}`}>{CHANNELS[o.channel] ?? o.channel}</span><span className="block text-[11px] text-neutral-400">{o.place ?? ""}</span></td>
+            <td className="whitespace-nowrap"><span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${channelColor(o.channel)}`}>{CHANNELS[o.channel] ?? o.channel}</span><span className="block text-[11px] text-neutral-400">{o.place ?? ""}</span></td>
             <td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? "-"}</td><td>{o.receiver ?? "-"}<span className="block text-xs text-neutral-400">{o.receiverPhone ?? ""}</span></td>
             <td className="max-w-[240px] text-xs">{o.items.length ? `${o.items[0].name}${o.items[0].option ? ` (${o.items[0].option})` : ""} × ${o.items[0].qty}${o.items.length > 1 ? ` 외 ${o.items.length - 1}건` : ""}` : "-"}</td>
             <td className="tabular-nums">{won(o.total)}</td>

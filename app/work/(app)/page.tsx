@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { dashboard, listAdminProducts, listContracts, listCustomers } from "@/lib/admin/repo";
+import { dashboard, listAdminProducts, listCustomers } from "@/lib/admin/repo";
 import Pill from "@/components/admin/Pill";
 import { H1, Table } from "@/components/admin/Table";
 import { Low } from "@/components/work/views";
 import { canSee, getWorkMe } from "@/lib/work/auth";
 import { MENUS, TEAMS } from "@/lib/work/menus";
-import { CHANNELS, STATUS_LABEL, unifiedOrders } from "@/lib/channels/orders";
+import { CHANNELS, STATUS_LABEL, channelColor, unifiedOrders } from "@/lib/channels/orders";
 import { syncIfStale } from "@/lib/channels/cafe24";
 import { dt, won } from "@/lib/fmt";
 
@@ -16,14 +16,17 @@ export default async function WorkHome({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   const me = (await getWorkMe())!;
   if (canSee(me, "orders")) await syncIfStale(5);
-  const [d, products, contracts, customers, uo] = await Promise.all([dashboard(), listAdminProducts(), listContracts(), listCustomers(), unifiedOrders()]);
+  const [d, products, customers, uo] = await Promise.all([dashboard(), listAdminProducts(), listCustomers(), unifiedOrders()]);
   const kstDay = (iso: string) => (iso ? new Date(iso).toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }) : "");
   const today = kstDay(new Date().toISOString());
   const todayN = uo.filter((o) => kstDay(o.orderedAt) === today).length;
   const pendingN = uo.filter((o) => o.status === "pending").length;
   const toShipN = uo.filter((o) => o.status === "paid" || o.status === "preparing").length;
   const shippedN = uo.filter((o) => o.status === "shipped").length;
-  const expiring = contracts.filter((c) => c.status === "active" && c.end_date && new Date(c.end_date).getTime() - Date.now() < 30 * 86400_000).length;
+  // 매출: 취소·반품·입금대기를 뺀 주문 금액 합계 (전 채널). 오늘 = 당일, 이번 달 = 1일부터 오늘까지 누적
+  const sold = uo.filter((o) => !["cancelled", "returned", "pending"].includes(o.status));
+  const salesToday = sold.filter((o) => kstDay(o.orderedAt) === today).reduce((n, o) => n + (o.total || 0), 0);
+  const salesMonth = sold.filter((o) => kstDay(o.orderedAt).slice(0, 7) === today.slice(0, 7)).reduce((n, o) => n + (o.total || 0), 0);
 
   // 최근 주문: 채널별로 골라 보기. 「전체」에서는 채널마다 최근 3건씩은 꼭 보이게 하고 나머지는 최신순으로 채움
   const chKeys = Object.keys(CHANNELS).filter((k) => uo.some((o) => o.channel === k));
@@ -47,9 +50,9 @@ export default async function WorkHome({ searchParams }: { searchParams: Promise
     ["배송중", shippedN, "/work/m/orders?s=shipped", "orders", false],
     ["재고 부족", products.filter((p) => p.status !== "cancelled" && p.stock <= Low).length, "/work/m/inventory", "inventory", true],
     ["계산서 처리", d.invoicePending, "/work/m/tax?s=pending", "tax", d.invoicePending > 0],
-    ["누적 매출", won(d.sales), "/work/m/revenue", "revenue", false],
+    ["오늘 매출", won(salesToday), "/work/m/revenue", "revenue", false],
     ["고객사", customers.filter((c) => c.role === "customer").length, "/work/m/clients", "clients", false],
-    ["계약 만료 임박", expiring, "/work/m/clients", "clients", expiring > 0],
+    [`${Number(today.slice(5, 7))}월 누적 매출`, won(salesMonth), "/work/m/revenue", "revenue", false],
     ["판매중 상품", d.products.active ?? 0, "/work/m/store?s=active", "store", false],
   ];
   const mine = cards.filter((c) => canSee(me, c[3]));
@@ -77,12 +80,12 @@ export default async function WorkHome({ searchParams }: { searchParams: Promise
             <h2 className="text-sm font-semibold">최근 주문 <span className="font-normal text-neutral-400">전체 {uo.length}건</span></h2>
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
               {chTabs.map(([k, l, n]) => (
-                <Link key={k} href={k === "all" ? "/work" : `/work?ch=${k}`} className={`rounded-full px-2.5 py-1 ${ch === k ? "bg-brand-600 font-semibold text-white" : "bg-white text-neutral-600 ring-1 ring-neutral-200"}`}>{l} <span className="opacity-60">{n}</span></Link>
+                <Link key={k} href={k === "all" ? "/work" : `/work?ch=${k}`} className={`rounded-full px-2.5 py-1 ring-1 ${ch === k ? "ring-2 font-bold" : ""} ${k === "all" ? (ch === k ? "bg-neutral-900 text-white ring-neutral-900" : "bg-white text-neutral-600 ring-neutral-200") : channelColor(k)}`}>{l} <span className="opacity-60">{n}</span></Link>
               ))}
             </div>
           </div>
           <Table head={["채널", "주문번호", "주문자", "금액", "상태", "일시"]} empty={!recent.length}>
-            {recent.map((o) => <tr key={o.key}><td className="text-xs">{o.place && o.place.includes("·") ? o.place : CHANNELS[o.channel] ?? o.channel}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
+            {recent.map((o) => <tr key={o.key}><td className="whitespace-nowrap text-xs"><span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${channelColor(o.channel)}`}>{CHANNELS[o.channel] ?? o.channel}</span>{o.place && o.place.includes("·") && <span className="ml-1.5 text-neutral-500">{o.place.split("·").slice(1).join("·").trim()}</span>}</td><td className="font-mono text-xs">{o.orderNo}</td><td>{o.buyer ?? o.receiver ?? "-"}</td><td className="tabular-nums">{o.total ? won(o.total) : <span className="text-neutral-300">-</span>}</td><td><Pill s={o.status} label={STATUS_LABEL[o.status] ?? o.status} /></td><td className="text-xs text-neutral-500">{dt(o.orderedAt)}</td></tr>)}
           </Table>
           <div className="mt-2 text-right">
             <Link href={ch === "all" ? "/work/m/orders" : `/work/m/orders?c=${ch}`} className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-700 ring-1 ring-brand-300 hover:bg-brand-50">더보기 ({ch === "all" ? uo.length : pool.length}건 전체 보기) →</Link>
