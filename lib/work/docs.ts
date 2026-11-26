@@ -89,8 +89,12 @@ export async function docFileUrl(me: WorkMe, id: number): Promise<string | null>
   if (!workLive()) return null;
   const { data } = await db().from("work_docs").select("box,file_path,file_name").eq("id", id).is("deleted_at", null).maybeSingle();
   if (!data?.file_path || !canBox(me, data.box)) return null;
-  const s = await db().storage.from(BUCKET).createSignedUrl(data.file_path, 60, { download: data.file_name ?? true });
-  return s.data?.signedUrl ?? null;
+  // download 옵션을 라이브러리에 맡기면 한글 파일 이름이 두 번 변환되어 "%EB%B7%B0…"처럼 깨져 내려옵니다.
+  // 그래서 서명 주소만 받아 온 뒤 파일 이름은 여기서 한 번만 붙입니다(이름이 없으면 빈 값 = 원래 이름으로 내려받기).
+  const s = await db().storage.from(BUCKET).createSignedUrl(data.file_path, 60);
+  if (!s.data?.signedUrl) return null;
+  // 공백은 "+"가 아니라 "%20"으로 보내야 이름에 "+"가 섞이지 않습니다.
+  return `${s.data.signedUrl}${s.data.signedUrl.includes("?") ? "&" : "?"}download=${encodeURIComponent(data.file_name ?? "")}`;
 }
 
 // ---------- 지시함 ----------
